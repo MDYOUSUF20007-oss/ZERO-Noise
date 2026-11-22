@@ -970,27 +970,56 @@ class ZeroNativeBridge(
 
     @JavascriptInterface
     fun launchDialerApp(): Boolean {
-        TheVoidActivity.dialerGraceUntilElapsed = SystemClock.elapsedRealtime() + 15000L
-        return try {
+        val nowElapsed = SystemClock.elapsedRealtime()
+        TheVoidActivity.dialerGraceUntilElapsed = nowElapsed + 15000L
+        TheVoidActivity.bagLaunchGraceUntilElapsed = nowElapsed + 5000L
+        val primary = bagStore.getPrimaryDialerPackage()
+        TheVoidActivity.activeBagPackage = primary ?: "dialer"
+
+        // 1. Try ACTION_DIAL with tel:
+        try {
             val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:")).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             activity.startActivity(dialIntent)
-            true
-        } catch (_: Exception) {
-            try {
-                val primary = bagStore.getPrimaryDialerPackage()
-                if (primary != null) {
-                    val launchIntent = activity.packageManager.getLaunchIntentForPackage(primary)
-                    if (launchIntent != null) {
-                        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        activity.startActivity(launchIntent)
-                        return true
-                    }
+            return true
+        } catch (_: Exception) {}
+
+        // 2. Try ACTION_DIAL plain
+        try {
+            val plainDialIntent = Intent(Intent.ACTION_DIAL).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            activity.startActivity(plainDialIntent)
+            return true
+        } catch (_: Exception) {}
+
+        // 3. Try primary dialer explicit launch intent
+        try {
+            if (primary != null) {
+                val launchIntent = activity.packageManager.getLaunchIntentForPackage(primary)
+                if (launchIntent != null) {
+                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    activity.startActivity(launchIntent)
+                    return true
                 }
-            } catch (_: Exception) {}
-            false
-        }
+            }
+        } catch (_: Exception) {}
+
+        // 4. Try any core dialer package installed
+        try {
+            for (candidate in BagStore.CORE_CALL_PACKAGES) {
+                val launchIntent = activity.packageManager.getLaunchIntentForPackage(candidate)
+                if (launchIntent != null) {
+                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    activity.startActivity(launchIntent)
+                    TheVoidActivity.activeBagPackage = candidate
+                    return true
+                }
+            }
+        } catch (_: Exception) {}
+
+        return false
     }
 
     @JavascriptInterface

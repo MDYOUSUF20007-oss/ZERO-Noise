@@ -70,20 +70,7 @@ object EngageConfig {
         val rawJson: String
     )
 
-    private val CORE_DIALER_PACKAGES = setOf(
-        "com.android.dialer",
-        "com.google.android.dialer",
-        "com.android.incallui",
-        "com.android.phone",
-        "com.android.server.telecom",
-        "com.samsung.android.dialer",
-        "com.samsung.android.incallui",
-        "com.oneplus.dialer",
-        "com.oplus.dialer",
-        "com.coloros.dialer",
-        "com.miui.phone",
-        "com.asus.dialer"
-    )
+    private val CORE_DIALER_PACKAGES = BagStore.CORE_CALL_PACKAGES
 
     private val CORE_AI_ASSISTANT_PACKAGES = setOf(
         "com.google.android.apps.bard",

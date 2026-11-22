@@ -168,10 +168,14 @@ class ZeroAccessibilityService : AccessibilityService() {
                         performGlobalAction(GLOBAL_ACTION_BACK)
                         performGlobalAction(GLOBAL_ACTION_HOME)
                         snapToVoid(nowElapsed)
-                    } else if (nowElapsed <= TheVoidActivity.dialerGraceUntilElapsed &&
-                        cachedDialerPackages.contains(resolvedPkg)
+                    } else if (cachedDialerPackages.contains(resolvedPkg) ||
+                        nowElapsed <= TheVoidActivity.dialerGraceUntilElapsed ||
+                        cachedPaymentPackages.contains(resolvedPkg) ||
+                        BagStore.SYSTEM_CUSTOMIZATION_GESTURE_PACKAGES.contains(resolvedPkg) ||
+                        BagStore.COMPULSORY_AI_ASSISTANT_PACKAGES.contains(resolvedPkg)
                     ) {
                         overlayController.hideBlockingOverlay()
+                        overlayController.hideNudgeBanner()
                     } else {
                         evaluateDecisionAndUpdateUi(resolvedPkg, nowElapsed)
                     }
@@ -450,6 +454,7 @@ class ZeroAccessibilityService : AccessibilityService() {
 
         // 4. Dialers, Payment/Wallet apps, System Customization / Gestures (One Hand Operation +, AOD, Good Lock) and AI Assistants: always permitted without blocking overlays
         if (cachedDialerPackages.contains(eventPkg) ||
+            nowElapsed <= TheVoidActivity.dialerGraceUntilElapsed ||
             cachedPaymentPackages.contains(eventPkg) ||
             BagStore.SYSTEM_CUSTOMIZATION_GESTURE_PACKAGES.contains(eventPkg) ||
             BagStore.COMPULSORY_AI_ASSISTANT_PACKAGES.contains(eventPkg)
@@ -463,7 +468,8 @@ class ZeroAccessibilityService : AccessibilityService() {
         // and return user to TheVoidActivity if navigating to desktop outside brief launch grace
         if (cachedLauncherPackages.contains(eventPkg)) {
             if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
-                nowElapsed > TheVoidActivity.bagLaunchGraceUntilElapsed
+                nowElapsed > TheVoidActivity.bagLaunchGraceUntilElapsed &&
+                nowElapsed > TheVoidActivity.dialerGraceUntilElapsed
             ) {
                 overlayController.hideBlockingOverlay()
                 snapToVoid(nowElapsed)

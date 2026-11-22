@@ -208,6 +208,10 @@ public class MainActivity extends BridgeActivity {
                     // Allow phone calls / dialer directly without blocking
                     if ("tel".equals(scheme)) {
                         try {
+                            long nowElapsed = android.os.SystemClock.elapsedRealtime();
+                            TheVoidActivity.dialerGraceUntilElapsed = nowElapsed + 15000L;
+                            TheVoidActivity.bagLaunchGraceUntilElapsed = nowElapsed + 5000L;
+                            TheVoidActivity.activeBagPackage = "dialer";
                             Intent dialIntent = new Intent(Intent.ACTION_DIAL, target);
                             dialIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(dialIntent);
@@ -220,6 +224,9 @@ public class MainActivity extends BridgeActivity {
                     // Allow SMS messaging directly without blocking
                     if ("sms".equals(scheme) || "smsto".equals(scheme)) {
                         try {
+                            long nowElapsed = android.os.SystemClock.elapsedRealtime();
+                            TheVoidActivity.bagLaunchGraceUntilElapsed = nowElapsed + 5000L;
+                            TheVoidActivity.activeBagPackage = "sms";
                             Intent smsIntent = new Intent(Intent.ACTION_SENDTO, target);
                             smsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(smsIntent);

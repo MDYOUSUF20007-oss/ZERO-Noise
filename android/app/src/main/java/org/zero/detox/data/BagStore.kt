@@ -54,17 +54,22 @@ class BagStore(private val context: Context) {
         private val PKG_PATTERN = Regex("\"packageName\"\\s*:\\s*\"([^\"]+)\"")
         private val LABEL_PATTERN = Regex("\"appName\"\\s*:\\s*\"([^\"]*)\"")
 
-        private val CORE_CALL_PACKAGES = setOf(
+        val CORE_CALL_PACKAGES = setOf(
             "com.android.incallui",
             "com.google.android.dialer",
+            "com.google.android.contacts",
             "com.samsung.android.incallui",
             "com.samsung.android.dialer",
+            "com.samsung.android.app.contacts",
+            "com.samsung.android.contacts",
             "com.android.dialer",
             "com.android.phone",
             "com.android.server.telecom",
             "com.oneplus.dialer",
             "com.oplus.dialer",
             "com.coloros.dialer",
+            "com.oppo.dialer",
+            "com.realme.dialer",
             "com.miui.phone",
             "com.asus.dialer",
             "com.vivo.dialer",
@@ -73,8 +78,14 @@ class BagStore(private val context: Context) {
             "com.motorola.dialer",
             "com.sh.smart.caller",
             "com.transsion.phonemaster",
+            "com.transsion.dialer",
+            "com.transsion.phone",
             "com.hihonor.contacts",
-            "com.huawei.contacts"
+            "com.huawei.contacts",
+            "com.truecaller",
+            "com.nothing.hearth",
+            "com.sonyericsson.android.socialphonebook",
+            "com.sonymobile.android.dialer"
         )
 
         val CORE_PAYMENT_PACKAGES = setOf(
@@ -352,9 +363,18 @@ class BagStore(private val context: Context) {
         } catch (_: Exception) {}
 
         try {
+            val plainDialIntent = Intent(Intent.ACTION_DIAL)
+            pkgs.addAll(queryIntentPackages(plainDialIntent))
+        } catch (_: Exception) {}
+
+        try {
             val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:"))
-            val matches = queryIntentPackages(dialIntent)
-            pkgs.addAll(matches)
+            pkgs.addAll(queryIntentPackages(dialIntent))
+        } catch (_: Exception) {}
+
+        try {
+            val viewDialIntent = Intent(Intent.ACTION_VIEW, Uri.parse("tel:"))
+            pkgs.addAll(queryIntentPackages(viewDialIntent))
         } catch (_: Exception) {}
         return pkgs
     }
@@ -393,8 +413,24 @@ class BagStore(private val context: Context) {
             val def = telecom?.defaultDialerPackage
             if (!def.isNullOrBlank()) return def
         } catch (_: Exception) {}
-        val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:"))
-        return queryIntentPackages(dialIntent).firstOrNull()
+        try {
+            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:"))
+            val match = queryIntentPackages(dialIntent).firstOrNull()
+            if (!match.isNullOrBlank()) return match
+        } catch (_: Exception) {}
+        try {
+            val plainDialIntent = Intent(Intent.ACTION_DIAL)
+            val match = queryIntentPackages(plainDialIntent).firstOrNull()
+            if (!match.isNullOrBlank()) return match
+        } catch (_: Exception) {}
+        val pm = context.packageManager
+        for (candidate in CORE_CALL_PACKAGES) {
+            try {
+                pm.getPackageInfo(candidate, 0)
+                return candidate
+            } catch (_: Exception) {}
+        }
+        return null
     }
 
     fun getPrimarySmsPackage(): String? {
