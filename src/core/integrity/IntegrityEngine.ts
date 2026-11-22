@@ -405,10 +405,6 @@ export function decodeAndVerifyZbak(
       (typeof localStorage !== 'undefined' &&
         localStorage.getItem(PROTECTED_STORAGE_KEYS.DEVELOPER_MODE) === '1')
     );
-    const hasProfile = Boolean(parsed.profile);
-    const claimedFirstTime = Boolean(
-      parsed.hasClaimedFirstTimeParachute || (hasProfile && bonus >= 1) || (bonus >= 1)
-    );
     const hasSupporterBadge = Boolean(
       parsed.isZeroSupporter ||
       (Array.isArray(parsed.unlockedBadgeIds) &&
@@ -420,23 +416,23 @@ export function decodeAndVerifyZbak(
       parsed.hasClaimedFirstDonationParachute || (hasSupporterBadge && bonus >= 2)
     );
 
-    const isSupporterOrDev = isDeveloper || hasSupporterBadge || Boolean(parsed.isZeroSupporter);
+    const isSupporterOrDev =
+      isDeveloper ||
+      hasSupporterBadge ||
+      Boolean(parsed.isZeroSupporter) ||
+      claimedFirstDonation;
 
-    // Max bonus allowed:
-    // Developer sandbox: up to 500
-    // Supporter / Founder / Donor: up to 5 tickets (1 starter + 1 tip + up to 3 founder/promotional perks)
-    // Regular user: up to 3 tickets (1 starter + promotional)
+    // Cryptographically signed .zbak (verified by HMAC-SHA256 above):
+    // Developers: up to 500
+    // Supporters / Donors / Founders: up to 50
+    // Standard users: up to 10
     const maxBonusLimit = isDeveloper
       ? 500
-      : (hasSupporterBadge || Boolean(parsed.isZeroSupporter))
-      ? 5
-      : 3;
+      : isSupporterOrDev
+      ? 50
+      : 10;
 
-    const maxGiftAllowed = isDeveloper
-      ? 500
-      : (claimedFirstTime ? 1 : 0) + (claimedFirstDonation ? 1 : 0) + 1; // +1 grace allowance for founder/promotional perk
-
-    if (bonus > maxBonusLimit || bonus > maxGiftAllowed + 0.001) {
+    if (bonus > maxBonusLimit) {
       return {
         ok: false,
         error: 'Backup ticket integrity check failed (bonus ticket count out of bounds).',
@@ -451,11 +447,13 @@ export function decodeAndVerifyZbak(
       0,
       Math.floor(cumSecs / 72000) + bonus - used
     );
+    const diff35h = Math.abs((parsed.remainingEscapeTickets ?? expectedRemaining35h) - expectedRemaining35h);
+    const diff20h = Math.abs((parsed.remainingEscapeTickets ?? expectedRemaining20h) - expectedRemaining20h);
+    const isBalanceReasonable = diff35h <= 2 || diff20h <= 2 || isSupporterOrDev;
+
     if (
       typeof parsed.remainingEscapeTickets === 'number' &&
-      parsed.remainingEscapeTickets !== expectedRemaining35h &&
-      parsed.remainingEscapeTickets !== expectedRemaining20h &&
-      !isSupporterOrDev
+      !isBalanceReasonable
     ) {
       return {
         ok: false,

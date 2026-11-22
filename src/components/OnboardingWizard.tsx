@@ -367,7 +367,7 @@ export function OnboardingWizard({
                 <input
                   type="file"
                   ref={fileInputRef}
-                  accept=".zbak,.json"
+                  accept="*/*"
                   className="hidden"
                   onChange={handleFileChange}
                 />
@@ -378,7 +378,11 @@ export function OnboardingWizard({
                     disabled={isRestoring}
                     onClick={() => {
                       haptics.tick(900);
-                      fileInputRef.current?.click();
+                      if (onRestoreFromCloudPicker) {
+                        handleCloudRestore();
+                      } else {
+                        fileInputRef.current?.click();
+                      }
                     }}
                     className="flex-1 py-2.5 px-3 rounded-2xl liquid-pill text-xs font-semibold text-white flex items-center justify-center gap-1.5 liquid-spring cursor-pointer disabled:opacity-50"
                     style={{
@@ -390,24 +394,22 @@ export function OnboardingWizard({
                     <span>{isRestoring ? 'Restoring...' : 'Restore .zbak File'}</span>
                   </button>
 
-                  {onRestoreFromCloudPicker && (
-                    <button
-                      type="button"
-                      disabled={isRestoring}
-                      onClick={() => {
-                        haptics.tick(900);
-                        handleCloudRestore();
-                      }}
-                      className="flex-1 py-2.5 px-3 rounded-2xl liquid-pill text-xs font-semibold text-sky-100/90 hover:text-white flex items-center justify-center gap-1.5 liquid-spring cursor-pointer disabled:opacity-50"
-                      style={{
-                        border: '1px solid rgba(255, 255, 255, 0.14)',
-                        background: 'rgba(255, 255, 255, 0.08)',
-                      }}
-                    >
-                      <Sparkles size={14} style={{ color: 'var(--accent-primary, #38bdf8)' }} />
-                      <span>Cloud Backup</span>
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    disabled={isRestoring}
+                    onClick={() => {
+                      haptics.tick(900);
+                      fileInputRef.current?.click();
+                    }}
+                    className="py-2.5 px-3 rounded-2xl liquid-pill text-xs font-semibold text-sky-100/90 hover:text-white flex items-center justify-center gap-1.5 liquid-spring cursor-pointer disabled:opacity-50"
+                    style={{
+                      border: '1px solid rgba(255, 255, 255, 0.14)',
+                      background: 'rgba(255, 255, 255, 0.08)',
+                    }}
+                  >
+                    <Sparkles size={14} style={{ color: 'var(--accent-primary, #38bdf8)' }} />
+                    <span>Browse All</span>
+                  </button>
                 </div>
 
                 {restoreStatus && (

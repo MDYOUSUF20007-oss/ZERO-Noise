@@ -900,7 +900,14 @@ export function App() {
             setShowOnboardingWizard(false);
             openInteractiveProfile();
           }}
-          onRestoreFromCloudPicker={store.restoreBackupFromCloudPicker}
+          onRestoreFromCloudPicker={async () => {
+            const res = await store.restoreBackupFromCloudPicker();
+            if (res.ok) {
+              setSuppressOnboardingForRestore(false);
+              setShowOnboardingWizard(false);
+            }
+            return res;
+          }}
           onRestoreFromFile={async (content: string) => {
             const res = store.importData(content);
             if (res.ok) {
