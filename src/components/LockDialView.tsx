@@ -497,7 +497,8 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
   });
   const [showIntentionRitual, setShowIntentionRitual] = useState<boolean>(false);
 
-  // Burn the Boats state
+  // Burn the Boats state (Hard maximum limit: 4 hours = 14,400 seconds)
+  const MAX_BURN_THE_BOATS_SECONDS = 4 * 3600;
   const [burnTheBoatsEnabled, setBurnTheBoatsEnabled] = useState<boolean>(() => {
     try {
       return localStorage.getItem('zero_burn_the_boats_v1') === 'true';
@@ -505,6 +506,24 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
       return false;
     }
   });
+  const [burnBoatsWarning, setBurnBoatsWarning] = useState<string | null>(null);
+
+  // Auto-disable Burn the Boats if session duration exceeds 4 hours
+  useEffect(() => {
+    if (durationSeconds > MAX_BURN_THE_BOATS_SECONDS && burnTheBoatsEnabled) {
+      setBurnTheBoatsEnabled(false);
+      try {
+        localStorage.setItem('zero_burn_the_boats_v1', 'false');
+      } catch {}
+      setBurnBoatsWarning('Burn the Boats auto-disabled: sessions exceeding 4 hours cannot use Burn the Boats.');
+    }
+  }, [durationSeconds, burnTheBoatsEnabled]);
+
+  useEffect(() => {
+    if (!burnBoatsWarning) return;
+    const timer = setTimeout(() => setBurnBoatsWarning(null), 4000);
+    return () => clearTimeout(timer);
+  }, [burnBoatsWarning]);
 
   const allTags = useMemo(
     () => mergeHashtagList([...customHashtags, ...localExtraTags], DEFAULT_SESSION_TAGS),
@@ -1376,16 +1395,30 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
             <button
               type="button"
               onClick={() => {
+                if (durationSeconds > MAX_BURN_THE_BOATS_SECONDS) {
+                  haptics.tick(1000);
+                  setBurnBoatsWarning('Burn the Boats is limited to a maximum of 4 hours (240 min). Reduce duration to engage.');
+                  return;
+                }
                 haptics.thud();
                 const nextVal = !burnTheBoatsEnabled;
                 setBurnTheBoatsEnabled(nextVal);
+                if (!nextVal) {
+                  setBurnBoatsWarning(null);
+                }
                 try {
                   localStorage.setItem('zero_burn_the_boats_v1', String(nextVal));
                 } catch {}
               }}
-              title="Burn the Boats disables emergency escape tickets for this session"
+              title={
+                durationSeconds > MAX_BURN_THE_BOATS_SECONDS
+                  ? 'Burn the Boats is limited to a maximum session duration of 4 hours'
+                  : 'Burn the Boats disables emergency escape tickets for this session (Max 4h)'
+              }
               className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-sans transition-all cursor-pointer ${
-                isAero
+                durationSeconds > MAX_BURN_THE_BOATS_SECONDS
+                  ? 'opacity-40 cursor-not-allowed bg-zinc-900/40 text-zinc-500 border border-white/5 rounded-full'
+                  : isAero
                   ? burnTheBoatsEnabled
                     ? 'bg-amber-600 text-white font-black rounded-2xl shadow-sm'
                     : 'bg-white text-[#0f172a] font-bold border border-[#CBD5E1] rounded-2xl shadow-xs'
@@ -1395,17 +1428,38 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
               }`}
             >
               <Flame size={12} strokeWidth={2} className={burnTheBoatsEnabled ? (isAero ? 'text-white' : 'text-amber-400') : (isAero ? 'text-[#0f172a]' : 'text-zinc-500')} />
-              <span>Burn Boats: {burnTheBoatsEnabled ? 'Active' : 'Off'}</span>
+              <span>Burn Boats: {burnTheBoatsEnabled ? 'Active (Max 4h)' : 'Off (Max 4h)'}</span>
             </button>
           </div>
 
+          {burnBoatsWarning && (
+            <div className="mx-auto max-w-sm px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-sans flex items-center justify-center gap-1.5 text-center">
+              <Flame size={12} className="text-amber-400 shrink-0" />
+              <span>{burnBoatsWarning}</span>
+            </div>
+          )}
+
+          {burnTheBoatsEnabled && (
+            <div className="text-[11px] font-sans text-amber-400/90 flex items-center justify-center gap-1.5">
+              <Flame size={12} className="text-amber-400" />
+              <span>Boats Burned • Escape tickets strictly locked for this session</span>
+            </div>
+          )}
+
           {parachuteMetrics.currentBalance > 0 && (
-            <div className="pt-2 flex justify-center">
-              <EscapeTicketDockButton
-                ticketCount={parachuteMetrics.currentBalance}
-                onOpen={onOpenTicketModal}
-                isAero={isAero}
-              />
+            <div className="pt-2 flex flex-col items-center gap-1.5">
+              {burnTheBoatsEnabled ? (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300/80 text-xs">
+                  <Flame size={12} className="text-amber-400" />
+                  <span>{parachuteMetrics.currentBalance} {parachuteMetrics.currentBalance === 1 ? 'ticket' : 'tickets'} locked (Boats Burned)</span>
+                </div>
+              ) : (
+                <EscapeTicketDockButton
+                  ticketCount={parachuteMetrics.currentBalance}
+                  onOpen={onOpenTicketModal}
+                  isAero={isAero}
+                />
+              )}
             </div>
           )}
         </div>

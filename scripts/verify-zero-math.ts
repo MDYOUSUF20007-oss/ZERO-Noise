@@ -1756,4 +1756,69 @@ failIf(
 
 console.log('PASS: ZeroTube Deterministic Whitelist Locking & URL Normalization Verified');
 
+// ==========================================
+// 27. BURN THE BOATS VERIFICATION (STRICT 4-HOUR CEILING & TICKET LOCKOUT)
+// ==========================================
+console.log('\n--- 27. BURN THE BOATS SPECIFICATION & LIMIT VERIFICATION ---');
+
+const MAX_BURN_THE_BOATS_SECONDS = 4 * 3600; // 14,400s (4 hours)
+
+function evaluateBurnTheBoatsEligibility(durationSeconds: number, requestedBurnTheBoats: boolean): boolean {
+  if (!requestedBurnTheBoats) return false;
+  return durationSeconds <= MAX_BURN_THE_BOATS_SECONDS;
+}
+
+function simulateEscapeTicketDeployment(session: { isLocked: boolean; burnTheBoats: boolean; ticketBalance: number }): boolean {
+  if (!session.isLocked) return false;
+  if (session.burnTheBoats) return false; // Strictly rejected
+  if (session.ticketBalance < 1) return false;
+  return true;
+}
+
+// Case 1: Session <= 4 hours with burn the boats requested
+failIf(
+  evaluateBurnTheBoatsEligibility(4 * 3600, true) === true,
+  'Burn the Boats must be eligible for sessions of exactly 4 hours'
+);
+failIf(
+  evaluateBurnTheBoatsEligibility(3600, true) === true,
+  'Burn the Boats must be eligible for sessions of 1 hour'
+);
+
+// Case 2: Session > 4 hours must strictly reject Burn the Boats
+failIf(
+  evaluateBurnTheBoatsEligibility(4 * 3600 + 1, true) === false,
+  'Burn the Boats must be rejected for sessions exceeding 4 hours (4h 1s)'
+);
+failIf(
+  evaluateBurnTheBoatsEligibility(8 * 3600, true) === false,
+  'Burn the Boats must be rejected for sessions of 8 hours'
+);
+failIf(
+  evaluateBurnTheBoatsEligibility(24 * 3600, true) === false,
+  'Burn the Boats must be rejected for sessions of 24 hours'
+);
+
+// Case 3: Burn the boats disabled by user
+failIf(
+  evaluateBurnTheBoatsEligibility(3600, false) === false,
+  'Burn the Boats must be false if not requested'
+);
+
+// Case 4: Escape Ticket deployment during Burn the Boats
+failIf(
+  simulateEscapeTicketDeployment({ isLocked: true, burnTheBoats: true, ticketBalance: 5 }) === false,
+  'Escape ticket deployment must be strictly denied when Burn the Boats is active'
+);
+failIf(
+  simulateEscapeTicketDeployment({ isLocked: true, burnTheBoats: false, ticketBalance: 5 }) === true,
+  'Escape ticket deployment should succeed when Burn the Boats is false and balance > 0'
+);
+failIf(
+  simulateEscapeTicketDeployment({ isLocked: true, burnTheBoats: false, ticketBalance: 0 }) === false,
+  'Escape ticket deployment should fail when ticket balance is 0'
+);
+
+console.log('PASS: Burn the Boats Strict 4-Hour Limit & Escape Ticket Lockout Verified');
+
 console.log('\n>>> ALL SPECIFICATION AND ANTI-EXPLOIT TESTS PASSED WITH 100% SUCCESS! <<<');

@@ -25,6 +25,8 @@ import {
   Coffee,
   Quote,
   GraduationCap,
+  Flame,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface AetherialVoidViewProps {
@@ -62,6 +64,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   const [showEscapeTicketModal, setShowEscapeTicketModal] = useState(false);
   const [showZeroTube, setShowZeroTube] = useState(false);
+  const [tamperWarning, setTamperWarning] = useState<string | null>(null);
 
   const effectiveTicketCount = activeLock.burnTheBoats ? 0 : (parachuteMetrics.currentBalance || 0);
   const [studyAppsConfig, setStudyAppsConfig] = useState<CompulsoryStudyAppsConfig>(() =>
@@ -627,7 +630,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
         {/* Action Controls: Emergency Dial & Escape */}
         <div
           className={`flex items-center gap-2 pt-1 ${
-            effectiveTicketCount > 0 ? 'justify-between' : 'justify-center'
+            effectiveTicketCount > 0 || activeLock.burnTheBoats ? 'justify-between' : 'justify-center'
           }`}
         >
           <button
@@ -637,23 +640,45 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
               setShowEmergencyModal(true);
             }}
             className={`py-3 px-4 rounded-xl bg-[#282a32]/80 hover:bg-[#33343d] text-xs font-semibold text-[#bdc8d1] hover:text-white transition-all cursor-pointer flex items-center justify-center gap-2 border border-white/5 active:scale-95 ${
-              effectiveTicketCount > 0 ? 'flex-1' : 'w-full max-w-xs'
+              effectiveTicketCount > 0 || activeLock.burnTheBoats ? 'flex-1' : 'w-full max-w-xs'
             }`}
           >
             <Phone size={14} className="text-[#ffb4ab]" />
             <span>Emergency Call</span>
           </button>
 
-          {effectiveTicketCount > 0 && (
+          {activeLock.burnTheBoats ? (
+            <button
+              type="button"
+              onClick={() => {
+                haptics.thud();
+                setTamperWarning('Burn the Boats is active. Escape tickets are strictly disabled for this session.');
+                setTimeout(() => setTamperWarning(null), 3500);
+              }}
+              className="py-3 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-xs font-semibold text-amber-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 border border-amber-500/30 active:scale-95 flex-1"
+              title="Burn the Boats is active. Escape tickets are strictly disabled."
+            >
+              <Flame size={14} className="text-amber-400" />
+              <span>Boats Burned • Locked</span>
+            </button>
+          ) : effectiveTicketCount > 0 ? (
             <EscapeTicketDockButton
               ticketCount={effectiveTicketCount}
               onOpen={() => {
                 setShowEscapeTicketModal(true);
               }}
             />
-          )}
+          ) : null}
         </div>
       </footer>
+
+      {/* ANTI-TAMPER BANNER */}
+      {tamperWarning && (
+        <div className="fixed top-14 left-5 right-5 max-w-md mx-auto z-60 bg-red-950/90 border border-red-500/60 text-red-200 text-xs px-4 py-2.5 rounded-2xl font-sans backdrop-blur-md shadow-2xl flex items-center gap-2.5 animate-fadeIn">
+          <AlertTriangle size={16} className="text-red-400 shrink-0" />
+          <span className="font-medium">{tamperWarning}</span>
+        </div>
+      )}
 
       {/* QUICK PAYMENT & UPI MODAL */}
       {showPaymentModal && (

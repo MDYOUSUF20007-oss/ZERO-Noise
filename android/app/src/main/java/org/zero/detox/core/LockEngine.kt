@@ -39,7 +39,7 @@ class LockEngine @JvmOverloads constructor(
         val remainingSeconds: Long = 0L
     )
 
-    data class LockTimingSnapshot(
+    data class LockTimingSnapshot @JvmOverloads constructor(
         val isLocked: Boolean,
         val isExpired: Boolean,
         val sessionId: String,
@@ -52,7 +52,8 @@ class LockEngine @JvmOverloads constructor(
         val remainingMillis: Long,
         val elapsedMonotonicMillis: Long,
         val usedRebootFallback: Boolean,
-        val needsRebootRebase: Boolean
+        val needsRebootRebase: Boolean,
+        val burnTheBoats: Boolean = false
     )
 
     companion object {
@@ -66,6 +67,8 @@ class LockEngine @JvmOverloads constructor(
         const val KEY_BOOT_ANCHOR_ELAPSED_MS = "boot_anchor_elapsed_ms"
         const val KEY_PRIOR_ELAPSED_MS = "prior_elapsed_ms"
         const val KEY_REBOOT_REBASED = "reboot_rebased"
+        const val KEY_BURN_THE_BOATS = "burn_the_boats"
+        const val MAX_BURN_THE_BOATS_SECONDS = 4 * 3600L
 
         const val MONOTONIC_SOURCE = "android_elapsed_realtime"
         private const val NATIVE_EVENT_HMAC_SECRET = "ZERO::FOSS::NATIVE::MONOTONIC::v1::org.zero.detox"
@@ -98,7 +101,8 @@ class LockEngine @JvmOverloads constructor(
                     remainingMillis = 0L,
                     elapsedMonotonicMillis = 0L,
                     usedRebootFallback = false,
-                    needsRebootRebase = false
+                    needsRebootRebase = false,
+                    burnTheBoats = false
                 )
             }
 
@@ -108,6 +112,7 @@ class LockEngine @JvmOverloads constructor(
             val startWall = prefs.getLong(KEY_START_TIME, nowWallMs)
             val targetEndWall = prefs.getLong(KEY_TARGET_END_TIME, startWall + durationMillis)
             val sessionId = prefs.getString(KEY_SESSION_ID, "sess_$startWall") ?: "sess_$startWall"
+            val burnTheBoats = prefs.getBoolean(KEY_BURN_THE_BOATS, false)
 
             val bootAnchorElapsed = prefs.getLong(KEY_BOOT_ANCHOR_ELAPSED_MS, -1L)
             val priorElapsedMs = maxOf(0L, prefs.getLong(KEY_PRIOR_ELAPSED_MS, 0L))
@@ -135,7 +140,8 @@ class LockEngine @JvmOverloads constructor(
                     remainingMillis = remainingMs,
                     elapsedMonotonicMillis = totalMonotonicElapsed,
                     usedRebootFallback = alreadyRebased,
-                    needsRebootRebase = false
+                    needsRebootRebase = false,
+                    burnTheBoats = burnTheBoats
                 )
             } else {
                 // Device cold-rebooted or pre-upgrade session: compute wall-clock gap while offline
@@ -155,7 +161,8 @@ class LockEngine @JvmOverloads constructor(
                     remainingMillis = remainingMs,
                     elapsedMonotonicMillis = elapsedWall,
                     usedRebootFallback = true,
-                    needsRebootRebase = !isExpired
+                    needsRebootRebase = !isExpired,
+                    burnTheBoats = burnTheBoats
                 )
             }
         }
@@ -211,8 +218,11 @@ class LockEngine @JvmOverloads constructor(
      * Arm and ignite a new lock session using both wall boundaries (reboot reference)
      * and Android's monotonic SystemClock.elapsedRealtime() anchor (tamper-proof active lock).
      */
-    fun igniteSession(durationSeconds: Long, tag: String) {
+    @JvmOverloads
+    fun igniteSession(durationSeconds: Long, tag: String, burnTheBoats: Boolean = false) {
         val safeDuration = maxOf(0L, durationSeconds)
+        // Enforce 4-hour hard ceiling on Burn the Boats feature
+        val safeBurnTheBoats = burnTheBoats && safeDuration <= MAX_BURN_THE_BOATS_SECONDS
         val nowWall = wallClockProvider()
         val nowElapsed = elapsedRealtimeProvider()
         val targetEndTime = nowWall + (safeDuration * 1000L)
@@ -228,6 +238,7 @@ class LockEngine @JvmOverloads constructor(
             .putLong(KEY_BOOT_ANCHOR_ELAPSED_MS, nowElapsed)
             .putLong(KEY_PRIOR_ELAPSED_MS, 0L)
             .putBoolean(KEY_REBOOT_REBASED, false)
+            .putBoolean(KEY_BURN_THE_BOATS, safeBurnTheBoats)
             .commit()
 
         _sessionState.value = SessionState(
@@ -370,11 +381,12 @@ class LockEngine @JvmOverloads constructor(
      * and NOT counted toward the 20-hour Escape Ticket milestone or focus hours.
      */
     fun deployParachute(): Boolean = synchronized(COMPLETION_LOCK) {
+        val timing = getCurrentTiming()
+        // Burn the Boats strictly locks escape tickets for the entire session
+        if (!timing.isLocked || timing.burnTheBoats) return@synchronized false
+
         val canDeploy = parachuteStore.getParachuteBalance() >= 1
         if (!canDeploy) return@synchronized false
-
-        val timing = getCurrentTiming()
-        if (!timing.isLocked) return@synchronized false
 
         val success = parachuteStore.useParachute(
             abortedTag = timing.sessionTag,

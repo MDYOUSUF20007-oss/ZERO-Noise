@@ -844,16 +844,28 @@ class ZeroNativeBridge(
 
     @JavascriptInterface
     fun igniteSession(durationSeconds: Long, tag: String): Boolean {
+        return igniteSessionWithBurnBoats(durationSeconds, tag, false)
+    }
+
+    @JavascriptInterface
+    fun igniteSessionWithBurnBoats(durationSeconds: Long, tag: String, burnTheBoats: Boolean): Boolean {
         if (!computeStrictReady()) {
             requestNextMissingPermission()
             return false
         }
-        lockEngine.igniteSession(durationSeconds, tag)
+        TheVoidActivity.dialerGraceUntilElapsed = 0L
+        TheVoidActivity.bagLaunchGraceUntilElapsed = 0L
+        TheVoidActivity.pomodoroBreakUntilElapsed = 0L
+        TheVoidActivity.activeBagPackage = null
+        val safeBurn = burnTheBoats && durationSeconds <= LockEngine.MAX_BURN_THE_BOATS_SECONDS
+        lockEngine.igniteSession(durationSeconds, tag, safeBurn)
         return true
     }
 
     @JavascriptInterface
     fun deployParachute(): Boolean {
+        val timing = lockEngine.getCurrentTiming()
+        if (timing.burnTheBoats) return false
         return lockEngine.deployParachute()
     }
 
@@ -882,6 +894,7 @@ class ZeroNativeBridge(
             put("elapsedMonotonicMs", timing.elapsedMonotonicMillis)
             put("monotonicNowMs", SystemClock.elapsedRealtime())
             put("monotonicSource", LockEngine.MONOTONIC_SOURCE)
+            put("burnTheBoats", timing.burnTheBoats)
             put("cumulativeSeconds", metrics.totalCumulativeSeconds)
             put("deployedCount", metrics.deployedParachutes)
             put("bonusCount", metrics.bonusParachutes)

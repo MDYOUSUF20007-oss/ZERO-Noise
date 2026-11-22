@@ -1553,21 +1553,27 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               <span>Emergency Call</span>
             </button>
 
-            {effectiveTicketCount > 0 && (
+            {activeLock.burnTheBoats ? (
+              <button
+                type="button"
+                onClick={() => {
+                  haptics.thud();
+                  setTamperWarning('Burn the Boats is active. Escape tickets are strictly disabled for this session.');
+                  setTimeout(() => setTamperWarning(null), 3500);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-sans font-semibold cursor-pointer active:scale-95"
+                title="Burn the Boats is active. Escape tickets are strictly locked."
+              >
+                <Flame size={13} className="text-amber-400" />
+                <span>Boats Burned</span>
+              </button>
+            ) : effectiveTicketCount > 0 ? (
               <EscapeTicketDockButton
                 ticketCount={effectiveTicketCount}
                 isAero={isAero}
-                onOpen={() => {
-                  if (activeLock.burnTheBoats) {
-                    haptics.thud();
-                    setTamperWarning('Burn the Boats is active. Escape tickets are strictly disabled for this session.');
-                    setTimeout(() => setTamperWarning(null), 3500);
-                    return;
-                  }
-                  setShowEscapeTicketModal(true);
-                }}
+                onOpen={() => setShowEscapeTicketModal(true)}
               />
-            )}
+            ) : null}
           </div>
         )}
       </div>
@@ -1576,7 +1582,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       {!isAero && (
         <div
           className={`relative z-10 w-full max-w-md mx-auto pt-1 pb-1 shrink-0 flex items-center gap-3 ${
-            effectiveTicketCount > 0 ? 'justify-between' : 'justify-center'
+            effectiveTicketCount > 0 || activeLock.burnTheBoats ? 'justify-between' : 'justify-center'
           }`}
         >
           <button
@@ -1586,27 +1592,33 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               setShowEmergencyModal(true);
             }}
             className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl liquid-pill text-xs font-sans font-medium text-zinc-300 hover:text-white transition-all cursor-pointer active:scale-95 ${
-              effectiveTicketCount > 0 ? 'flex-1' : 'w-full max-w-xs'
+              effectiveTicketCount > 0 || activeLock.burnTheBoats ? 'flex-1' : 'w-full max-w-xs'
             }`}
           >
             <Phone size={14} className="text-red-400" />
             <span>Emergency Call</span>
           </button>
 
-          {effectiveTicketCount > 0 && (
+          {activeLock.burnTheBoats ? (
+            <button
+              type="button"
+              onClick={() => {
+                haptics.thud();
+                setTamperWarning('Burn the Boats is active. Escape tickets are strictly disabled for this session.');
+                setTimeout(() => setTamperWarning(null), 3500);
+              }}
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs font-sans font-semibold text-amber-300 transition-all cursor-pointer active:scale-95 flex-1"
+              title="Burn the Boats is active. Escape tickets are strictly disabled."
+            >
+              <Flame size={14} className="text-amber-400" />
+              <span>Boats Burned • Locked</span>
+            </button>
+          ) : effectiveTicketCount > 0 ? (
             <EscapeTicketDockButton
               ticketCount={effectiveTicketCount}
-              onOpen={() => {
-                if (activeLock.burnTheBoats) {
-                  haptics.thud();
-                  setTamperWarning('Burn the Boats is active. Escape tickets are strictly disabled for this session.');
-                  setTimeout(() => setTamperWarning(null), 3500);
-                  return;
-                }
-                setShowEscapeTicketModal(true);
-              }}
+              onOpen={() => setShowEscapeTicketModal(true)}
             />
-          )}
+          ) : null}
         </div>
       )}
 

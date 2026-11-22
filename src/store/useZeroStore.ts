@@ -1074,6 +1074,9 @@ export function useZeroStore() {
       }
 
       if (nativeState.isLocked) {
+        const isBurn = nativeState.burnTheBoats !== undefined
+          ? Boolean(nativeState.burnTheBoats)
+          : Boolean(currentLock.burnTheBoats);
         const nextLock: ActiveLockSession = {
           isLocked: true,
           tag: nativeState.sessionTag || currentLock.tag || 'Deep Work',
@@ -1082,6 +1085,7 @@ export function useZeroStore() {
           durationSeconds: nativeState.durationSeconds || currentLock.durationSeconds || 0,
           elapsedSeconds: Math.max(0, Number(nativeState.elapsedSeconds ?? currentLock.elapsedSeconds)),
           remainingSeconds: Math.max(0, Number(nativeState.remainingSeconds ?? currentLock.remainingSeconds)),
+          burnTheBoats: isBurn,
         };
         setActiveLock(nextLock);
       } else if (currentLock.isLocked) {
@@ -1419,6 +1423,8 @@ export function useZeroStore() {
     };
   }, [activeLock.isLocked, syncWithNativeState, applyPostCompletionSideEffects]);
 
+  const MAX_BURN_THE_BOATS_SECONDS = 4 * 3600; // 4-hour hard ceiling
+
   const igniteSession = (durationSeconds: number, tag: SessionTag): boolean => {
     const latestPerms = readPermissionsFromNative();
     const latestSecurity = readEnvironmentSecurityFromNative();
@@ -1477,7 +1483,18 @@ export function useZeroStore() {
             activeTokensNow.badgeText
           );
         }
-        const started = window.ZeroNative.igniteSession(safeDuration, tag);
+        const isBurnTheBoats = (() => {
+          try {
+            const enabled = localStorage.getItem('zero_burn_the_boats_v1') === 'true';
+            return enabled && safeDuration <= MAX_BURN_THE_BOATS_SECONDS;
+          } catch {
+            return false;
+          }
+        })();
+
+        const started = window.ZeroNative.igniteSessionWithBurnBoats
+          ? window.ZeroNative.igniteSessionWithBurnBoats(safeDuration, tag, isBurnTheBoats)
+          : window.ZeroNative.igniteSession(safeDuration, tag);
         if (started === false) {
           stopNativeEngageSession();
           refreshPermissions();
@@ -1499,7 +1516,8 @@ export function useZeroStore() {
 
     const isBurnTheBoats = (() => {
       try {
-        return localStorage.getItem('zero_burn_the_boats_v1') === 'true';
+        const enabled = localStorage.getItem('zero_burn_the_boats_v1') === 'true';
+        return enabled && safeDuration <= MAX_BURN_THE_BOATS_SECONDS;
       } catch {
         return false;
       }

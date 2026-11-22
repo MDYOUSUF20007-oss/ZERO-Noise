@@ -122,6 +122,7 @@ export interface NativeStateSnapshot {
   deployedCount: number;
   bonusCount?: number;
   strictAccessibilityEnabled?: boolean;
+  burnTheBoats?: boolean;
   pendingCompletions?: VerifiedNativeCompletionEvent[];
 }
 
@@ -476,6 +477,7 @@ export interface ZeroNativeBridgeInterface {
   syncLedgerState(cumulativeSeconds: number, deployedCount: IntOrNum): void;
   syncLedgerStateWithBonus?(cumulativeSeconds: number, deployedCount: IntOrNum, bonusCount: IntOrNum): void;
   igniteSession(durationSeconds: number, tag: string): boolean;
+  igniteSessionWithBurnBoats?(durationSeconds: number, tag: string, burnTheBoats: boolean): boolean;
   startEngageSessionJson?(payloadJson: string): boolean;
   stopEngageSession?(): void;
   getEngageSessionStateJson?(): string;
