@@ -114,7 +114,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       const docAccent = document.documentElement.style.getPropertyValue('--accent-primary')?.trim();
       if (docAccent && docAccent.startsWith('#')) return docAccent;
     }
-    return '#E69F86';
+    return '#00f0ff';
   }, [isAero, isDusk, aeroAccentColor, accent]);
 
   const voidBackgroundImage = useMemo(() => {
@@ -724,10 +724,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
             }
           : ({
-              backgroundColor: themeRuntime.cssVars['--zero-bg-primary'] || '#24283F',
+              backgroundColor: themeRuntime.cssVars['--zero-bg-primary'] || '#08090c',
               backgroundImage: voidBackgroundImage,
               backgroundSize: themeRuntime.cssVars['--zero-bg-size'],
-              color: themeRuntime.cssVars['--zero-ink-primary'] || '#F3EDE8',
+              color: themeRuntime.cssVars['--zero-ink-primary'] || '#f8fafc',
               paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
               paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
               ...themeRuntime.cssVars,
@@ -1645,15 +1645,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                         style={{
                           backgroundColor: brand.bgColor,
                           color: brand.textColor,
-                          border: isAero ? '1.5px solid #111827' : '1.5px solid var(--accent-primary, #38bdf8)',
+                          border: isAero ? '1.5px solid #111827' : '1.5px solid var(--accent-primary, #00f0ff)',
                         }}
                       >
                         {brand.initial}
                         <span
                           className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
                           style={{
-                            backgroundColor: isAero ? '#353B5B' : 'var(--accent-primary, #38bdf8)',
-                            color: '#F3EDE8',
+                            backgroundColor: isAero ? '#353B5B' : 'var(--accent-primary, #00f0ff)',
+                            color: isAero ? '#F3EDE8' : '#021a1f',
                           }}
                         >
                           <GraduationCap size={10} />

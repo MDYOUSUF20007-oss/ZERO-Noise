@@ -3,16 +3,15 @@ Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host "   ZERO-NOISE PHONE INSTALLER / UPDATER   " -ForegroundColor Cyan
 Write-Host "=========================================" -ForegroundColor Cyan
 
-$apkPath = "$PSScriptRoot\android\app\build\outputs\apk\strict\debug\app-strict-debug.apk"
+$apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.144.apk"
 if (-not (Test-Path $apkPath)) {
-    Write-Host "[!] Strict debug APK not found locally. Searching release assets..." -ForegroundColor Yellow
-    $apkPath = "$PSScriptRoot\release-assets\ZERO-requires-adb-v1.0.143-preview.apk"
+    $apkPath = "$PSScriptRoot\ZERO-v1.0.144.apk"
 }
 
 if (-not (Test-Path $apkPath)) {
-    Write-Host "[!] Local APK not found. Downloading v1.0.143 from GitHub..." -ForegroundColor Yellow
-    $apkPath = "$PSScriptRoot\ZERO-v1.0.143.apk"
-    Invoke-WebRequest -Uri "https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases/download/v1.0.143/ZERO-requires-adb-v1.0.143-preview.apk" -OutFile $apkPath
+    Write-Host "[!] Local v1.0.144 APK not found. Downloading from GitHub..." -ForegroundColor Yellow
+    $apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.144.apk"
+    Invoke-WebRequest -Uri "https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases/download/v1.0.144/ZERO-requires-adb-v1.0.144.apk" -OutFile $apkPath
 }
 
 Write-Host "[+] Target APK: $apkPath" -ForegroundColor Green
@@ -27,15 +26,23 @@ if ($devices -match "offline") {
     Write-Host "    --> Check your phone screen for 'Allow USB debugging?' and tap ALLOW." -ForegroundColor Magenta
 }
 
-Write-Host "[*] Waiting for device to authorize..." -ForegroundColor Cyan
+$attached = ($devices -split "`r?`n" | Where-Object { $_ -match "\bdevice\b" -and $_ -notmatch "List of devices" })
+if (-not $attached) {
+    Write-Host "[!] No authorized phone detected via ADB." -ForegroundColor Yellow
+    Write-Host "    --> Plug your phone into the computer via USB cable." -ForegroundColor Yellow
+    Write-Host "    --> Enable USB Debugging in Developer Options." -ForegroundColor Yellow
+    Write-Host "    --> If prompted, tap 'Allow USB debugging' on your phone." -ForegroundColor Yellow
+    Write-Host "[*] Waiting for device to connect and authorize..." -ForegroundColor Cyan
+}
+
 adb wait-for-device
 
-Write-Host "[*] Device detected! Installing update..." -ForegroundColor Cyan
-$installResult = adb install -r "$apkPath"
+Write-Host "[*] Device detected! Installing v1.0.144 (with downgrade support)..." -ForegroundColor Cyan
+$installResult = adb install -r -d "$apkPath"
 Write-Host "$installResult"
 
 if ($installResult -match "Success") {
-    Write-Host "[SUCCESS] Zero-Noise updated successfully on your phone!" -ForegroundColor Green
+    Write-Host "[SUCCESS] Zero-Noise v1.0.144 (Morning Release) installed successfully on your phone!" -ForegroundColor Green
 } else {
     Write-Host "[!] Install response: $installResult" -ForegroundColor Yellow
 }

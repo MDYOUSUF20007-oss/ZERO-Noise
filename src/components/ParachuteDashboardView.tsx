@@ -233,7 +233,7 @@ function getHeatmapCellStyle(
         };
       case 4:
         return {
-          background: 'var(--accent-primary, #E69F86)',
+          background: 'var(--accent-primary, #00f0ff)',
           borderTop: '1px solid #FFFFFF',
           borderLeft: '1px solid rgba(255, 255, 255, 0.95)',
           borderRight: '1px solid rgba(255, 255, 255, 0.75)',

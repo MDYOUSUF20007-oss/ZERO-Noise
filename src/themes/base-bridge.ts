@@ -56,7 +56,6 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   }
 
   /* Purple Accent */
-  :root,
   [data-accent="purple"],
   html[data-accent="purple"] {
     --accent-primary: #a855f7 !important;
@@ -78,20 +77,21 @@ export const BASE_ENGINE_BRIDGE_CSS = `
     --accent-shift-4: #8b5cf6 !important; /* Luminous Purple */
   }
 
-  /* Cyan Accent */
+  /* Cyan Accent (Default Primary) */
+  :root,
   [data-accent="cyan"],
   html[data-accent="cyan"] {
     --accent-primary: #00f0ff !important;
     --accent-secondary: #38bdf8 !important;
-    --accent-soft: rgba(0, 240, 255, 0.18) !important;
-    --accent-border: rgba(0, 240, 255, 0.55) !important;
-    --text-on-accent: #042f2e !important;
+    --accent-soft: rgba(0, 240, 255, 0.16) !important;
+    --accent-border: rgba(0, 240, 255, 0.50) !important;
+    --text-on-accent: #021a1f !important;
     --zero-accent: #00f0ff !important;
     --zero-dial-stroke: #00f0ff !important;
     --accent-hex: #00f0ff !important;
     --accent-rgb: 0, 240, 255 !important;
-    --liquid-accent-glow: rgba(0, 240, 255, 0.40) !important;
-    --liquid-accent-soft-glow: rgba(0, 240, 255, 0.18) !important;
+    --liquid-accent-glow: rgba(0, 240, 255, 0.35) !important;
+    --liquid-accent-soft-glow: rgba(0, 240, 255, 0.16) !important;
     --liquid-accent-vibrant: #00f0ff !important;
     --liquid-accent-tint: #38bdf8 !important;
     --accent-shift-1: #0ea5e9 !important; /* Celestial Sky */
@@ -156,24 +156,24 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   .settings-card,
   [data-frosted-card="true"],
   [data-obsidian-card="true"] {
-    background-color: var(--glass-surface-bg, rgba(16, 26, 44, 0.62)) !important;
+    background-color: var(--glass-surface-bg, rgba(20, 24, 32, 0.65)) !important;
     background-image:
       linear-gradient(
         160deg,
         rgba(255, 255, 255, calc(var(--glass-opacity, 0.50) * 0.08)) 0%,
         rgba(255, 255, 255, 0.01) 35%,
-        rgba(0, 0, 0, 0.18) 100%
+        rgba(0, 0, 0, 0.20) 100%
       ) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12)) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.09)) !important;
     border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.28)) !important;
     border-radius: 20px !important;
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, calc(var(--glass-opacity, 0.50) * 0.22)),
       0 12px 30px -6px rgba(0, 0, 0, 0.65) !important;
-    backdrop-filter: var(--surface-blur, blur(18px) saturate(160%)) !important;
-    -webkit-backdrop-filter: var(--surface-blur, blur(18px) saturate(160%)) !important;
+    backdrop-filter: var(--surface-blur, blur(18px) saturate(140%)) !important;
+    -webkit-backdrop-filter: var(--surface-blur, blur(18px) saturate(140%)) !important;
     text-shadow: var(--glass-text-shadow, none) !important;
-    color: var(--text-primary, #f0f9ff) !important;
+    color: var(--text-primary, #f8fafc) !important;
   }
 
   /* -------------------------------------------------------------
@@ -236,16 +236,16 @@ export const BASE_ENGINE_BRIDGE_CSS = `
 
   .obsidian-inset,
   .liquid-inset {
-    background-color: var(--glass-inset-bg, rgba(20, 30, 48, 0.40)) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.10)) !important;
+    background-color: var(--glass-inset-bg, rgba(26, 32, 44, 0.45)) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08)) !important;
     border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.18)) !important;
     border-radius: 14px !important;
   }
 
   .obsidian-inset-neutral,
   .liquid-row {
-    background-color: var(--glass-row-bg, rgba(14, 22, 38, 0.32)) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.07)) !important;
+    background-color: var(--glass-row-bg, rgba(16, 20, 28, 0.36)) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06)) !important;
     border-radius: 14px !important;
   }
 
@@ -279,7 +279,7 @@ export const BASE_ENGINE_BRIDGE_CSS = `
      Radial Dial Optical Glass Surface & Zero-Heat Touch Dragging
      ------------------------------------------------------------- */
   .zero-dial-surface {
-    background-color: var(--glass-dial-bg, rgba(14, 22, 38, 0.70)) !important;
+    background-color: var(--glass-dial-bg, rgba(16, 21, 30, 0.70)) !important;
     background-image:
       radial-gradient(
         circle at 35% 25%,
@@ -287,11 +287,11 @@ export const BASE_ENGINE_BRIDGE_CSS = `
         rgba(255, 255, 255, 0.01) 50%,
         transparent 80%
       ) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.14)) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12)) !important;
     border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.30)) !important;
     border-radius: 9999px !important;
-    backdrop-filter: var(--surface-blur, blur(18px) saturate(160%)) !important;
-    -webkit-backdrop-filter: var(--surface-blur, blur(18px) saturate(160%)) !important;
+    backdrop-filter: var(--surface-blur, blur(18px) saturate(140%)) !important;
+    -webkit-backdrop-filter: var(--surface-blur, blur(18px) saturate(140%)) !important;
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22), 0 16px 36px -8px rgba(0, 0, 0, 0.70) !important;
     contain: layout style paint;
     touch-action: none !important;
@@ -310,12 +310,12 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   .zero-bottom-nav,
   nav[data-bottom-nav="true"],
   nav[data-frosted-chrome="true"] {
-    background-color: rgba(10, 16, 28, 0.78) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12)) !important;
+    background-color: var(--glass-dock-bg, rgba(12, 16, 24, 0.80)) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.10)) !important;
     border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.26)) !important;
     border-radius: 2rem !important;
-    backdrop-filter: blur(8px) saturate(130%) !important;
-    -webkit-backdrop-filter: blur(8px) saturate(130%) !important;
+    backdrop-filter: blur(10px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(130%) !important;
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.20), 0 12px 32px -4px rgba(0, 0, 0, 0.65) !important;
   }
 
@@ -325,11 +325,11 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   .modal-glass,
   [data-modal-glass="true"],
   .zero-modal-card {
-    background-color: rgba(11, 17, 30, 0.94) !important;
+    background-color: rgba(12, 15, 20, 0.94) !important;
     background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.07) 0%, transparent 45%) !important;
-    backdrop-filter: blur(8px) saturate(125%) !important;
-    -webkit-backdrop-filter: blur(8px) saturate(125%) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.14)) !important;
+    backdrop-filter: blur(10px) saturate(125%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(125%) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12)) !important;
     border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.30)) !important;
   }
 
@@ -362,7 +362,7 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   html[data-gpu-safeguard="true"] [data-modal-glass="true"] {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    background-color: rgba(14, 20, 32, 0.95) !important;
+    background-color: rgba(14, 18, 24, 0.95) !important;
     background-image: linear-gradient(
       160deg,
       rgba(255, 255, 255, 0.05) 0%,
@@ -386,11 +386,11 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   }
 
   /* Semantic Helper Utilities */
-  .theme-bg-primary { background-color: #000000 !important; color: #f0f9ff !important; }
-  .theme-bg-secondary { background-color: rgba(14, 20, 32, 0.72) !important; color: #f0f9ff !important; }
-  .theme-text-primary { color: #f0f9ff !important; }
-  .theme-text-secondary { color: #bae6fd !important; }
-  .theme-text-muted { color: #7dd3fc !important; }
+  .theme-bg-primary { background-color: #08090c !important; color: #f8fafc !important; }
+  .theme-bg-secondary { background-color: rgba(15, 18, 24, 0.75) !important; color: #f8fafc !important; }
+  .theme-text-primary { color: #f8fafc !important; }
+  .theme-text-secondary { color: #94a3b8 !important; }
+  .theme-text-muted { color: #64748b !important; }
   .theme-text-accent { color: var(--accent-primary) !important; }
-  .theme-border { border-color: rgba(255, 255, 255, 0.10) !important; }
+  .theme-border { border-color: rgba(255, 255, 255, 0.09) !important; }
 `;

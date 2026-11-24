@@ -75,6 +75,7 @@ import {
   Zap,
   Flame,
   Battery,
+  Layers,
 } from 'lucide-react';
 
 interface SchedulesDonateViewProps {
@@ -229,6 +230,16 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
     aeroAccentColor,
     materialYouSeed: _ctxMaterialYouSeed,
     setMaterialYouSeed: _ctxSetMaterialYouSeed,
+    fluentOrbIntensity,
+    setFluentOrbIntensity,
+    fluentGlassStrength,
+    setFluentGlassStrength,
+    gpuThermalSafeguard,
+    setGpuThermalSafeguard,
+    ambientDriftEnabled,
+    setAmbientDriftEnabled,
+    glassEngine,
+    setGlassEngine,
     targetFps,
     setTargetFps,
   } = useInterfaceStyle();
@@ -641,7 +652,11 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                     Interface Style
                   </h2>
                   <p className="text-[11px] theme-text-muted truncate">
-                    {theme === 'dusk' ? 'Twilight Dusk • Night Comfort' : 'Aero Porcelain • Day Comfort'}
+                    {theme === 'fluent'
+                      ? 'Fluent Glass • Grey & Cyan Acrylic'
+                      : theme === 'dusk'
+                      ? 'Twilight Dusk • Night Comfort'
+                      : 'Aero Porcelain • Day Comfort'}
                   </p>
                 </div>
               </div>
@@ -650,8 +665,8 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
               </span>
             </div>
 
-            {/* Interface Style Choice Grid (Aero Porcelain vs Twilight Dusk) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Interface Style Choice Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {availableThemes.map((engineDef) => {
                 const isSelected = theme === engineDef.id;
                 return (
@@ -664,7 +679,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                     }}
                     className={`w-full p-3.5 text-left rounded-2xl border transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
                       isSelected
-                        ? 'border-[var(--accent-primary,#E69F86)] bg-[var(--accent-soft,rgba(230,159,134,0.12))] shadow-[0_0_16px_var(--liquid-accent-soft-glow)]'
+                        ? 'border-[var(--accent-primary,#00f0ff)] bg-[var(--accent-soft,rgba(0,240,255,0.12))] shadow-[0_0_16px_var(--liquid-accent-soft-glow)]'
                         : 'theme-border theme-bg-secondary/40 hover:theme-bg-secondary/70'
                     }`}
                   >
@@ -672,22 +687,41 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                       <div className="font-semibold text-xs theme-text-primary flex items-center gap-2">
                         <span>{engineDef.name}</span>
                         <span className={`text-[9px] uppercase px-1.5 py-0.5 rounded-full font-mono border ${
-                          isSelected ? 'border-[var(--accent-primary,#E69F86)] text-[var(--accent-primary,#E69F86)]' : 'theme-border theme-text-muted'
+                          isSelected ? 'border-[var(--accent-primary,#00f0ff)] text-[var(--accent-primary,#00f0ff)]' : 'theme-border theme-text-muted'
                         }`}>
                           {engineDef.badge}
                         </span>
                       </div>
                       {isSelected && (
-                        <span className="w-2 h-2 rounded-full bg-[var(--accent-primary,#E69F86)] shadow-[0_0_8px_var(--accent-primary,#E69F86)] animate-pulse shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-[var(--accent-primary,#00f0ff)] shadow-[0_0_8px_var(--accent-primary,#00f0ff)] animate-pulse shrink-0" />
                       )}
                     </div>
 
-                    <p className="text-[11px] theme-text-muted leading-relaxed">
+                    <p className="text-[11px] theme-text-muted leading-relaxed line-clamp-2">
                       {engineDef.description}
                     </p>
 
                     <div className="flex items-center gap-1.5 pt-1">
-                      {engineDef.id === 'aero' ? (
+                      {engineDef.id === 'fluent' ? (
+                        <>
+                          <div
+                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0 bg-[#08090c]"
+                            title="Charcoal Grey Canvas"
+                          />
+                          <div
+                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0 bg-[#161a23]"
+                            title="Smoked Grey Glass Surface"
+                          />
+                          <div
+                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0 bg-[#94a3b8]"
+                            title="Slate Grey Structure"
+                          />
+                          <div
+                            className="w-3.5 h-3.5 rounded-full border border-cyan-400/40 shrink-0 bg-[#00f0ff] shadow-[0_0_6px_#00f0ff]"
+                            title="Electric Cyan Accent"
+                          />
+                        </>
+                      ) : engineDef.id === 'aero' ? (
                         <>
                           <div
                             className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 bg-[#F3EDE8]"
@@ -734,6 +768,299 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                 );
               })}
             </div>
+
+            {/* Fluent Glass Calibration Controls (Active when not in Aero mode) */}
+            {!isAero && (
+              <>
+                {/* Ambient Glow Intensity Slider */}
+                <div className="pt-3 border-t theme-border space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-semibold theme-text-primary block">
+                      Ambient Glow Intensity
+                    </label>
+                    <span className="text-[10px] font-mono tabular-nums text-zinc-400">
+                      {Math.round(fluentOrbIntensity * 100)}%
+                      <span className="text-zinc-500 ml-1.5">
+                        {fluentOrbIntensity === 0
+                          ? '• Stealth AMOLED'
+                          : fluentOrbIntensity < 0.3
+                          ? '• Subtle'
+                          : fluentOrbIntensity < 0.6
+                          ? '• Balanced'
+                          : '• Radiant'}
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Slider Track */}
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="5"
+                      value={Math.round(fluentOrbIntensity * 100)}
+                      onChange={(e) => {
+                        const val = Number(e.target.value) / 100;
+                        setFluentOrbIntensity(val);
+                        haptics.tick(600 + val * 600);
+                      }}
+                      className="w-full accent-cyan-400 cursor-pointer h-1.5 rounded-lg bg-zinc-800"
+                      aria-label="Ambient Glow Intensity"
+                    />
+                  </div>
+
+                  {/* 3 Quick Presets */}
+                  <div className="grid grid-cols-3 gap-2 pt-0.5">
+                    {[
+                      { label: 'Stealth (0%)', value: 0 },
+                      { label: 'Subtle (35%)', value: 0.35 },
+                      { label: 'Radiant (75%)', value: 0.75 },
+                    ].map((preset) => {
+                      const isActive = Math.abs(fluentOrbIntensity - preset.value) < 0.05;
+                      return (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => {
+                            haptics.tick(850);
+                            setFluentOrbIntensity(preset.value);
+                          }}
+                          className={`py-1.5 px-2 text-[10px] font-medium rounded-lg border transition-all text-center ${
+                            isActive
+                              ? 'theme-pill-active font-semibold'
+                              : 'theme-pill text-zinc-400 hover:text-white'
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Fluent Glass Strength & Transparency Slider */}
+                <div className="pt-3 border-t theme-border space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-semibold theme-text-primary block">
+                      Glass Strength &amp; Transparency
+                    </label>
+                    <span className="text-[10px] font-mono tabular-nums text-zinc-400">
+                      {Math.round(fluentGlassStrength * 100)}%
+                      <span className="text-zinc-500 ml-1.5">
+                        {fluentGlassStrength <= 0.15
+                          ? '• Ultra-Clear'
+                          : fluentGlassStrength < 0.35
+                          ? '• High Transparency'
+                          : fluentGlassStrength < 0.65
+                          ? '• Balanced Glass'
+                          : fluentGlassStrength < 0.85
+                          ? '• Frosted Acrylic'
+                          : '• Deep Frost'}
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Live Optical Glass Preview Box */}
+                  <div className="relative w-full rounded-2xl p-3.5 overflow-hidden border theme-border bg-black/60 select-none">
+                    <div
+                      aria-hidden="true"
+                      className="absolute -top-4 -right-4 w-32 h-32 rounded-full pointer-events-none blur-xl transition-all duration-300"
+                      style={{
+                        background:
+                          'radial-gradient(circle, var(--accent-primary, #00f0ff) 0%, var(--accent-soft, rgba(0,240,255,0.16)) 50%, transparent 80%)',
+                        opacity: fluentOrbIntensity,
+                      }}
+                    />
+                    <div className="relative z-10 glass-card p-3 rounded-xl border">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <div className="flex items-center gap-1.5">
+                          <Layers size={13} className="text-cyan-400" />
+                          <span className="text-xs font-semibold theme-text-primary">
+                            Optical Refraction Preview
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full liquid-pill-active shrink-0">
+                          {Math.round(fluentGlassStrength * 100)}%
+                        </span>
+                      </div>
+                      <p className="text-[11px] theme-text-secondary leading-relaxed">
+                        Translucent charcoal grey glass with specular highlights &amp; vibrant cyan accent.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Slider Track */}
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range"
+                      min="5"
+                      max="100"
+                      step="5"
+                      value={Math.round(fluentGlassStrength * 100)}
+                      onChange={(e) => {
+                        const val = Number(e.target.value) / 100;
+                        setFluentGlassStrength(val);
+                        haptics.tick(600 + val * 600);
+                      }}
+                      className="w-full accent-cyan-400 cursor-pointer h-1.5 rounded-lg bg-zinc-800"
+                      aria-label="Glass Strength &amp; Transparency"
+                    />
+                  </div>
+
+                  {/* 3 Quick Presets */}
+                  <div className="grid grid-cols-3 gap-2 pt-0.5">
+                    {[
+                      { label: 'Clear (20%)', value: 0.20 },
+                      { label: 'Balanced (50%)', value: 0.50 },
+                      { label: 'Frosted (80%)', value: 0.80 },
+                    ].map((preset) => {
+                      const isActive = Math.abs(fluentGlassStrength - preset.value) < 0.05;
+                      return (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => {
+                            haptics.tick(850);
+                            setFluentGlassStrength(preset.value);
+                          }}
+                          className={`py-1.5 px-2 text-[10px] font-medium rounded-lg border transition-all text-center ${
+                            isActive
+                              ? 'theme-pill-active font-semibold'
+                              : 'theme-pill text-zinc-400 hover:text-white'
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* GPU Battery & Thermal Safeguard Switch */}
+                <div className="pt-3 border-t theme-border space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-xl theme-bg-secondary flex items-center justify-center shrink-0 border theme-border">
+                        <Zap
+                          size={15}
+                          strokeWidth={1.75}
+                          className={gpuThermalSafeguard ? 'text-amber-400' : 'theme-text-muted'}
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <label className="text-xs font-semibold theme-text-primary block truncate">
+                          GPU Battery &amp; Thermal Safeguard
+                        </label>
+                        <p className="text-[11px] theme-text-muted leading-tight">
+                          Disables heavy blur shaders &amp; pauses mesh drift for cool, low-battery 60FPS
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={gpuThermalSafeguard}
+                      onClick={() => {
+                        haptics.tick(gpuThermalSafeguard ? 600 : 900);
+                        setGpuThermalSafeguard(!gpuThermalSafeguard);
+                      }}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        gpuThermalSafeguard ? 'bg-amber-500' : 'bg-zinc-800'
+                      }`}
+                      aria-label="Toggle GPU Battery & Thermal Safeguard"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                          gpuThermalSafeguard ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Glass Surface Engine Toggle */}
+                <div className="pt-3 border-t theme-border space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0">
+                      <label className="text-xs font-semibold theme-text-primary block">
+                        Glass Surface Engine
+                      </label>
+                      <p className="text-[11px] theme-text-muted leading-tight">
+                        Switch between original high-fidelity acrylic blur or eco shaderless
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full liquid-pill-active uppercase shrink-0">
+                      {glassEngine === 'acrylic' ? 'Acrylic Blur' : 'Eco Matte'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'acrylic', label: 'Acrylic Glass', note: 'Backdrop blur' },
+                      { id: 'eco', label: 'Eco Shaderless', note: '0ms GPU pass' },
+                    ].map((opt) => {
+                      const isSel = glassEngine === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            haptics.tick(isSel ? 500 : 850);
+                            setGlassEngine(opt.id as any);
+                          }}
+                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                            isSel
+                              ? 'border-cyan-400 bg-cyan-500/10 shadow-[0_0_12px_rgba(0,240,255,0.2)]'
+                              : 'theme-border theme-bg-secondary/40 hover:theme-bg-secondary/70'
+                          }`}
+                        >
+                          <div className="font-semibold text-xs theme-text-primary flex items-center justify-between">
+                            <span>{opt.label}</span>
+                            {isSel && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />}
+                          </div>
+                          <span className="text-[10px] theme-text-muted block mt-0.5">{opt.note}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Optional Ambient Drift Animation Toggle */}
+                <div className="pt-3 border-t theme-border flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <label className="text-xs font-semibold theme-text-primary block truncate">
+                      Ambient Mesh Drift
+                    </label>
+                    <p className="text-[11px] theme-text-muted leading-tight">
+                      Slow kinetic drift animation across ambient canvas (42s loop)
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={ambientDriftEnabled}
+                    onClick={() => {
+                      haptics.tick(ambientDriftEnabled ? 600 : 900);
+                      setAmbientDriftEnabled(!ambientDriftEnabled);
+                    }}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      ambientDriftEnabled ? 'bg-cyan-500' : 'bg-zinc-800'
+                    }`}
+                    aria-label="Toggle Ambient Mesh Drift"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                        ambientDriftEnabled ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </>
+            )}
 
             {/* Display Refresh Rate & Target FPS (24, 30, 60, 90, 120 FPS / Native) */}
             <div className="pt-3 border-t theme-border space-y-2.5">

@@ -96,22 +96,22 @@ export function applyGlassTokens(root: HTMLElement, strength: number): void {
       : 'none';
 
   root.style.setProperty('--glass-opacity', clamped.toString());
-  root.style.setProperty('--glass-surface-bg', `rgba(16, 26, 44, ${bgAlpha})`);
-  root.style.setProperty('--bg-surface', `rgba(16, 26, 44, ${bgAlpha})`);
-  root.style.setProperty('--surface-tonal', `rgba(20, 32, 54, ${(0.10 + clamped * 0.68).toFixed(3)})`);
-  root.style.setProperty('--bg-surface-hover', `rgba(24, 38, 64, ${(0.08 + clamped * 0.66).toFixed(3)})`);
-  root.style.setProperty('--bg-elevated', `rgba(20, 32, 54, ${(0.10 + clamped * 0.68).toFixed(3)})`);
+  root.style.setProperty('--glass-surface-bg', `rgba(20, 24, 32, ${bgAlpha})`);
+  root.style.setProperty('--bg-surface', `rgba(20, 24, 32, ${bgAlpha})`);
+  root.style.setProperty('--surface-tonal', `rgba(28, 34, 46, ${(0.10 + clamped * 0.68).toFixed(3)})`);
+  root.style.setProperty('--bg-surface-hover', `rgba(32, 38, 52, ${(0.08 + clamped * 0.66).toFixed(3)})`);
+  root.style.setProperty('--bg-elevated', `rgba(26, 31, 42, ${(0.10 + clamped * 0.68).toFixed(3)})`);
   root.style.setProperty('--surface-blur', `blur(${blurPx}px) saturate(${satPct}%)`);
   root.style.setProperty('--glass-blur', `${blurPx}px`);
   root.style.setProperty('--border-specular', `rgba(255, 255, 255, ${specularAlpha})`);
   root.style.setProperty('--border-subtle', `rgba(255, 255, 255, ${(0.03 + clamped * 0.11).toFixed(3)})`);
   root.style.setProperty('--glass-specular-opacity', specularRim);
-  root.style.setProperty('--glass-inset-bg', `rgba(20, 30, 48, ${insetAlpha})`);
-  root.style.setProperty('--glass-row-bg', `rgba(14, 22, 38, ${rowAlpha})`);
-  root.style.setProperty('--glass-dock-bg', `rgba(10, 16, 28, ${dockAlpha})`);
-  root.style.setProperty('--glass-dial-bg', `rgba(14, 20, 32, ${dialAlpha})`);
+  root.style.setProperty('--glass-inset-bg', `rgba(26, 32, 44, ${insetAlpha})`);
+  root.style.setProperty('--glass-row-bg', `rgba(16, 20, 28, ${rowAlpha})`);
+  root.style.setProperty('--glass-dock-bg', `rgba(12, 16, 24, ${dockAlpha})`);
+  root.style.setProperty('--glass-dial-bg', `rgba(16, 21, 30, ${dialAlpha})`);
   root.style.setProperty('--glass-glow-mult', glowMult);
-  root.style.setProperty('--glass-modal-bg', `rgba(10, 16, 28, ${modalBgAlpha})`);
+  root.style.setProperty('--glass-modal-bg', `rgba(12, 15, 22, ${modalBgAlpha})`);
   root.style.setProperty('--glass-modal-blur', `blur(${modalBlurPx}px) saturate(180%)`);
   root.style.setProperty('--glass-text-shadow', textShadowRule);
 }
@@ -155,7 +155,7 @@ function mountIsolatedThemeEngine(
     root.style.setProperty('--accent-primary', palColor);
     root.style.setProperty('--accent-hex', palColor);
     root.style.setProperty('--accent-rgb', '230, 159, 134');
-  } else {
+  } else if (themeId === 'dusk') {
     root.setAttribute('data-interface-style', 'dusk');
     root.classList.remove('light');
     root.classList.add('dark');
@@ -163,6 +163,26 @@ function mountIsolatedThemeEngine(
     root.style.setProperty('--accent-primary', palColor);
     root.style.setProperty('--accent-hex', palColor);
     root.style.setProperty('--accent-rgb', '230, 159, 134');
+    root.style.setProperty('--ambient-glow-opacity', glowIntensity.toString());
+    root.style.setProperty('--ambient-glow-scale', (0.75 + glowIntensity * 0.45).toString());
+    applyGlassTokens(root, glassStrength);
+  } else {
+    // Fluent Glass (Flagship / Default)
+    root.removeAttribute('data-interface-style');
+    root.classList.remove('light');
+    root.classList.add('dark');
+    root.setAttribute('data-theme', 'fluent');
+    root.setAttribute('data-engine', 'fluent');
+    const palColor = accent === 'cyan' ? '#00f0ff' : accent === 'amber' ? '#f59e0b' : accent === 'emerald' ? '#10b981' : accent === 'crimson' ? '#f43f5e' : '#a855f7';
+    root.style.setProperty('--accent-primary', palColor);
+    root.style.setProperty('--accent-hex', palColor);
+    if (accent === 'cyan') {
+      root.style.setProperty('--accent-rgb', '0, 240, 255');
+      root.style.setProperty('--liquid-accent-vibrant', '#00f0ff');
+      root.style.setProperty('--liquid-accent-tint', '#38bdf8');
+      root.style.setProperty('--liquid-accent-glow', 'rgba(0, 240, 255, 0.35)');
+      root.style.setProperty('--liquid-accent-soft-glow', 'rgba(0, 240, 255, 0.16)');
+    }
     // Set real-time ambient glow parameters
     root.style.setProperty('--ambient-glow-opacity', glowIntensity.toString());
     root.style.setProperty('--ambient-glow-scale', (0.75 + glowIntensity * 0.45).toString());
@@ -310,7 +330,7 @@ export function InterfaceStyleProvider({
   const isBespokeActive = interfaceStyleProp === 'bespoke' || interfaceStyleProp === 'minimalist';
 
   const [accent, setAccentState] = useState<AccentColorId>(() => {
-    if (typeof window === 'undefined') return 'amber';
+    if (typeof window === 'undefined') return 'cyan';
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY_ACCENT);
       if (
@@ -332,7 +352,7 @@ export function InterfaceStyleProvider({
     ) {
       return materialYouSeedProp as AccentColorId;
     }
-    return 'amber';
+    return 'cyan';
   });
 
   const [aeroPalette, setAeroPaletteState] = useState<AeroPaletteId>(() => {
@@ -449,7 +469,7 @@ export function InterfaceStyleProvider({
   });
 
   const [theme, setThemeState] = useState<CanonicalThemeId>(() => {
-    if (typeof window === 'undefined') return 'aero';
+    if (typeof window === 'undefined') return 'fluent';
     try {
       for (const oldKey of LEGACY_STORAGE_KEYS) {
         window.localStorage.removeItem(oldKey);
@@ -457,7 +477,7 @@ export function InterfaceStyleProvider({
       const saved = window.localStorage.getItem(STORAGE_KEY_THEME);
       return normalizeThemeId(saved);
     } catch {
-      return 'aero';
+      return 'fluent';
     }
   });
 
@@ -683,10 +703,10 @@ export function InterfaceStyleProvider({
       isLiquidGlass: theme === 'fluent' && !isBespokeActive,
       isAetherial: theme === 'aetherial' && !isBespokeActive,
       isAero: theme === 'aero' && !isBespokeActive,
-      isDusk: (theme === 'dusk' || theme === 'fluent' || theme === 'aetherial') && !isBespokeActive,
+      isDusk: theme === 'dusk' && !isBespokeActive,
       aeroPalette: 'orange',
       setAeroPalette: () => {},
-      aeroAccentColor: '#E69F86',
+      aeroAccentColor: theme === 'fluent' ? '#00f0ff' : '#E69F86',
       isMinimalist: isBespokeActive,
       isBespoke: isBespokeActive,
 

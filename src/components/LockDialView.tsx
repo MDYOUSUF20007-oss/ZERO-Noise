@@ -915,7 +915,7 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                 <div
                   className="w-6 h-6 obsidian-icon-box flex items-center justify-center rounded-xl"
                   style={{
-                    backgroundColor: 'var(--accent-primary, #E69F86)',
+                    backgroundColor: 'var(--accent-primary, #00f0ff)',
                     border: '1px solid rgba(255, 255, 255, 0.95)',
                     boxShadow: '0 2px 10px var(--liquid-accent-glow)',
                     color: '#07040d',
@@ -1308,7 +1308,7 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                 opacity: isHolding ? 0.98 : 0,
                 background: isAero
                   ? 'rgba(255, 255, 255, 0.25)'
-                  : 'var(--accent-primary, #E69F86)',
+                  : 'var(--accent-primary, #00f0ff)',
               }}
             />
 
