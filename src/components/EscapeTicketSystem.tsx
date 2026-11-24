@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useId, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useId } from 'react';
 import { haptics } from '../utils/haptics';
 import './EscapeTicketSystem.css';
 
@@ -245,6 +245,34 @@ interface Particle {
   alpha: number;
   decay: number;
   color: string;
+}
+
+function buildFullTearTeethPath(): string {
+  const pts: string[] = ['M 160 14'];
+  const step = 7.5;
+  const count = Math.floor((282 - 14) / step);
+  for (let i = 0; i < count; i++) {
+    const y = 14 + i * step;
+    const offset = i % 2 === 0 ? 2.2 : -2.0;
+    pts.push(`L ${(160 + offset).toFixed(1)} ${(y + step * 0.5).toFixed(1)}`);
+  }
+  pts.push('L 160 282');
+  return pts.join(' ');
+}
+
+const FULL_TEAR_TEETH_PATH = buildFullTearTeethPath();
+
+function getTearTeethPath(tearY: number): string {
+  const pts: string[] = ['M 160 14'];
+  const step = 8;
+  const count = Math.max(1, Math.floor((tearY - 14) / step));
+  for (let i = 0; i < count; i++) {
+    const y = 14 + i * step;
+    const offset = i % 2 === 0 ? 1.8 : -1.8;
+    pts.push(`L ${(160 + offset).toFixed(1)} ${(y + step * 0.5).toFixed(1)}`);
+  }
+  pts.push(`L 160 ${tearY.toFixed(1)}`);
+  return pts.join(' ');
 }
 
 /**
@@ -628,31 +656,8 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
   const tearY = 14 + ripProgress * 268;
 
   // Real physical jagged paper perforation teeth paths
-  const tearTeethPath = useMemo(() => {
-    const pts: string[] = ['M 160 14'];
-    const step = 8;
-    const count = Math.max(1, Math.floor((tearY - 14) / step));
-    for (let i = 0; i < count; i++) {
-      const y = 14 + i * step;
-      const offset = i % 2 === 0 ? 1.8 : -1.8;
-      pts.push(`L ${(160 + offset).toFixed(1)} ${(y + step * 0.5).toFixed(1)}`);
-    }
-    pts.push(`L 160 ${tearY.toFixed(1)}`);
-    return pts.join(' ');
-  }, [tearY]);
-
-  const fullTearTeethPath = useMemo(() => {
-    const pts: string[] = ['M 160 14'];
-    const step = 7.5;
-    const count = Math.floor((282 - 14) / step);
-    for (let i = 0; i < count; i++) {
-      const y = 14 + i * step;
-      const offset = i % 2 === 0 ? 2.2 : -2.0;
-      pts.push(`L ${(160 + offset).toFixed(1)} ${(y + step * 0.5).toFixed(1)}`);
-    }
-    pts.push('L 160 282');
-    return pts.join(' ');
-  }, []);
+  const tearTeethPath = getTearTeethPath(tearY);
+  const fullTearTeethPath = FULL_TEAR_TEETH_PATH;
 
   // Left stub physical 3D paper curl & gravity tear transform
   const stubStyle: React.CSSProperties = isEscaped
