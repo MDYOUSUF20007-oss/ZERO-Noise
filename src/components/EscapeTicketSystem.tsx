@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useId } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useId, useMemo } from 'react';
 import { haptics } from '../utils/haptics';
 import './EscapeTicketSystem.css';
 
@@ -93,9 +93,9 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
               </>
             ) : (
               <>
-                {/* Authentic Liquid Glass: Translucent smoked acrylic */}
-                <stop offset="0%" stopColor="rgba(24, 32, 48, 0.65)" />
-                <stop offset="100%" stopColor="rgba(6, 10, 18, 0.85)" />
+                {/* Authentic High-Contrast Deep Liquid Glass Obsidian */}
+                <stop offset="0%" stopColor="#0B101D" />
+                <stop offset="100%" stopColor="#020408" />
               </>
             )}
           </linearGradient>
@@ -247,19 +247,9 @@ interface Particle {
   color: string;
 }
 
-interface SoftShockwave {
-  cx: number;
-  cy: number;
-  radius: number;
-  maxRadius: number;
-  speed: number;
-  alpha: number;
-  width: number;
-}
-
 /**
  * Full-size interactive two-part tear-off Escape Ticket modal
- * with 4-stage "Escape from the Void" unlock sequence.
+ * with authentic 3D physical ticket paper tearing and "zip" snap acoustics.
  */
 export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
   isOpen,
@@ -290,7 +280,6 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
   const lastNotchRef = useRef(0);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const particlesRef = useRef<Particle[]>([]);
-  const shockwavesRef = useRef<SoftShockwave[]>([]);
   const lastTimeRef = useRef<number>(0);
   const rafMoveRef = useRef<number | null>(null);
   const pendingMoveYRef = useRef<number | null>(null);
@@ -320,7 +309,6 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
       setWaveFlatness(0);
       lastNotchRef.current = 0;
       particlesRef.current = [];
-      shockwavesRef.current = [];
       lastTimeRef.current = 0;
       pendingMoveYRef.current = null;
       if (rafMoveRef.current !== null) {
@@ -330,7 +318,7 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
     }
   }, [isOpen]);
 
-  // Web Audio API synthesizer for mechanical notch ticks & paper tear burst
+  // Web Audio API synthesizer for mechanical paper tooth friction click
   const playTickSound = useCallback((progress: number) => {
     try {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
@@ -341,26 +329,28 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
       const ctx = audioCtxRef.current;
       if (ctx.state === 'suspended') ctx.resume();
 
+      const now = ctx.currentTime;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'triangle';
-      const baseFreq = 620 + progress * 480;
-      osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + 0.028);
+      const baseFreq = 850 + progress * 720;
+      osc.frequency.setValueAtTime(baseFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(220, now + 0.018);
 
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.028);
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.03);
+      osc.start(now);
+      osc.stop(now + 0.02);
     } catch {
       // Ignore audio restriction errors
     }
   }, []);
 
-  const playDetachSound = useCallback(() => {
+  // Web Audio API synthesizer for authentic paper ticket "Zzzzip-SNAP!" rip sound
+  const playZipSound = useCallback(() => {
     try {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioCtx) return;
@@ -370,36 +360,60 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
       const ctx = audioCtxRef.current;
       if (ctx.state === 'suspended') ctx.resume();
 
-      // Filtered noise burst for crisp perforation snap + sub pulse
-      const bufferSize = Math.floor(ctx.sampleRate * 0.22);
+      const now = ctx.currentTime;
+      const duration = 0.17; // 170ms rapid zipping rip
+
+      // 1. Modulated paper perforation teeth noise burst ("zzzz-ip!")
+      const bufferSize = Math.floor(ctx.sampleRate * duration);
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.06));
+        const t = i / ctx.sampleRate;
+        // Teeth tooth-to-tooth flutter frequency at ~115Hz
+        const toothFlutter = 0.5 + 0.5 * Math.sin(2 * Math.PI * 115 * t);
+        data[i] = (Math.random() * 2 - 1) * toothFlutter * Math.exp(-t / 0.11);
       }
 
-      const noise = ctx.createBufferSource();
-      noise.buffer = buffer;
+      const noiseSource = ctx.createBufferSource();
+      noiseSource.buffer = buffer;
 
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(1400, ctx.currentTime);
-      filter.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.22);
+      // Resonant bandpass filter rapidly sweeping down from 3800Hz to 1050Hz
+      const bandpass = ctx.createBiquadFilter();
+      bandpass.type = 'bandpass';
+      bandpass.Q.setValueAtTime(3.5, now);
+      bandpass.frequency.setValueAtTime(3800, now);
+      bandpass.frequency.exponentialRampToValueAtTime(1050, now + duration);
 
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.22, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.42, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-      noise.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-      noise.start();
+      noiseSource.connect(bandpass);
+      bandpass.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      noiseSource.start(now);
+
+      // 2. High-frequency paper fracture snap transient at the bottom
+      const snapOsc = ctx.createOscillator();
+      const snapGain = ctx.createGain();
+      snapOsc.type = 'triangle';
+      snapOsc.frequency.setValueAtTime(2600, now + 0.035);
+      snapOsc.frequency.exponentialRampToValueAtTime(220, now + 0.13);
+
+      snapGain.gain.setValueAtTime(0.001, now);
+      snapGain.gain.setValueAtTime(0.22, now + 0.035);
+      snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+      snapOsc.connect(snapGain);
+      snapGain.connect(ctx.destination);
+      snapOsc.start(now + 0.035);
+      snapOsc.stop(now + 0.16);
     } catch {
       // Ignore audio restriction errors
     }
   }, []);
 
-  // Spawn sparks along the perforation seam in screen coordinates
+  // Spawn paper fiber sparks along the perforation seam in screen coordinates
   const spawnSeamSparks = useCallback((progress: number, burst = false) => {
     const box = ticketBoxRef.current;
     if (!box) return;
@@ -407,77 +421,59 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
     const seamX = rect.left + rect.width * 0.25;
     const seamY = rect.top + rect.height * (0.05 + progress * 0.9);
 
-    const count = burst ? 28 : 4;
+    const count = burst ? 24 : 4;
     for (let i = 0; i < count; i++) {
       const angle = (Math.random() - 0.5) * Math.PI * 1.4 - Math.PI * 0.5;
-      const speed = burst ? 2.5 + Math.random() * 6.5 : 1.0 + Math.random() * 3.0;
+      const speed = burst ? 2.5 + Math.random() * 5.5 : 1.0 + Math.random() * 2.5;
       particlesRef.current.push({
         x: seamX + (Math.random() - 0.5) * 4,
         y: seamY + (Math.random() - 0.5) * 6,
         vx: Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1),
         vy: Math.sin(angle) * speed - 0.6,
-        size: burst ? 1.8 + Math.random() * 2.2 : 1.2 + Math.random() * 1.5,
+        size: burst ? 1.6 + Math.random() * 2.0 : 1.1 + Math.random() * 1.4,
         alpha: 1,
-        decay: burst ? 0.018 + Math.random() * 0.015 : 0.035 + Math.random() * 0.025,
-        color: Math.random() > 0.32 ? (primaryAccent || '#f43f5e') : '#ffffff',
+        decay: burst ? 0.02 + Math.random() * 0.015 : 0.038 + Math.random() * 0.025,
+        color: Math.random() > 0.35 ? (primaryAccent || '#00F0FF') : '#ffffff',
       });
     }
   }, [primaryAccent]);
 
-  // Trigger the 4-stage Escape from the Void sequence once rip >= 85%
+  // Trigger paper ticket rip-out sequence once rip >= 85%
   const triggerEscapeSequence = useCallback(() => {
     if (phaseRef.current === 'escaped') return;
     setPhase('escaped');
     setRipProgress(1);
     setIsDragging(false);
 
-    playDetachSound();
+    playZipSound();
     if (navigator.vibrate) {
-      navigator.vibrate([16, 28, 36]);
+      navigator.vibrate([14, 26, 32]);
     }
     haptics.parachuteDeploy();
     spawnSeamSparks(1, true);
 
-    // Stage 2: Smoothly flatten waveform to 0.00 dB as shockwave crosses ticket
+    // Smoothly flatten audio waveform to 0.00 dB
     const startWave = performance.now();
-    const flattenDuration = 520;
+    const flattenDuration = 480;
     const stepWave = (now: number) => {
       const t = Math.min(1, (now - startWave) / flattenDuration);
       const eased = 1 - Math.pow(1 - t, 3);
       setWaveFlatness(eased);
       if (t < 1) requestAnimationFrame(stepWave);
     };
-    setTimeout(() => requestAnimationFrame(stepWave), 160);
+    setTimeout(() => requestAnimationFrame(stepWave), 120);
 
-    // Stage 3: Spawn Smooth Atmospheric Shockwave Aura (No harsh wireframe lines)
-    setTimeout(() => {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      const maxRadius = Math.max(window.innerWidth, window.innerHeight) * 0.95;
-      for (let i = 0; i < 3; i++) {
-        shockwavesRef.current.push({
-          cx,
-          cy,
-          radius: 35 + i * 40,
-          maxRadius,
-          speed: 8.5 + i * 2.8,
-          alpha: 0.65 - i * 0.12,
-          width: 70 + i * 25,
-        });
-      }
-    }, 280);
-
-    // Stage 4: Commit ticket consumption & unlock session
+    // Commit ticket consumption & unlock session
     setTimeout(() => {
       if (onEscapeConfirmed) {
         onEscapeConfirmed();
       } else {
         onClose();
       }
-    }, 1550);
-  }, [playDetachSound, spawnSeamSparks, onEscapeConfirmed, onClose]);
+    }, 1450);
+  }, [playZipSound, spawnSeamSparks, onEscapeConfirmed, onClose]);
 
-  // 2D Canvas overlay loop for smooth sparks & soft aura glow
+  // 2D Canvas overlay loop for subtle paper tear sparks (Ripples REMOVED)
   useEffect(() => {
     if (!isOpen) return;
     const canvas = canvasRef.current;
@@ -485,7 +481,7 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const strokeColor = primaryAccent || '#f43f5e';
+    const strokeColor = primaryAccent || '#00F0FF';
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -500,47 +496,26 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
     const render = (now: number) => {
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
-      // Delta time normalized to 60fps (dt ≈ 1.0 at 60fps, dt ≈ 0.5 at 120fps)
+      // Delta time normalized to 60fps
       const rawDt = (now - lastTimeRef.current) / 16.667;
       const dt = Math.max(0.2, Math.min(rawDt, 2.0));
       lastTimeRef.current = now;
 
-      // Update & draw glowing ember sparks with delta-time
+      // Update & draw glowing paper fiber sparks with delta-time
       particlesRef.current = particlesRef.current.filter((p) => p.alpha > 0.02);
       for (const p of particlesRef.current) {
         p.x += p.vx * dt;
         p.y += p.vy * dt;
-        p.vy += 0.12 * dt; // gentle weightless gravity
+        p.vy += 0.12 * dt;
         p.alpha -= p.decay * dt;
 
         ctx.save();
         ctx.globalAlpha = Math.max(0, p.alpha);
         ctx.fillStyle = p.color;
         ctx.shadowColor = strokeColor;
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 6;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-
-      // Update & draw silky soft expanding atmospheric aura glow waves
-      shockwavesRef.current = shockwavesRef.current.filter((sw) => sw.alpha > 0.01 && sw.radius < sw.maxRadius);
-      for (const sw of shockwavesRef.current) {
-        sw.radius += sw.speed * dt;
-        sw.alpha *= Math.pow(0.97, dt);
-
-        ctx.save();
-        const rInner = Math.max(0, sw.radius - sw.width);
-        const rOuter = sw.radius + sw.width;
-        const grad = ctx.createRadialGradient(sw.cx, sw.cy, rInner, sw.cx, sw.cy, rOuter);
-        grad.addColorStop(0, 'rgba(125, 211, 252, 0)');
-        grad.addColorStop(0.5, `rgba(125, 211, 252, ${Math.max(0, sw.alpha * 0.32)})`);
-        grad.addColorStop(1, 'rgba(125, 211, 252, 0)');
-
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(sw.cx, sw.cy, rOuter, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
       }
@@ -652,17 +627,44 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
   const isEscaped = phase === 'escaped';
   const tearY = 14 + ripProgress * 268;
 
-  // Left stub physical hinge transform (GPU accelerated translate3d)
+  // Real physical jagged paper perforation teeth paths
+  const tearTeethPath = useMemo(() => {
+    const pts: string[] = ['M 160 14'];
+    const step = 8;
+    const count = Math.max(1, Math.floor((tearY - 14) / step));
+    for (let i = 0; i < count; i++) {
+      const y = 14 + i * step;
+      const offset = i % 2 === 0 ? 1.8 : -1.8;
+      pts.push(`L ${(160 + offset).toFixed(1)} ${(y + step * 0.5).toFixed(1)}`);
+    }
+    pts.push(`L 160 ${tearY.toFixed(1)}`);
+    return pts.join(' ');
+  }, [tearY]);
+
+  const fullTearTeethPath = useMemo(() => {
+    const pts: string[] = ['M 160 14'];
+    const step = 7.5;
+    const count = Math.floor((282 - 14) / step);
+    for (let i = 0; i < count; i++) {
+      const y = 14 + i * step;
+      const offset = i % 2 === 0 ? 2.2 : -2.0;
+      pts.push(`L ${(160 + offset).toFixed(1)} ${(y + step * 0.5).toFixed(1)}`);
+    }
+    pts.push('L 160 282');
+    return pts.join(' ');
+  }, []);
+
+  // Left stub physical 3D paper curl & gravity tear transform
   const stubStyle: React.CSSProperties = isEscaped
     ? {
-        transform: 'translate3d(-80px, 460px, 0) rotate(-34deg) scale(0.88)',
+        transform: 'translate3d(-105px, 520px, 80px) rotateZ(-38deg) rotateY(44deg) rotateX(20deg) scale(0.85)',
         opacity: 0,
-        filter: 'blur(3px)',
-        transition: 'transform 0.78s cubic-bezier(0.12, 0.92, 0.24, 1.05), opacity 0.65s cubic-bezier(0.3, 0, 0.8, 1), filter 0.65s ease-out',
+        filter: 'blur(2px)',
+        transition: 'transform 0.72s cubic-bezier(0.18, 0.88, 0.26, 1.05), opacity 0.58s cubic-bezier(0.4, 0, 0.8, 1), filter 0.58s ease-out',
         willChange: 'transform, opacity, filter',
       }
     : {
-        transform: `translate3d(${-ripProgress * 22}px, ${ripProgress * 65}px, 0) rotate(${-ripProgress * 13}deg)`,
+        transform: `translate3d(${-ripProgress * 28}px, ${ripProgress * 70}px, ${ripProgress * 20}px) rotateZ(${-ripProgress * 15}deg) rotateY(${ripProgress * 22}deg) rotateX(${-ripProgress * 8}deg)`,
         transformOrigin: '160px 292px',
         transition: isDragging ? 'none' : 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)',
         willChange: 'transform',
@@ -739,10 +741,10 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 </>
               ) : (
                 <>
-                  {/* Authentic Liquid Glass: Translucent smoked acrylic obsidian */}
-                  <stop offset="0%" stopColor="rgba(20, 28, 44, 0.65)" />
-                  <stop offset="50%" stopColor="rgba(12, 16, 26, 0.75)" />
-                  <stop offset="100%" stopColor="rgba(6, 8, 14, 0.85)" />
+                  {/* Authentic High-Contrast Deep Liquid Glass Obsidian */}
+                  <stop offset="0%" stopColor="#0B101D" />
+                  <stop offset="40%" stopColor="#060912" />
+                  <stop offset="100%" stopColor="#020306" />
                 </>
               )}
             </linearGradient>
@@ -754,9 +756,9 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 </>
               ) : (
                 <>
-                  {/* Translucent Left Stub Glass */}
-                  <stop offset="0%" stopColor="rgba(26, 36, 56, 0.62)" />
-                  <stop offset="100%" stopColor="rgba(10, 14, 24, 0.80)" />
+                  {/* Deep Smoked Left Stub Glass */}
+                  <stop offset="0%" stopColor="#0E1424" />
+                  <stop offset="100%" stopColor="#03050A" />
                 </>
               )}
             </linearGradient>
@@ -769,23 +771,23 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 </>
               ) : (
                 <>
-                  <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.90" />
-                  <stop offset="22%" stopColor={primaryAccent} stopOpacity="0.85" />
-                  <stop offset="68%" stopColor="rgba(255, 255, 255, 0.40)" stopOpacity="0.55" />
+                  <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.92" />
+                  <stop offset="24%" stopColor={primaryAccent} stopOpacity="0.88" />
+                  <stop offset="65%" stopColor="rgba(255, 255, 255, 0.42)" stopOpacity="0.55" />
                   <stop offset="100%" stopColor="rgba(255, 255, 255, 0.08)" stopOpacity="0.2" />
                 </>
               )}
             </linearGradient>
-            <linearGradient id={sheenGradId} x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="rgba(255, 255, 255, 0.16)" />
-              <stop offset="32%" stopColor="rgba(255, 255, 255, 0.05)" />
-              <stop offset="65%" stopColor="rgba(255, 255, 255, 0)" />
+            <linearGradient id={sheenGradId} x1="0" y1="0" x2="1" y2="0.8">
+              <stop offset="0%" stopColor="rgba(255, 255, 255, 0.22)" />
+              <stop offset="26%" stopColor="rgba(255, 255, 255, 0.07)" />
+              <stop offset="55%" stopColor="rgba(255, 255, 255, 0)" />
             </linearGradient>
             <linearGradient id={specularRimId} x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
-              <stop offset="28%" stopColor={primaryAccent} stopOpacity="0.85" />
-              <stop offset="70%" stopColor="#FFFFFF" stopOpacity="0.45" />
-              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.08" />
+              <stop offset="25%" stopColor={primaryAccent} stopOpacity="0.90" />
+              <stop offset="65%" stopColor="#FFFFFF" stopOpacity="0.45" />
+              <stop offset="100%" stopColor="rgba(255, 255, 255, 0.06)" />
             </linearGradient>
             <radialGradient id={thumbGradId} cx="38%" cy="32%" r="68%">
               <stop offset="0%" stopColor="#FFFFFF" />
@@ -802,10 +804,10 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
 
           {/* ================= RIGHT MAIN BODY (75%) ================= */}
           <g clipPath={`url(#${mainClipId})`}>
-            {/* Smoked Acrylic Glass Fill */}
+            {/* Deep Obsidian Glass Fill */}
             <rect x="160" y="0" width="480" height="296" fill={`url(#${mainBgId})`} />
 
-            {/* Diagonal Refractive Sheen */}
+            {/* Specular Diagonal Glass Sheen */}
             <rect x="160" y="0" width="480" height="296" fill={`url(#${sheenGradId})`} pointerEvents="none" />
 
             {/* Subtle Technical Grid Texture */}
@@ -814,19 +816,6 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               <line x1="160" y1="222" x2="640" y2="222" />
               <line x1="398" y1="0" x2="398" y2="296" />
             </g>
-
-            {/* Horizontal Shockwave Sweep on Escape */}
-            {isEscaped && (
-              <rect
-                className="zn-shockwave-bar"
-                x="160"
-                y="0"
-                width="46"
-                height="296"
-                fill={primaryAccent}
-                fillOpacity="0.28"
-              />
-            )}
 
             {/* Top Micro Status */}
             <text
@@ -930,43 +919,46 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               strokeDasharray="5 5"
             />
           )}
-          {/* Unzipped Glowing Upper Edge */}
+          {/* Unzipped Jagged Paper Tear Teeth */}
           {ripProgress > 0.01 && !isEscaped && (
             <>
-              <line
-                x1="160"
-                y1="14"
-                x2="160"
-                y2={tearY}
+              <path
+                d={tearTeethPath}
                 stroke={primaryAccent}
-                strokeWidth="5"
+                strokeWidth="4"
                 strokeOpacity="0.4"
                 strokeLinecap="round"
+                fill="none"
               />
-              <line
-                x1="160"
-                y1="14"
-                x2="160"
-                y2={tearY}
+              <path
+                d={tearTeethPath}
                 stroke={primaryAccent}
-                strokeWidth="2.5"
+                strokeWidth="2.2"
                 strokeOpacity="0.95"
                 strokeLinecap="round"
+                fill="none"
               />
             </>
           )}
-          {/* Torn Seam Energy Flash on Escape */}
+          {/* Ripped Paper Tooth Edge on Escape */}
           {isEscaped && (
-            <line
-              className="zn-seam-flash"
-              x1="160"
-              y1="14"
-              x2="160"
-              y2="282"
-              stroke={primaryAccent}
-              strokeWidth="3.5"
-              strokeLinecap="round"
-            />
+            <>
+              <path
+                className="zn-seam-flash"
+                d={fullTearTeethPath}
+                stroke={primaryAccent}
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <path
+                d={fullTearTeethPath}
+                stroke="rgba(255, 255, 255, 0.45)"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                fill="none"
+              />
+            </>
           )}
 
           {/* ================= LEFT TEAR-OFF STUB (25%) ================= */}
@@ -993,8 +985,8 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 width="28"
                 height="188"
                 rx="14"
-                fill={isAeroTheme ? '#EDE6DF' : 'rgba(8, 12, 20, 0.72)'}
-                stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(255, 255, 255, 0.16)'}
+                fill={isAeroTheme ? '#EDE6DF' : '#03050A'}
+                stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(255, 255, 255, 0.18)'}
                 strokeWidth="1.2"
               />
               <line
@@ -1003,7 +995,7 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 x2="89"
                 y2="228"
                 stroke={primaryAccent}
-                strokeOpacity="0.22"
+                strokeOpacity="0.30"
                 strokeWidth="1"
                 strokeDasharray="3 3"
               />
@@ -1024,25 +1016,25 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               {/* Draggable Liquid Glass Pearl Indicator */}
               <g transform={`translate(0, ${ripProgress * 144})`}>
                 {/* Ambient glow halo */}
-                <circle cx="89" cy="76" r="15" fill={primaryAccent} fillOpacity="0.22" />
+                <circle cx="89" cy="76" r="15" fill={primaryAccent} fillOpacity="0.28" />
                 {/* Outer glass ring bevel */}
-                <circle cx="89" cy="76" r="10.5" fill="none" stroke="rgba(255, 255, 255, 0.45)" strokeWidth="1" />
+                <circle cx="89" cy="76" r="10.5" fill="none" stroke="rgba(255, 255, 255, 0.65)" strokeWidth="1.2" />
                 {/* Glowing pearl core */}
                 <circle
                   cx="89"
                   cy="76"
                   r="9.5"
                   fill={`url(#${thumbGradId})`}
-                  style={{ filter: `drop-shadow(0 0 10px ${primaryAccent})` }}
+                  style={{ filter: `drop-shadow(0 0 12px ${primaryAccent})` }}
                 />
                 {/* Specular light glint reflection */}
                 <ellipse
                   cx="86.5"
                   cy="73"
-                  rx="2.6"
-                  ry="1.4"
+                  rx="2.8"
+                  ry="1.5"
                   fill="#FFFFFF"
-                  fillOpacity="0.9"
+                  fillOpacity="0.95"
                   transform="rotate(-28 86.5 73)"
                 />
               </g>

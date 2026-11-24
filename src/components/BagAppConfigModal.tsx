@@ -410,6 +410,12 @@ const BagAppConfigModalContent: React.FC<BagAppConfigModalContentProps> = ({
                                   ? 'bg-blue-600 border-blue-500 text-white'
                                   : 'bg-black border-neutral-800 hover:border-neutral-700 text-neutral-300'
                               }`
+                            : isFluentGlass
+                            ? `p-2.5 rounded-xl text-left transition-all disabled:opacity-40 liquid-spring ${
+                                selected
+                                  ? 'liquid-pill-active font-semibold shadow-[0_0_14px_var(--liquid-accent-soft-glow)] border-[var(--accent-primary)]/60'
+                                  : 'liquid-row text-zinc-300 hover:brightness-110'
+                              }`
                             : `p-2.5 rounded-xl text-left transition-all disabled:opacity-40 ${
                                 selected
                                   ? 'obsidian-pill-active shadow-sm'
@@ -849,6 +855,12 @@ const BagAppConfigModalContent: React.FC<BagAppConfigModalContentProps> = ({
                                     selected
                                       ? 'bg-blue-600 border-blue-500 text-white'
                                       : 'bg-black border-neutral-800 hover:border-neutral-700 text-neutral-300'
+                                  }`
+                                : isFluentGlass
+                                ? `p-2.5 rounded-xl text-left transition-all liquid-spring ${
+                                    selected
+                                      ? 'liquid-pill-active font-semibold shadow-[0_0_12px_var(--liquid-accent-soft-glow)] border-[var(--accent-primary)]/60'
+                                      : 'liquid-row text-zinc-300 hover:brightness-110'
                                   }`
                                 : `p-2.5 rounded-xl text-left transition-all ${
                                     selected

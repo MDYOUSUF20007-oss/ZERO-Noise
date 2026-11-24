@@ -232,9 +232,9 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                                     : 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:border-[rgba(53,59,91,0.20)] shadow-xs hover:bg-[#EDE6DF]'
                                 }`
                               : isFluentGlass
-                              ? `p-3 rounded-2xl text-left liquid-spring ${
+                              ? `p-3 rounded-2xl text-left liquid-spring transition-all ${
                                   isActive
-                                    ? 'liquid-pill-active font-semibold'
+                                    ? 'liquid-pill-active font-semibold shadow-[0_0_16px_var(--liquid-accent-soft-glow)] border-[var(--accent-primary)]'
                                     : bagEditingDisabled
                                     ? 'liquid-row text-zinc-500 opacity-50 cursor-not-allowed'
                                     : 'liquid-row text-zinc-200 hover:brightness-110'
@@ -505,6 +505,12 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                       style={
                         isAero || isBespoke
                           ? undefined
+                          : isFluentGlass
+                          ? {
+                              backgroundColor: 'rgba(var(--accent-rgb, 0, 240, 255), 0.14)',
+                              borderColor: 'var(--accent-border, rgba(0, 240, 255, 0.50))',
+                              boxShadow: '0 0 14px var(--liquid-accent-soft-glow, rgba(0, 240, 255, 0.18))',
+                            }
                           : {
                               backgroundColor: 'rgba(var(--accent-rgb, 255, 255, 255), 0.12)',
                               borderColor: 'rgba(var(--accent-rgb, 255, 255, 255), 0.55)',
@@ -515,6 +521,8 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                           ? 'p-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 text-emerald-950 text-left flex items-center justify-between gap-1.5 shadow-xs'
                           : isBespoke
                           ? 'p-3 rounded-md border bg-neutral-950 border-blue-500/60 text-blue-300 text-left flex items-center justify-between gap-1.5'
+                          : isFluentGlass
+                          ? 'p-3 rounded-2xl border text-white text-left flex items-center justify-between gap-1.5 liquid-spring'
                           : 'p-3 rounded-2xl border text-white text-left flex items-center justify-between gap-1.5'
                       }
                       title="Phone Calls remain compulsory and always accessible even if not in the bag"
@@ -547,10 +555,16 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                       }
                       style={
                         !isAero && !isBespoke && selectedBag.allowSms
-                          ? {
-                              backgroundColor: 'rgba(var(--accent-rgb, 255, 255, 255), 0.12)',
-                              borderColor: 'rgba(var(--accent-rgb, 255, 255, 255), 0.55)',
-                            }
+                          ? isFluentGlass
+                            ? {
+                                backgroundColor: 'rgba(var(--accent-rgb, 0, 240, 255), 0.14)',
+                                borderColor: 'var(--accent-border, rgba(0, 240, 255, 0.50))',
+                                boxShadow: '0 0 14px var(--liquid-accent-soft-glow, rgba(0, 240, 255, 0.18))',
+                              }
+                            : {
+                                backgroundColor: 'rgba(var(--accent-rgb, 255, 255, 255), 0.12)',
+                                borderColor: 'rgba(var(--accent-rgb, 255, 255, 255), 0.55)',
+                              }
                           : undefined
                       }
                       className={
@@ -565,6 +579,12 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                               selectedBag.allowSms
                                 ? 'bg-neutral-950 border-blue-500/60 text-blue-300'
                                 : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700'
+                            }`
+                          : isFluentGlass
+                          ? `p-3 rounded-2xl border text-left transition-all flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed liquid-spring ${
+                              selectedBag.allowSms
+                                ? 'text-white'
+                                : 'liquid-row text-zinc-400 hover:brightness-110'
                             }`
                           : `p-3 rounded-2xl border text-left transition-all flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed ${
                               selectedBag.allowSms
@@ -647,6 +667,8 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                                 ? 'p-3 rounded-2xl bg-white border border-[#E2E8F0] shadow-xs flex items-center justify-between gap-2.5 transition-all hover:border-[#CBD5E1]'
                                 : isBespoke
                                 ? 'p-2.5 rounded-md bg-neutral-950 border border-neutral-800 hover:border-neutral-700 flex items-center justify-between gap-2 transition-colors duration-75'
+                                : isFluentGlass
+                                ? 'p-2.5 rounded-2xl liquid-row flex items-center justify-between gap-2 transition-all hover:brightness-110'
                                 : 'p-2.5 rounded-2xl obsidian-inset flex items-center justify-between gap-2 transition-all'
                             }
                           >
@@ -724,6 +746,8 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                                     ? 'p-2 rounded-xl bg-[#EDE6DF] border border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#E8E0D7] shadow-xs transition-all'
                                     : isBespoke
                                     ? 'p-1.5 rounded-sm bg-black border border-neutral-800 hover:border-neutral-600 text-neutral-300 hover:text-white transition-colors duration-75'
+                                    : isFluentGlass
+                                    ? 'p-1.5 rounded-xl liquid-pill text-zinc-300 hover:text-white transition-all'
                                     : 'p-1.5 rounded-xl obsidian-inset-neutral hover:border-white/25 transition-all'
                                 }
                                 title="Configure App Quotas & Friction"
@@ -745,6 +769,8 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                                     ? 'p-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 disabled:opacity-40 disabled:cursor-not-allowed shadow-xs transition-all'
                                     : isBespoke
                                     ? 'p-1.5 rounded-sm bg-black border border-neutral-800 hover:border-red-500/60 text-red-400 hover:text-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-75'
+                                    : isFluentGlass
+                                    ? 'p-1.5 rounded-xl bg-red-950/40 border border-red-500/50 text-red-300 hover:text-red-200 hover:bg-red-900/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all'
                                     : 'p-1.5 rounded-xl bg-red-950/35 border border-red-500/40 text-red-400 hover:text-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all'
                                 }
                                 title="Remove from Bag"
@@ -823,6 +849,12 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                                     ? 'bg-neutral-950 border-blue-500/60'
                                     : 'bg-neutral-950 border-neutral-800 hover:border-neutral-700'
                                 }`
+                              : isFluentGlass
+                              ? `w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-2xl transition-all ${
+                                  isPacked
+                                    ? 'liquid-inset border-[var(--accent-primary)]/50 shadow-[0_0_12px_var(--liquid-accent-soft-glow)]'
+                                    : 'liquid-row hover:brightness-110'
+                                }`
                               : `w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-2xl transition-all ${
                                   isPacked ? 'obsidian-inset' : 'obsidian-inset-neutral'
                                 }`
@@ -857,6 +889,12 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                                       ? 'bg-blue-600 border-blue-500 text-white'
                                       : 'bg-black border-neutral-800 hover:border-neutral-600 text-neutral-200'
                                   }`
+                                : isFluentGlass
+                                ? `px-2.5 py-1 rounded-lg text-[10px] uppercase shrink-0 transition-all ${
+                                    isPacked
+                                      ? 'liquid-pill-active font-semibold shadow-[0_0_10px_var(--liquid-accent-soft-glow)]'
+                                      : 'liquid-pill text-zinc-300 hover:text-white font-medium'
+                                  }`
                                 : `px-2.5 py-1 rounded-lg text-[10px] uppercase shrink-0 transition-all ${
                                     isPacked
                                       ? 'obsidian-pill-active font-black'
@@ -883,6 +921,12 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                                     isPacked
                                       ? 'bg-black border-blue-500/60 text-blue-400'
                                       : 'bg-black border-neutral-800 hover:border-neutral-600 text-neutral-300 hover:text-white'
+                                  }`
+                                : isFluentGlass
+                                ? `p-1.5 rounded-xl disabled:opacity-40 shrink-0 transition-all ${
+                                    isPacked
+                                      ? 'liquid-pill-active'
+                                      : 'liquid-pill text-zinc-300 hover:text-white'
                                   }`
                                 : `p-1.5 rounded-xl disabled:opacity-40 shrink-0 transition-all ${
                                     isPacked
