@@ -122,6 +122,72 @@ export const BASE_ENGINE_BRIDGE_CSS = `
     --accent-shift-4: #fb7185 !important; /* Rose Blossom */
   }
 
+  /* Electric Indigo Accent (Sleek SaaS / Twilight Neon) */
+  [data-accent="indigo"],
+  html[data-accent="indigo"] {
+    --accent-primary: #6366f1 !important;
+    --accent-secondary: #818cf8 !important;
+    --accent-soft: rgba(99, 102, 241, 0.18) !important;
+    --accent-border: rgba(99, 102, 241, 0.55) !important;
+    --text-on-accent: #ffffff !important;
+    --zero-accent: #6366f1 !important;
+    --zero-dial-stroke: #6366f1 !important;
+    --accent-hex: #6366f1 !important;
+    --accent-rgb: 99, 102, 241 !important;
+    --liquid-accent-glow: rgba(99, 102, 241, 0.38) !important;
+    --liquid-accent-soft-glow: rgba(99, 102, 241, 0.18) !important;
+    --liquid-accent-vibrant: #6366f1 !important;
+    --liquid-accent-tint: #818cf8 !important;
+    --accent-shift-1: #4f46e5 !important;
+    --accent-shift-2: #6366f1 !important;
+    --accent-shift-3: #4338ca !important;
+    --accent-shift-4: #a5b4fc !important;
+  }
+
+  /* Laser Volt Lime Accent (High-Energy Flagship OLED) */
+  [data-accent="lime"],
+  html[data-accent="lime"] {
+    --accent-primary: #84cc16 !important;
+    --accent-secondary: #a3e635 !important;
+    --accent-soft: rgba(132, 204, 22, 0.18) !important;
+    --accent-border: rgba(132, 204, 22, 0.55) !important;
+    --text-on-accent: #0f1c04 !important;
+    --zero-accent: #84cc16 !important;
+    --zero-dial-stroke: #84cc16 !important;
+    --accent-hex: #84cc16 !important;
+    --accent-rgb: 132, 204, 22 !important;
+    --liquid-accent-glow: rgba(132, 204, 22, 0.38) !important;
+    --liquid-accent-soft-glow: rgba(132, 204, 22, 0.18) !important;
+    --liquid-accent-vibrant: #84cc16 !important;
+    --liquid-accent-tint: #a3e635 !important;
+    --accent-shift-1: #65a30d !important;
+    --accent-shift-2: #84cc16 !important;
+    --accent-shift-3: #4d7c0f !important;
+    --accent-shift-4: #bef264 !important;
+  }
+
+  /* Ice Platinum Silver Accent (Minimalist Monochrome Diamond) */
+  [data-accent="silver"],
+  html[data-accent="silver"] {
+    --accent-primary: #e2e8f0 !important;
+    --accent-secondary: #94a3b8 !important;
+    --accent-soft: rgba(226, 232, 240, 0.16) !important;
+    --accent-border: rgba(226, 232, 240, 0.45) !important;
+    --text-on-accent: #090a0f !important;
+    --zero-accent: #e2e8f0 !important;
+    --zero-dial-stroke: #e2e8f0 !important;
+    --accent-hex: #e2e8f0 !important;
+    --accent-rgb: 226, 232, 240 !important;
+    --liquid-accent-glow: rgba(226, 232, 240, 0.30) !important;
+    --liquid-accent-soft-glow: rgba(226, 232, 240, 0.14) !important;
+    --liquid-accent-vibrant: #f8fafc !important;
+    --liquid-accent-tint: #cbd5e1 !important;
+    --accent-shift-1: #cbd5e1 !important;
+    --accent-shift-2: #e2e8f0 !important;
+    --accent-shift-3: #94a3b8 !important;
+    --accent-shift-4: #f8fafc !important;
+  }
+
   /* -------------------------------------------------------------
      Clean Typography & Natural Letter-casing
      ------------------------------------------------------------- */

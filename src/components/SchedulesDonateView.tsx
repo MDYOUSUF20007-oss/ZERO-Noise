@@ -26,7 +26,7 @@ import type {
   CloudAutoBackupStatus,
   CloudReminderInterval,
 } from '../types';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle, AMOLED_ACCENTS } from '../context/InterfaceStyleContext';
 import { evaluatePermissionPriority } from '../utils/permissionPriority';
 import { RestrictedSettingsGuideCard } from './RestrictedSettingsGuideCard';
 import { ProfileAvatar } from './ProfileAvatar';
@@ -222,11 +222,15 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   const {
     theme,
     setTheme,
+    accent,
+    setAccent,
     availableThemes,
     isBespoke,
     isFluentGlass,
     isMaterialYou,
     isAero,
+    aeroPalette,
+    setAeroPalette,
     aeroAccentColor,
     materialYouSeed: _ctxMaterialYouSeed,
     setMaterialYouSeed: _ctxSetMaterialYouSeed,
@@ -772,6 +776,84 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
             {/* Fluent Glass Calibration Controls (Active when not in Aero mode) */}
             {!isAero && (
               <>
+                {/* Premium AMOLED Accent Color Palette */}
+                <div className="pt-3 border-t theme-border space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles size={13} style={{ color: 'var(--accent-primary, #00f0ff)' }} />
+                        <label className="text-xs font-semibold theme-text-primary block">
+                          AMOLED Accent Palette
+                        </label>
+                      </div>
+                      <p className="text-[11px] theme-text-muted leading-tight mt-0.5">
+                        High-contrast, pure-glow accents calibrated for deep AMOLED dark mode
+                      </p>
+                    </div>
+                    <span
+                      className="text-[10px] font-mono px-2.5 py-0.5 rounded-full uppercase shrink-0 font-bold border transition-colors"
+                      style={{
+                        borderColor: 'var(--accent-primary, #00f0ff)',
+                        color: 'var(--accent-primary, #00f0ff)',
+                        backgroundColor: 'var(--accent-soft, rgba(0, 240, 255, 0.12))',
+                        boxShadow: '0 0 10px var(--liquid-accent-soft-glow, rgba(0, 240, 255, 0.2))',
+                      }}
+                    >
+                      {AMOLED_ACCENTS.find((a) => a.id === accent)?.name ?? 'Cyber Cyan'}
+                    </span>
+                  </div>
+
+                  {/* 8 AMOLED Color Card Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {AMOLED_ACCENTS.map((item) => {
+                      const isSelected = accent === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => {
+                            haptics.tick(950);
+                            setAccent(item.id);
+                          }}
+                          className={`p-3 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between gap-2 ${
+                            isSelected
+                              ? 'border-[var(--accent-primary,#00f0ff)] bg-[var(--accent-soft,rgba(0,240,255,0.14))] shadow-[0_0_18px_var(--liquid-accent-soft-glow)] ring-1 ring-[var(--accent-primary,#00f0ff)]'
+                              : 'theme-border theme-bg-secondary/40 hover:theme-bg-secondary/80'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1 w-full">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="w-4 h-4 rounded-full shrink-0 border border-white/20 transition-transform"
+                                style={{
+                                  backgroundColor: item.color,
+                                  boxShadow: isSelected
+                                    ? `0 0 12px ${item.color}, 0 0 4px #ffffff`
+                                    : `0 0 6px ${item.color}88`,
+                                  transform: isSelected ? 'scale(1.15)' : 'scale(1)',
+                                }}
+                              />
+                              <span className="text-xs font-bold theme-text-primary leading-tight">
+                                {item.name}
+                              </span>
+                            </div>
+                            {isSelected && (
+                              <span
+                                className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse"
+                                style={{ backgroundColor: item.color, boxShadow: `0 0 6px ${item.color}` }}
+                              />
+                            )}
+                          </div>
+
+                          <span className="text-[10px] theme-text-muted leading-tight font-mono">
+                            {item.subtitle}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Ambient Glow Intensity Slider */}
                 <div className="pt-3 border-t theme-border space-y-2.5">
                   <div className="flex items-center justify-between">
@@ -875,7 +957,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                     <div className="relative z-10 glass-card p-3 rounded-xl border">
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <div className="flex items-center gap-1.5">
-                          <Layers size={13} className="text-cyan-400" />
+                          <Layers size={13} style={{ color: 'var(--accent-primary, #00f0ff)' }} />
                           <span className="text-xs font-semibold theme-text-primary">
                             Optical Refraction Preview
                           </span>
@@ -885,7 +967,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                         </span>
                       </div>
                       <p className="text-[11px] theme-text-secondary leading-relaxed">
-                        Translucent charcoal grey glass with specular highlights &amp; vibrant cyan accent.
+                        Translucent charcoal grey glass with specular highlights &amp; {AMOLED_ACCENTS.find((a) => a.id === accent)?.name ?? 'Cyber Cyan'} accent.
                       </p>
                     </div>
                   </div>
@@ -1060,6 +1142,63 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                   </button>
                 </div>
               </>
+            )}
+
+            {/* Aero Porcelain Palette (Active in Aero mode) */}
+            {isAero && (
+              <div className="pt-3 border-t theme-border space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="min-w-0">
+                    <label className="text-xs font-semibold theme-text-primary block">
+                      Porcelain Palette
+                    </label>
+                    <p className="text-[11px] theme-text-muted leading-tight">
+                      Warm ink &amp; ceramic tones designed for daylight readability
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full uppercase shrink-0 font-bold border border-[#CBD5E1] bg-white text-[#0f172a]">
+                    {aeroPalette === 'espresso' ? 'Espresso' : aeroPalette === 'terracotta' ? 'Terracotta' : 'Sunset Peach'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'orange', name: 'Sunset Peach', color: '#E69F86', note: 'Warm Peach Ink' },
+                    { id: 'espresso', name: 'Espresso', color: '#353B5B', note: 'Twilight Navy' },
+                    { id: 'terracotta', name: 'Terracotta', color: '#D87255', note: 'Earthy Clay' },
+                  ].map((p) => {
+                    const isSelected = aeroPalette === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => {
+                          haptics.tick(900);
+                          setAeroPalette(p.id as any);
+                        }}
+                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? 'border-[#353B5B] bg-white shadow-md ring-1 ring-[#353B5B]'
+                            : 'border-[#CBD5E1] bg-[#F8F4F0] hover:bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="w-3.5 h-3.5 rounded-full shrink-0 border border-black/10"
+                            style={{ backgroundColor: p.color }}
+                          />
+                          <span className="text-xs font-bold text-[#0f172a] truncate">
+                            {p.name}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-zinc-500 block mt-1 truncate">
+                          {p.note}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             )}
 
             {/* Display Refresh Rate & Target FPS (24, 30, 60, 90, 120 FPS / Native) */}
@@ -2390,9 +2529,11 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
             }
             footerContent={
               <>
-                <span>Fluent Glass</span>
+                <span>{theme === 'fluent' ? 'Fluent Glass' : theme === 'dusk' ? 'Twilight Dusk' : 'Aero Porcelain'}</span>
                 <strong className="text-white uppercase font-sans">
-                  Pitch #000000 + Fluent Acrylic
+                  {theme === 'aero'
+                    ? `${aeroPalette} Porcelain`
+                    : `${AMOLED_ACCENTS.find((a) => a.id === accent)?.name ?? 'Cyber Cyan'} AMOLED`}
                 </strong>
               </>
             }

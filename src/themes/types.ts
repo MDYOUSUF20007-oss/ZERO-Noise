@@ -1,5 +1,13 @@
 export type CanonicalThemeId = 'fluent' | 'aetherial' | 'aero' | 'dusk';
-export type AccentColorId = 'amber' | 'emerald' | 'cyan' | 'purple' | 'crimson';
+export type AccentColorId =
+  | 'cyan'
+  | 'emerald'
+  | 'indigo'
+  | 'purple'
+  | 'amber'
+  | 'crimson'
+  | 'lime'
+  | 'silver';
 
 // Prevents TypeScript TS2367 errors if any legacy component checks an interface style string
 export type InterfaceStyle = 'fluent' | 'aetherial' | 'aero' | 'dusk' | (string & {});

@@ -25,6 +25,30 @@ export { AVAILABLE_THEMES, normalizeThemeId };
 export type GlassEngineType = 'acrylic' | 'eco';
 export type AeroPaletteId = 'orange' | 'espresso' | 'terracotta';
 
+export interface AmoledAccent {
+  id: AccentColorId;
+  name: string;
+  subtitle: string;
+  color: string;
+  glow: string;
+  bg: string;
+}
+
+export const AMOLED_ACCENTS: readonly AmoledAccent[] = [
+  { id: 'cyan', name: 'Cyber Cyan', subtitle: 'Infinite OLED', color: '#00F0FF', glow: 'rgba(0, 240, 255, 0.35)', bg: '#042F2E' },
+  { id: 'emerald', name: 'Neon Emerald', subtitle: 'Mint Jade', color: '#10B981', glow: 'rgba(16, 185, 129, 0.35)', bg: '#022C22' },
+  { id: 'indigo', name: 'Electric Indigo', subtitle: 'Royal Twilight', color: '#6366F1', glow: 'rgba(99, 102, 241, 0.35)', bg: '#1E1B4B' },
+  { id: 'purple', name: 'Cosmic Violet', subtitle: 'Ultraviolet', color: '#A855F7', glow: 'rgba(168, 85, 247, 0.35)', bg: '#3B0764' },
+  { id: 'amber', name: 'Sunset Amber', subtitle: 'Golden Ember', color: '#F59E0B', glow: 'rgba(245, 158, 11, 0.35)', bg: '#451A03' },
+  { id: 'crimson', name: 'Rose Coral', subtitle: 'Neon Ruby', color: '#F43F5E', glow: 'rgba(244, 63, 94, 0.35)', bg: '#4C0519' },
+  { id: 'lime', name: 'Laser Volt', subtitle: 'Acid Lime', color: '#84CC16', glow: 'rgba(132, 204, 22, 0.35)', bg: '#1A2E05' },
+  { id: 'silver', name: 'Ice Platinum', subtitle: 'Monochrome Specular', color: '#E2E8F0', glow: 'rgba(226, 232, 240, 0.30)', bg: '#0F172A' },
+] as const;
+
+export function isAmoledAccent(val: unknown): val is AccentColorId {
+  return typeof val === 'string' && AMOLED_ACCENTS.some((a) => a.id === val);
+}
+
 const STORAGE_KEY_THEME = 'zero_isolated_theme_engine_v5';
 const STORAGE_KEY_ACCENT = 'zero_theme_accent_seed_v5';
 const STORAGE_KEY_AERO_PALETTE = 'zero_aero_palette_v1';
@@ -173,16 +197,30 @@ function mountIsolatedThemeEngine(
     root.classList.add('dark');
     root.setAttribute('data-theme', 'fluent');
     root.setAttribute('data-engine', 'fluent');
-    const palColor = accent === 'cyan' ? '#00f0ff' : accent === 'amber' ? '#f59e0b' : accent === 'emerald' ? '#10b981' : accent === 'crimson' ? '#f43f5e' : '#a855f7';
-    root.style.setProperty('--accent-primary', palColor);
-    root.style.setProperty('--accent-hex', palColor);
-    if (accent === 'cyan') {
-      root.style.setProperty('--accent-rgb', '0, 240, 255');
-      root.style.setProperty('--liquid-accent-vibrant', '#00f0ff');
-      root.style.setProperty('--liquid-accent-tint', '#38bdf8');
-      root.style.setProperty('--liquid-accent-glow', 'rgba(0, 240, 255, 0.35)');
-      root.style.setProperty('--liquid-accent-soft-glow', 'rgba(0, 240, 255, 0.16)');
-    }
+    root.setAttribute('data-accent', accent);
+
+    const accentConfig: Record<AccentColorId, { hex: string; rgb: string; tint: string; glow: string; softGlow: string }> = {
+      cyan: { hex: '#00f0ff', rgb: '0, 240, 255', tint: '#38bdf8', glow: 'rgba(0, 240, 255, 0.35)', softGlow: 'rgba(0, 240, 255, 0.16)' },
+      emerald: { hex: '#10b981', rgb: '16, 185, 129', tint: '#34d399', glow: 'rgba(16, 185, 129, 0.35)', softGlow: 'rgba(16, 185, 129, 0.16)' },
+      indigo: { hex: '#6366f1', rgb: '99, 102, 241', tint: '#818cf8', glow: 'rgba(99, 102, 241, 0.35)', softGlow: 'rgba(99, 102, 241, 0.16)' },
+      purple: { hex: '#a855f7', rgb: '168, 85, 247', tint: '#c084fc', glow: 'rgba(168, 85, 247, 0.35)', softGlow: 'rgba(168, 85, 247, 0.16)' },
+      amber: { hex: '#f59e0b', rgb: '245, 158, 11', tint: '#fbbf24', glow: 'rgba(245, 158, 11, 0.35)', softGlow: 'rgba(245, 158, 11, 0.16)' },
+      crimson: { hex: '#f43f5e', rgb: '244, 63, 94', tint: '#fb7185', glow: 'rgba(244, 63, 94, 0.35)', softGlow: 'rgba(244, 63, 94, 0.16)' },
+      lime: { hex: '#84cc16', rgb: '132, 204, 22', tint: '#a3e635', glow: 'rgba(132, 204, 22, 0.35)', softGlow: 'rgba(132, 204, 22, 0.16)' },
+      silver: { hex: '#e2e8f0', rgb: '226, 232, 240', tint: '#94a3b8', glow: 'rgba(226, 232, 240, 0.30)', softGlow: 'rgba(226, 232, 240, 0.14)' },
+    };
+
+    const cfg = accentConfig[accent] || accentConfig.cyan;
+    root.style.setProperty('--accent-primary', cfg.hex);
+    root.style.setProperty('--accent-hex', cfg.hex);
+    root.style.setProperty('--accent-rgb', cfg.rgb);
+    root.style.setProperty('--liquid-accent-vibrant', cfg.hex);
+    root.style.setProperty('--liquid-accent-tint', cfg.tint);
+    root.style.setProperty('--liquid-accent-glow', cfg.glow);
+    root.style.setProperty('--liquid-accent-soft-glow', cfg.softGlow);
+    root.style.setProperty('--zero-accent', cfg.hex);
+    root.style.setProperty('--zero-dial-stroke', cfg.hex);
+
     // Set real-time ambient glow parameters
     root.style.setProperty('--ambient-glow-opacity', glowIntensity.toString());
     root.style.setProperty('--ambient-glow-scale', (0.75 + glowIntensity * 0.45).toString());
@@ -333,23 +371,11 @@ export function InterfaceStyleProvider({
     if (typeof window === 'undefined') return 'cyan';
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY_ACCENT);
-      if (
-        saved === 'amber' ||
-        saved === 'emerald' ||
-        saved === 'cyan' ||
-        saved === 'purple' ||
-        saved === 'crimson'
-      ) {
+      if (isAmoledAccent(saved)) {
         return saved;
       }
     } catch {}
-    if (
-      materialYouSeedProp === 'amber' ||
-      materialYouSeedProp === 'emerald' ||
-      materialYouSeedProp === 'cyan' ||
-      materialYouSeedProp === 'crimson' ||
-      materialYouSeedProp === 'purple'
-    ) {
+    if (isAmoledAccent(materialYouSeedProp)) {
       return materialYouSeedProp as AccentColorId;
     }
     return 'cyan';
@@ -482,13 +508,7 @@ export function InterfaceStyleProvider({
   });
 
   useEffect(() => {
-    if (
-      materialYouSeedProp === 'amber' ||
-      materialYouSeedProp === 'emerald' ||
-      materialYouSeedProp === 'cyan' ||
-      materialYouSeedProp === 'purple' ||
-      materialYouSeedProp === 'crimson'
-    ) {
+    if (isAmoledAccent(materialYouSeedProp)) {
       if (materialYouSeedProp !== accent) {
         setAccentState(materialYouSeedProp as AccentColorId);
       }
@@ -661,10 +681,7 @@ export function InterfaceStyleProvider({
   }, []);
 
   const setAccent = useCallback((nextAccent: AccentColorId) => {
-    const safeAccent: AccentColorId =
-      nextAccent === 'amber' || nextAccent === 'emerald' || nextAccent === 'cyan' || nextAccent === 'crimson'
-        ? nextAccent
-        : 'purple';
+    const safeAccent: AccentColorId = isAmoledAccent(nextAccent) ? nextAccent : 'cyan';
     removeActiveModStyles();
     mountIsolatedThemeEngine(theme, safeAccent, isBespokeActive ? 0 : fluentOrbIntensity, fluentGlassStrength);
     setAccentState(safeAccent);
@@ -704,9 +721,9 @@ export function InterfaceStyleProvider({
       isAetherial: theme === 'aetherial' && !isBespokeActive,
       isAero: theme === 'aero' && !isBespokeActive,
       isDusk: theme === 'dusk' && !isBespokeActive,
-      aeroPalette: 'orange',
-      setAeroPalette: () => {},
-      aeroAccentColor: theme === 'fluent' ? '#00f0ff' : '#E69F86',
+      aeroPalette,
+      setAeroPalette,
+      aeroAccentColor: theme === 'fluent' ? '#00f0ff' : aeroAccentColor,
       isMinimalist: isBespokeActive,
       isBespoke: isBespokeActive,
 
@@ -718,7 +735,7 @@ export function InterfaceStyleProvider({
       setAmoled: () => {},
       materialYouSeed: accent,
       setMaterialYouSeed: (s: any) => {
-        setAccent(s === 'cyan' ? 'cyan' : 'purple');
+        setAccent(isAmoledAccent(s) ? s : 'cyan');
       },
       materialYouAmoled: true,
       setMaterialYouAmoled: () => {},
