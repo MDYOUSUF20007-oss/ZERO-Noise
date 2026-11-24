@@ -3,15 +3,15 @@ Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host "   ZERO-NOISE PHONE INSTALLER / UPDATER   " -ForegroundColor Cyan
 Write-Host "=========================================" -ForegroundColor Cyan
 
-$apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.149.apk"
+$apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.151.apk"
 if (-not (Test-Path $apkPath)) {
-    $apkPath = "$PSScriptRoot\ZERO-v1.0.149.apk"
+    $apkPath = "$PSScriptRoot\ZERO-v1.0.151.apk"
 }
 
 if (-not (Test-Path $apkPath)) {
-    Write-Host "[!] Local v1.0.149 APK not found. Downloading from GitHub..." -ForegroundColor Yellow
-    $apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.149.apk"
-    Invoke-WebRequest -Uri "https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases/download/v1.0.149/ZERO-requires-adb-v1.0.149.apk" -OutFile $apkPath
+    Write-Host "[!] Local v1.0.151 APK not found. Downloading from GitHub..." -ForegroundColor Yellow
+    $apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.151.apk"
+    Invoke-WebRequest -Uri "https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases/download/v1.0.151/ZERO-requires-adb-v1.0.151.apk" -OutFile $apkPath
 }
 
 Write-Host "[+] Target APK: $apkPath" -ForegroundColor Green
@@ -37,12 +37,12 @@ if (-not $attached) {
 
 adb wait-for-device
 
-Write-Host "[*] Device detected! Installing v1.0.149 (with downgrade support)..." -ForegroundColor Cyan
+Write-Host "[*] Device detected! Installing v1.0.151 (with downgrade support)..." -ForegroundColor Cyan
 $installResult = adb install -r -d "$apkPath"
 Write-Host "$installResult"
 
 if ($installResult -match "Success") {
-    Write-Host "[SUCCESS] Zero-Noise v1.0.149 installed successfully on your phone!" -ForegroundColor Green
+    Write-Host "[SUCCESS] Zero-Noise v1.0.151 installed successfully on your phone!" -ForegroundColor Green
     adb shell am start -n org.zero.detox/.MainActivity
 } else {
     Write-Host "[!] Install response: $installResult" -ForegroundColor Yellow
