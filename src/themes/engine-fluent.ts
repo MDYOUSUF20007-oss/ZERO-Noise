@@ -5,11 +5,11 @@ export const fluentEngine: ThemeEngineDefinition = {
   id: 'fluent',
   name: 'Fluent Glass',
   badge: 'ACRYLIC',
-  description: 'Translucent multi-layer acrylic glass with backdrop blur, specular top highlights, neutral grey surfaces and electric cyan focus.',
+  description: 'Translucent multi-layer acrylic glass with backdrop blur, specular top highlights, neutral grey surfaces and liquid glass focus.',
   swatchBg: '#08090c',
   swatchSurface: '#161a23',
-  swatchAccent: '#00f0ff',
-  swatchAccentSecondary: '#94a3b8',
+  swatchAccent: '#f43f5e',
+  swatchAccentSecondary: '#e2e8f0',
   css: `
     :root, html[data-theme="fluent"] {
       color-scheme: dark !important;
@@ -39,28 +39,28 @@ export const fluentEngine: ThemeEngineDefinition = {
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --text-muted: #64748b;
-      --text-on-accent: #021a1f;
+      --text-on-accent: #ffffff;
 
-      /* Electric Cyan Accent */
-      --accent-primary: #00f0ff;
-      --accent-secondary: #38bdf8;
-      --accent-soft: rgba(0, 240, 255, 0.16);
-      --accent-border: rgba(0, 240, 255, 0.50);
-      --accent-glow: rgba(0, 240, 255, 0.35);
-      --accent-hex: #00f0ff;
-      --accent-rgb: 0, 240, 255;
+      /* Rose Coral & Radiant Liquid Accent */
+      --accent-primary: #f43f5e;
+      --accent-secondary: #fb7185;
+      --accent-soft: rgba(244, 63, 94, 0.16);
+      --accent-border: rgba(244, 63, 94, 0.50);
+      --accent-glow: rgba(244, 63, 94, 0.35);
+      --accent-hex: #f43f5e;
+      --accent-rgb: 244, 63, 94;
 
       /* Frosted Specular & Subtle Hairline Borders */
       --border-subtle: rgba(255, 255, 255, 0.09);
       --border-strong: rgba(255, 255, 255, 0.18);
       --border-specular: rgba(255, 255, 255, 0.28);
 
-      --status-success: #00f0ff;
+      --status-success: #10b981;
       --status-warning: #94a3b8;
       --status-danger: #f87171;
 
-      /* Grey & Cyan Backdrop Depth */
-      --app-backdrop-gradient: radial-gradient(circle at 18% 12%, rgba(0, 240, 255, 0.12) 0%, transparent 48%), radial-gradient(circle at 82% 82%, rgba(148, 163, 184, 0.06) 0%, transparent 50%);
+      /* Liquid Glass Backdrop Depth */
+      --app-backdrop-gradient: radial-gradient(circle at 18% 12%, rgba(244, 63, 94, 0.12) 0%, transparent 48%), radial-gradient(circle at 82% 82%, rgba(148, 163, 184, 0.06) 0%, transparent 50%);
       --surface-blur: blur(18px) saturate(140%);
       --surface-shadow: 0 10px 32px -4px rgba(0, 0, 0, 0.65);
       --surface-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.0) 100%);
@@ -76,12 +76,12 @@ export const fluentEngine: ThemeEngineDefinition = {
       --zero-border: rgba(255, 255, 255, 0.09);
       --zero-ink-primary: #f8fafc;
       --zero-ink-muted: #94a3b8;
-      --zero-accent: #00f0ff;
-      --zero-dial-stroke: #00f0ff;
-      --liquid-accent-glow: rgba(0, 240, 255, 0.35);
-      --liquid-accent-soft-glow: rgba(0, 240, 255, 0.16);
-      --liquid-accent-vibrant: #00f0ff;
-      --liquid-accent-tint: #38bdf8;
+      --zero-accent: #f43f5e;
+      --zero-dial-stroke: #f43f5e;
+      --liquid-accent-glow: rgba(244, 63, 94, 0.35);
+      --liquid-accent-soft-glow: rgba(244, 63, 94, 0.16);
+      --liquid-accent-vibrant: #f43f5e;
+      --liquid-accent-tint: #fb7185;
       --liquid-surface-blur: 18px;
     }
     ${BASE_ENGINE_BRIDGE_CSS}

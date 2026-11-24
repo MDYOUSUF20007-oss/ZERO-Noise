@@ -77,30 +77,8 @@ export const BASE_ENGINE_BRIDGE_CSS = `
     --accent-shift-4: #8b5cf6 !important; /* Luminous Purple */
   }
 
-  /* Cyan Accent (Default Primary) */
+  /* Rose Coral Accent (Default Flagship Accent) */
   :root,
-  [data-accent="cyan"],
-  html[data-accent="cyan"] {
-    --accent-primary: #00f0ff !important;
-    --accent-secondary: #38bdf8 !important;
-    --accent-soft: rgba(0, 240, 255, 0.16) !important;
-    --accent-border: rgba(0, 240, 255, 0.50) !important;
-    --text-on-accent: #021a1f !important;
-    --zero-accent: #00f0ff !important;
-    --zero-dial-stroke: #00f0ff !important;
-    --accent-hex: #00f0ff !important;
-    --accent-rgb: 0, 240, 255 !important;
-    --liquid-accent-glow: rgba(0, 240, 255, 0.35) !important;
-    --liquid-accent-soft-glow: rgba(0, 240, 255, 0.16) !important;
-    --liquid-accent-vibrant: #00f0ff !important;
-    --liquid-accent-tint: #38bdf8 !important;
-    --accent-shift-1: #0ea5e9 !important; /* Celestial Sky */
-    --accent-shift-2: #14b8a6 !important; /* Radiant Teal */
-    --accent-shift-3: #0284c7 !important; /* Cobalt Azure */
-    --accent-shift-4: #06b6d4 !important; /* Vibrant Cyan */
-  }
-
-  /* Crimson Rose Accent */
   [data-accent="crimson"],
   html[data-accent="crimson"] {
     --accent-primary: #f43f5e !important;
@@ -120,6 +98,30 @@ export const BASE_ENGINE_BRIDGE_CSS = `
     --accent-shift-2: #f43f5e !important; /* Crimson */
     --accent-shift-3: #be123c !important; /* Deep Velvet */
     --accent-shift-4: #fb7185 !important; /* Rose Blossom */
+  }
+
+  /* Liquid Sapphire Accent (replaces Cyber Cyan; supports legacy cyan alias) */
+  [data-accent="azure"],
+  [data-accent="cyan"],
+  html[data-accent="azure"],
+  html[data-accent="cyan"] {
+    --accent-primary: #0ea5e9 !important;
+    --accent-secondary: #38bdf8 !important;
+    --accent-soft: rgba(14, 165, 233, 0.18) !important;
+    --accent-border: rgba(14, 165, 233, 0.50) !important;
+    --text-on-accent: #ffffff !important;
+    --zero-accent: #0ea5e9 !important;
+    --zero-dial-stroke: #0ea5e9 !important;
+    --accent-hex: #0ea5e9 !important;
+    --accent-rgb: 14, 165, 233 !important;
+    --liquid-accent-glow: rgba(14, 165, 233, 0.40) !important;
+    --liquid-accent-soft-glow: rgba(14, 165, 233, 0.18) !important;
+    --liquid-accent-vibrant: #0ea5e9 !important;
+    --liquid-accent-tint: #38bdf8 !important;
+    --accent-shift-1: #0284c7 !important; /* Deep Sapphire */
+    --accent-shift-2: #38bdf8 !important; /* Radiant Sky */
+    --accent-shift-3: #0369a1 !important; /* Cobalt Sea */
+    --accent-shift-4: #7dd3fc !important; /* Arctic Frost */
   }
 
   /* Electric Indigo Accent (Sleek SaaS / Twilight Neon) */
@@ -247,55 +249,83 @@ export const BASE_ENGINE_BRIDGE_CSS = `
      ------------------------------------------------------------- */
   @keyframes ambientMeshGlideA {
     0% {
-      transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
     }
-    33% {
-      transform: translate3d(18px, 14px, 0);
+    25% {
+      transform: translate3d(36px, -24px, 0) scale(1.08) rotate(3deg);
     }
-    66% {
-      transform: translate3d(-14px, 20px, 0);
+    50% {
+      transform: translate3d(64px, 28px, 0) scale(1.02) rotate(-2deg);
+    }
+    75% {
+      transform: translate3d(-14px, 48px, 0) scale(1.11) rotate(3.5deg);
     }
     100% {
-      transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
     }
   }
 
   @keyframes ambientMeshGlideB {
     0% {
-      transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
     }
-    33% {
-      transform: translate3d(-16px, -18px, 0);
+    25% {
+      transform: translate3d(-42px, -30px, 0) scale(1.09) rotate(-3.5deg);
     }
-    66% {
-      transform: translate3d(14px, -12px, 0);
+    50% {
+      transform: translate3d(-24px, 40px, 0) scale(0.95) rotate(2.5deg);
+    }
+    75% {
+      transform: translate3d(40px, -18px, 0) scale(1.06) rotate(-2deg);
     }
     100% {
-      transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes ambientMeshGlideC {
+    0% {
+      transform: translate3d(0, 0, 0) scale(0.94);
+      opacity: 0.55;
+    }
+    33% {
+      transform: translate3d(-30px, 36px, 0) scale(1.12);
+      opacity: 0.85;
+    }
+    66% {
+      transform: translate3d(34px, -26px, 0) scale(1.03);
+      opacity: 0.65;
+    }
+    100% {
+      transform: translate3d(0, 0, 0) scale(0.94);
+      opacity: 0.55;
     }
   }
 
   .ambient-mesh-node-1,
-  .ambient-mesh-node-2 {
+  .ambient-mesh-node-2,
+  .ambient-mesh-node-3 {
     animation: none;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
   }
 
   html[data-ambient-drift="true"]:not([data-gpu-safeguard="true"]) .ambient-mesh-node-1 {
-    animation: ambientMeshGlideA 42s ease-in-out infinite;
-    will-change: transform;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+    animation: ambientMeshGlideA 44s cubic-bezier(0.42, 0, 0.58, 1) infinite;
   }
   html[data-ambient-drift="true"]:not([data-gpu-safeguard="true"]) .ambient-mesh-node-2 {
-    animation: ambientMeshGlideB 48s ease-in-out infinite;
-    will-change: transform;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+    animation: ambientMeshGlideB 52s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+  }
+  html[data-ambient-drift="true"]:not([data-gpu-safeguard="true"]) .ambient-mesh-node-3 {
+    animation: ambientMeshGlideC 60s cubic-bezier(0.42, 0, 0.58, 1) infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {
     html[data-ambient-drift="true"] .ambient-mesh-node-1,
-    html[data-ambient-drift="true"] .ambient-mesh-node-2 {
+    html[data-ambient-drift="true"] .ambient-mesh-node-2,
+    html[data-ambient-drift="true"] .ambient-mesh-node-3 {
       animation: none !important;
     }
   }
@@ -439,7 +469,8 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   }
 
   html[data-gpu-safeguard="true"] .ambient-mesh-node-1,
-  html[data-gpu-safeguard="true"] .ambient-mesh-node-2 {
+  html[data-gpu-safeguard="true"] .ambient-mesh-node-2,
+  html[data-gpu-safeguard="true"] .ambient-mesh-node-3 {
     animation-play-state: paused !important;
   }
 

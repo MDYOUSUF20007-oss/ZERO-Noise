@@ -252,7 +252,7 @@ export function App() {
         dailyGoalHours: profile.dailyReclaimTargetHours || 3,
         motto: profile.primaryGoal,
         avatarId: 'monk',
-        accentColor: 'cyan',
+        accentColor: 'emerald',
       });
     }
 

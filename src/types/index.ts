@@ -373,14 +373,15 @@ export type InterfaceStyle =
   | 'minimal';
 
 export type MaterialYouSeed =
-  | 'cyan'
+  | 'crimson'
   | 'emerald'
+  | 'silver'
+  | 'azure'
+  | 'cyan'
   | 'indigo'
   | 'purple'
   | 'amber'
-  | 'crimson'
-  | 'lime'
-  | 'silver';
+  | 'lime';
 
 export type AmoledGradientId =
   | 'pure'

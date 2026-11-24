@@ -843,7 +843,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
           {/* Primary Celestial Anchor Glow (Upper Left) */}
           <div
             aria-hidden="true"
-            className="fixed -top-24 -left-20 w-84 h-84 rounded-full pointer-events-none blur-3xl transition-all duration-700"
+            className="ambient-mesh-node-1 fixed -top-24 -left-20 w-84 h-84 rounded-full pointer-events-none blur-3xl transition-all duration-700"
             style={{
               background: `radial-gradient(circle at 45% 45%, ${hexToRgba(activeAccent, 0.42)} 0%, ${hexToRgba(activeAccent, 0.14)} 45%, transparent 72%)`,
               opacity: gpuThermalSafeguard ? 0.15 : Math.max(0.2, fluentOrbIntensity * 0.75),
@@ -852,7 +852,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
           {/* Secondary Atmospheric Depth Glow (Lower Right) */}
           <div
             aria-hidden="true"
-            className="fixed -bottom-28 -right-20 w-80 h-80 rounded-full pointer-events-none blur-3xl transition-all duration-700"
+            className="ambient-mesh-node-2 fixed -bottom-28 -right-20 w-80 h-80 rounded-full pointer-events-none blur-3xl transition-all duration-700"
             style={{
               background: `radial-gradient(circle at 55% 55%, ${hexToRgba(activeAccent, 0.35)} 0%, ${hexToRgba(activeAccent, 0.10)} 42%, transparent 70%)`,
               opacity: gpuThermalSafeguard ? 0.12 : Math.max(0.15, fluentOrbIntensity * 0.55),

@@ -793,13 +793,13 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                     <span
                       className="text-[10px] font-mono px-2.5 py-0.5 rounded-full uppercase shrink-0 font-bold border transition-colors"
                       style={{
-                        borderColor: 'var(--accent-primary, #00f0ff)',
-                        color: 'var(--accent-primary, #00f0ff)',
-                        backgroundColor: 'var(--accent-soft, rgba(0, 240, 255, 0.12))',
-                        boxShadow: '0 0 10px var(--liquid-accent-soft-glow, rgba(0, 240, 255, 0.2))',
+                        borderColor: 'var(--accent-primary, #f43f5e)',
+                        color: 'var(--accent-primary, #f43f5e)',
+                        backgroundColor: 'var(--accent-soft, rgba(244, 63, 94, 0.12))',
+                        boxShadow: '0 0 10px var(--liquid-accent-soft-glow, rgba(244, 63, 94, 0.2))',
                       }}
                     >
-                      {AMOLED_ACCENTS.find((a) => a.id === accent)?.name ?? 'Cyber Cyan'}
+                      {AMOLED_ACCENTS.find((a) => a.id === accent)?.name ?? 'Rose Coral'}
                     </span>
                   </div>
 
@@ -817,7 +817,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                           }}
                           className={`p-3 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between gap-2 ${
                             isSelected
-                              ? 'border-[var(--accent-primary,#00f0ff)] bg-[var(--accent-soft,rgba(0,240,255,0.14))] shadow-[0_0_18px_var(--liquid-accent-soft-glow)] ring-1 ring-[var(--accent-primary,#00f0ff)]'
+                              ? 'border-[var(--accent-primary,#f43f5e)] bg-[var(--accent-soft,rgba(244,63,94,0.14))] shadow-[0_0_18px_var(--liquid-accent-soft-glow)] ring-1 ring-[var(--accent-primary,#f43f5e)]'
                               : 'theme-border theme-bg-secondary/40 hover:theme-bg-secondary/80'
                           }`}
                         >
@@ -950,14 +950,14 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                       className="absolute -top-4 -right-4 w-32 h-32 rounded-full pointer-events-none blur-xl transition-all duration-300"
                       style={{
                         background:
-                          'radial-gradient(circle, var(--accent-primary, #00f0ff) 0%, var(--accent-soft, rgba(0,240,255,0.16)) 50%, transparent 80%)',
+                          'radial-gradient(circle, var(--accent-primary, #f43f5e) 0%, var(--accent-soft, rgba(244,63,94,0.16)) 50%, transparent 80%)',
                         opacity: fluentOrbIntensity,
                       }}
                     />
                     <div className="relative z-10 glass-card p-3 rounded-xl border">
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <div className="flex items-center gap-1.5">
-                          <Layers size={13} style={{ color: 'var(--accent-primary, #00f0ff)' }} />
+                          <Layers size={13} style={{ color: 'var(--accent-primary, #f43f5e)' }} />
                           <span className="text-xs font-semibold theme-text-primary">
                             Optical Refraction Preview
                           </span>
@@ -967,7 +967,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                         </span>
                       </div>
                       <p className="text-[11px] theme-text-secondary leading-relaxed">
-                        Translucent charcoal grey glass with specular highlights &amp; {AMOLED_ACCENTS.find((a) => a.id === accent)?.name ?? 'Cyber Cyan'} accent.
+                        Translucent charcoal grey glass with specular highlights &amp; {AMOLED_ACCENTS.find((a) => a.id === accent)?.name ?? 'Rose Coral'} accent.
                       </p>
                     </div>
                   </div>
@@ -1117,7 +1117,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                       Ambient Mesh Drift
                     </label>
                     <p className="text-[11px] theme-text-muted leading-tight">
-                      Slow kinetic drift animation across ambient canvas (42s loop)
+                      Smooth kinetic respiration drift across ambient canvas (44s-60s multi-axis loop)
                     </p>
                   </div>
                   <button
@@ -1129,8 +1129,11 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                       setAmbientDriftEnabled(!ambientDriftEnabled);
                     }}
                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                      ambientDriftEnabled ? 'bg-cyan-500' : 'bg-zinc-800'
+                      ambientDriftEnabled ? '' : 'bg-zinc-800'
                     }`}
+                    style={{
+                      backgroundColor: ambientDriftEnabled ? 'var(--accent-primary, #f43f5e)' : undefined,
+                    }}
                     aria-label="Toggle Ambient Mesh Drift"
                   >
                     <span
@@ -2533,7 +2536,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                 <strong className="text-white uppercase font-sans">
                   {theme === 'aero'
                     ? `${aeroPalette} Porcelain`
-                    : `${AMOLED_ACCENTS.find((a) => a.id === accent)?.name ?? 'Cyber Cyan'} AMOLED`}
+                    : `${AMOLED_ACCENTS.find((a) => a.id === accent)?.name ?? 'Rose Coral'} AMOLED`}
                 </strong>
               </>
             }

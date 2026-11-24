@@ -32,6 +32,7 @@ export function normalizeEngineType(value: unknown): EngineType {
 
 export function seedToM3Palette(seed?: string | null): M3Palette {
   switch (seed) {
+    case 'azure':
     case 'cyan':
     case 'cyber-cyan':
       return 'cyber-cyan';
@@ -40,11 +41,12 @@ export function seedToM3Palette(seed?: string | null): M3Palette {
       return 'neon-emerald';
     case 'crimson':
     case 'crimson-pulse':
+    case 'rose-coral':
       return 'crimson-pulse';
     case 'purple':
     case 'deep-purple':
     default:
-      return 'deep-purple';
+      return 'crimson-pulse';
   }
 }
 
@@ -52,6 +54,7 @@ export function m3PaletteToSeed(palette?: string | null): MaterialYouSeed {
   switch (palette) {
     case 'cyber-cyan':
     case 'cyan':
+    case 'azure':
       return 'cyan';
     case 'neon-emerald':
     case 'emerald':
@@ -62,7 +65,7 @@ export function m3PaletteToSeed(palette?: string | null): MaterialYouSeed {
     case 'deep-purple':
     case 'purple':
     default:
-      return 'purple';
+      return 'crimson';
   }
 }
 
