@@ -16,7 +16,7 @@ const ACCENT_COLOR_MAP: Record<string, string> = {
   emerald: '#10B981', // Neon Emerald
   silver: '#E2E8F0',  // Ice Platinum
   azure: '#0EA5E9',   // Liquid Sapphire
-  cyan: '#0EA5E9',    // Liquid Sapphire fallback
+  cyan: '#00F0FF',    // Cyber Cyan
   amber: '#F59E0B',   // Sunset Amber
   purple: '#A855F7',  // Cosmic Violet
   indigo: '#6366F1',  // Electric Indigo
@@ -31,10 +31,12 @@ export function resolveTicketAccent(explicitAccent?: string, isAero?: boolean): 
     if (activeAccentAttr && ACCENT_COLOR_MAP[activeAccentAttr]) {
       return ACCENT_COLOR_MAP[activeAccentAttr];
     }
+    const cssVarHex = getComputedStyle(document.documentElement).getPropertyValue('--accent-hex').trim();
+    if (cssVarHex && cssVarHex.startsWith('#')) return cssVarHex;
     const cssVar = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim();
     if (cssVar && cssVar.startsWith('#')) return cssVar;
   }
-  return '#F43F5E';
+  return '#00F0FF';
 }
 
 /**
@@ -92,15 +94,15 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
             ) : (
               <>
                 {/* Authentic Liquid Glass: Translucent smoked acrylic */}
-                <stop offset="0%" stopColor="rgba(20, 26, 42, 0.72)" />
-                <stop offset="100%" stopColor="rgba(6, 8, 14, 0.88)" />
+                <stop offset="0%" stopColor="rgba(24, 32, 48, 0.65)" />
+                <stop offset="100%" stopColor="rgba(6, 10, 18, 0.85)" />
               </>
             )}
           </linearGradient>
           <linearGradient id={specularGradId} x1="0" y1="0" x2="296" y2="124" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor={primaryAccent} stopOpacity={0.95} />
-            <stop offset="38%" stopColor={primaryAccent} stopOpacity={0.45} />
-            <stop offset="70%" stopColor="rgba(255, 255, 255, 0.45)" stopOpacity={0.35} />
+            <stop offset="34%" stopColor={primaryAccent} stopOpacity={0.45} />
+            <stop offset="68%" stopColor="rgba(255, 255, 255, 0.50)" stopOpacity={0.35} />
             <stop offset="100%" stopColor={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(255, 255, 255, 0.08)'} stopOpacity={0.15} />
           </linearGradient>
           <clipPath id={clipId}>
@@ -113,7 +115,7 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
           <rect x="0" y="0" width="296" height="124" fill={`url(#${bgGradId})`} />
 
           {/* Translucent Left Stub Tint */}
-          <rect x="0" y="0" width="74" height="124" fill={isAeroTheme ? '#EDE6DF' : 'rgba(28, 36, 56, 0.55)'} />
+          <rect x="0" y="0" width="74" height="124" fill={isAeroTheme ? '#EDE6DF' : 'rgba(32, 44, 68, 0.48)'} />
 
           {/* Ambient Specular Sheen Sweep */}
           <rect
@@ -123,7 +125,7 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
             width="90"
             height="124"
             fill={primaryAccent}
-            fillOpacity={isAeroTheme ? 0.04 : 0.12}
+            fillOpacity={isAeroTheme ? 0.04 : 0.14}
             transform="skewX(-22)"
           />
 
@@ -180,6 +182,14 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
             fill="none"
           />
 
+          {/* Top Specular Rim Line for Liquid Glass Cut Look */}
+          <path
+            d="M 16 3 L 68 3 L 74 9 L 80 3 L 280 3"
+            stroke="rgba(255, 255, 255, 0.45)"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+          />
+
           {/* Outer & Inner Concentric Hairline Borders */}
           <path
             d="M 16 2 L 68 2 L 74 8 L 80 2 L 280 2 A 14 14 0 0 1 294 16 L 294 48 A 14 14 0 0 0 294 76 L 294 108 A 14 14 0 0 1 280 122 L 80 122 L 74 116 L 68 122 L 16 122 A 14 14 0 0 1 2 108 L 2 76 A 14 14 0 0 0 2 48 L 2 16 A 14 14 0 0 1 16 2 Z"
@@ -187,7 +197,7 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
             strokeWidth="1.75"
           />
           <path
-            d="M 19 7 L 66 7 L 74 14 L 82 7 L 277 7 A 10 10 0 0 1 289 19 L 289 45 A 17 17 0 0 0 289 79 L 289 105 A 10 10 0 0 1 277 117 L 82 117 L 74 110 L 66 117 L 19 117 A 10 10 0 0 1 277 117 L 82 117 L 74 110 L 66 117 L 19 117 A 10 10 0 0 1 7 105 L 7 79 A 17 17 0 0 0 7 45 L 7 19 A 10 10 0 0 1 19 7 Z"
+            d="M 19 7 L 66 7 L 74 14 L 82 7 L 277 7 A 10 10 0 0 1 289 19 L 289 45 A 17 17 0 0 0 289 79 L 289 105 A 10 10 0 0 1 277 117 L 82 117 L 74 110 L 66 117 L 19 117 A 10 10 0 0 1 7 105 L 7 79 A 17 17 0 0 0 7 45 L 7 19 A 10 10 0 0 1 19 7 Z"
             stroke={`url(#${specularGradId})`}
             strokeWidth="1.25"
           />
@@ -293,6 +303,9 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
   const iceBorderId = `znIceBorder_${uid}`;
   const stubClipId = `znStubClip_${uid}`;
   const mainClipId = `znMainClip_${uid}`;
+  const sheenGradId = `znSheen_${uid}`;
+  const specularRimId = `znSpecularRim_${uid}`;
+  const thumbGradId = `znThumbGrad_${uid}`;
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -566,12 +579,19 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
     return () => cancelAnimationFrame(raf);
   }, [isDragging, phase, ripProgress]);
 
+  const getDragRange = useCallback(() => {
+    const box = ticketBoxRef.current;
+    if (!box) return 160;
+    return Math.max(120, box.getBoundingClientRect().height * 0.72);
+  }, []);
+
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (phase === 'escaped') return;
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsDragging(true);
     setPhase('ripping');
-    dragStartYRef.current = e.clientY - ripProgress * 180;
+    const dragRange = getDragRange();
+    dragStartYRef.current = e.clientY - ripProgress * dragRange;
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -582,8 +602,7 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
     rafMoveRef.current = requestAnimationFrame(() => {
       rafMoveRef.current = null;
       if (pendingMoveYRef.current === null) return;
-      const box = ticketBoxRef.current;
-      const dragRange = box ? Math.max(130, box.getBoundingClientRect().height * 0.74) : 170;
+      const dragRange = getDragRange();
       const raw = (pendingMoveYRef.current - dragStartYRef.current) / dragRange;
       const clamped = Math.max(0, Math.min(1, raw));
       setRipProgress(clamped);
@@ -636,15 +655,16 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
   // Left stub physical hinge transform (GPU accelerated translate3d)
   const stubStyle: React.CSSProperties = isEscaped
     ? {
-        transform: 'translate3d(-44px, 340px, 0) rotate(-26deg)',
+        transform: 'translate3d(-80px, 460px, 0) rotate(-34deg) scale(0.88)',
         opacity: 0,
-        transition: 'transform 0.62s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease-out',
-        willChange: 'transform, opacity',
+        filter: 'blur(3px)',
+        transition: 'transform 0.78s cubic-bezier(0.12, 0.92, 0.24, 1.05), opacity 0.65s cubic-bezier(0.3, 0, 0.8, 1), filter 0.65s ease-out',
+        willChange: 'transform, opacity, filter',
       }
     : {
-        transform: `translate3d(${-ripProgress * 12}px, ${ripProgress * 16}px, 0) rotate(${-ripProgress * 7.5}deg)`,
-        transformOrigin: '160px 282px',
-        transition: isDragging ? 'none' : 'transform 0.28s cubic-bezier(0.25, 1, 0.5, 1)',
+        transform: `translate3d(${-ripProgress * 22}px, ${ripProgress * 65}px, 0) rotate(${-ripProgress * 13}deg)`,
+        transformOrigin: '160px 292px',
+        transition: isDragging ? 'none' : 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)',
         willChange: 'transform',
       };
 
@@ -656,8 +676,11 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
       aria-label="Escape Ticket"
       style={{
         background: isAeroTheme ? 'rgba(243, 237, 232, 0.95)' : 'rgba(4, 6, 12, 0.92)',
-        backdropFilter: 'blur(28px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+        backdropFilter: 'blur(36px) saturate(190%)',
+        WebkitBackdropFilter: 'blur(36px) saturate(190%)',
+        ['--liquid-accent-glow' as any]: `${primaryAccent}44`,
+        ['--liquid-accent-soft-glow' as any]: `${primaryAccent}22`,
+        ['--accent-hex' as any]: primaryAccent,
       }}
     >
       {/* 2D Particle Sparks & Void Fracture Canvas */}
@@ -698,6 +721,9 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
         ref={ticketBoxRef}
         className={`zn-ticket-stage ${isEscaped ? 'zn-ticket-stage--escaped' : ''}`}
       >
+        {/* Soft Ambient Caustic Underglow */}
+        <div className="zn-ticket-ambient-glow" />
+
         <svg
           className="zn-ticket-svg"
           viewBox="0 0 640 296"
@@ -713,9 +739,10 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 </>
               ) : (
                 <>
-                  {/* Authentic Liquid Glass: Translucent smoked obsidian */}
-                  <stop offset="0%" stopColor="rgba(18, 22, 34, 0.85)" />
-                  <stop offset="100%" stopColor="rgba(4, 6, 12, 0.94)" />
+                  {/* Authentic Liquid Glass: Translucent smoked acrylic obsidian */}
+                  <stop offset="0%" stopColor="rgba(20, 28, 44, 0.65)" />
+                  <stop offset="50%" stopColor="rgba(12, 16, 26, 0.75)" />
+                  <stop offset="100%" stopColor="rgba(6, 8, 14, 0.85)" />
                 </>
               )}
             </linearGradient>
@@ -728,8 +755,8 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               ) : (
                 <>
                   {/* Translucent Left Stub Glass */}
-                  <stop offset="0%" stopColor="rgba(26, 32, 50, 0.75)" />
-                  <stop offset="100%" stopColor="rgba(10, 14, 24, 0.88)" />
+                  <stop offset="0%" stopColor="rgba(26, 36, 56, 0.62)" />
+                  <stop offset="100%" stopColor="rgba(10, 14, 24, 0.80)" />
                 </>
               )}
             </linearGradient>
@@ -742,12 +769,29 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 </>
               ) : (
                 <>
-                  <stop offset="0%" stopColor={primaryAccent} stopOpacity="0.95" />
-                  <stop offset="42%" stopColor="rgba(255, 255, 255, 0.40)" stopOpacity="0.7" />
+                  <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.90" />
+                  <stop offset="22%" stopColor={primaryAccent} stopOpacity="0.85" />
+                  <stop offset="68%" stopColor="rgba(255, 255, 255, 0.40)" stopOpacity="0.55" />
                   <stop offset="100%" stopColor="rgba(255, 255, 255, 0.08)" stopOpacity="0.2" />
                 </>
               )}
             </linearGradient>
+            <linearGradient id={sheenGradId} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="rgba(255, 255, 255, 0.16)" />
+              <stop offset="32%" stopColor="rgba(255, 255, 255, 0.05)" />
+              <stop offset="65%" stopColor="rgba(255, 255, 255, 0)" />
+            </linearGradient>
+            <linearGradient id={specularRimId} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+              <stop offset="28%" stopColor={primaryAccent} stopOpacity="0.85" />
+              <stop offset="70%" stopColor="#FFFFFF" stopOpacity="0.45" />
+              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.08" />
+            </linearGradient>
+            <radialGradient id={thumbGradId} cx="38%" cy="32%" r="68%">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="42%" stopColor={primaryAccent} />
+              <stop offset="100%" stopColor={primaryAccent} stopOpacity="0.85" />
+            </radialGradient>
             <clipPath id={stubClipId}>
               <path d="M 22 4 L 152 4 L 160 14 L 160 282 L 152 292 L 22 292 A 18 18 0 0 1 4 274 L 4 176 A 28 28 0 0 0 4 120 L 4 22 A 18 18 0 0 1 22 4 Z" />
             </clipPath>
@@ -758,7 +802,11 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
 
           {/* ================= RIGHT MAIN BODY (75%) ================= */}
           <g clipPath={`url(#${mainClipId})`}>
+            {/* Smoked Acrylic Glass Fill */}
             <rect x="160" y="0" width="480" height="296" fill={`url(#${mainBgId})`} />
+
+            {/* Diagonal Refractive Sheen */}
+            <rect x="160" y="0" width="480" height="296" fill={`url(#${sheenGradId})`} pointerEvents="none" />
 
             {/* Subtle Technical Grid Texture */}
             <g opacity={isAeroTheme ? 0.04 : 0.06} stroke={primaryAccent} strokeWidth="1">
@@ -829,7 +877,7 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               {isEscaped ? '0.00 dB' : 'VOID LOCK'}
             </text>
 
-            {/* Bottom Divider & Destination Line Only */}
+            {/* Bottom Divider & Destination Line */}
             <line x1="204" y1="228" x2="594" y2="228" stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(255, 255, 255, 0.16)'} strokeWidth="1" />
             <text
               x="204"
@@ -845,6 +893,15 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 ESCAPE
               </tspan>
             </text>
+
+            {/* Top Specular Rim Reflection Highlight */}
+            <path
+              d="M 168 5 L 618 5 A 17 17 0 0 1 635 22"
+              stroke={`url(#${specularRimId})`}
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              opacity="0.85"
+            />
 
             {/* Outer & Inner Specular Borders (Main Body) */}
             <path
@@ -875,14 +932,40 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
           )}
           {/* Unzipped Glowing Upper Edge */}
           {ripProgress > 0.01 && !isEscaped && (
+            <>
+              <line
+                x1="160"
+                y1="14"
+                x2="160"
+                y2={tearY}
+                stroke={primaryAccent}
+                strokeWidth="5"
+                strokeOpacity="0.4"
+                strokeLinecap="round"
+              />
+              <line
+                x1="160"
+                y1="14"
+                x2="160"
+                y2={tearY}
+                stroke={primaryAccent}
+                strokeWidth="2.5"
+                strokeOpacity="0.95"
+                strokeLinecap="round"
+              />
+            </>
+          )}
+          {/* Torn Seam Energy Flash on Escape */}
+          {isEscaped && (
             <line
+              className="zn-seam-flash"
               x1="160"
               y1="14"
               x2="160"
-              y2={tearY}
+              y2="282"
               stroke={primaryAccent}
-              strokeWidth="2.4"
-              strokeOpacity="0.95"
+              strokeWidth="3.5"
+              strokeLinecap="round"
             />
           )}
 
@@ -891,16 +974,38 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
             <g clipPath={`url(#${stubClipId})`}>
               <rect x="0" y="0" width="160" height="296" fill={`url(#${stubBgId})`} />
 
+              {/* Diagonal Refractive Sheen on Stub */}
+              <rect x="0" y="0" width="160" height="296" fill={`url(#${sheenGradId})`} pointerEvents="none" />
+
+              {/* Top Specular Rim on Stub */}
+              <path
+                d="M 22 5 L 152 5"
+                stroke={`url(#${specularRimId})`}
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                opacity="0.85"
+              />
+
               {/* Vertical Slider Track: Deep liquid groove */}
               <rect
-                x="76"
-                y="56"
-                width="26"
-                height="184"
-                rx="13"
-                fill={isAeroTheme ? '#EDE6DF' : 'rgba(10, 14, 24, 0.88)'}
-                stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(255, 255, 255, 0.18)'}
+                x="75"
+                y="54"
+                width="28"
+                height="188"
+                rx="14"
+                fill={isAeroTheme ? '#EDE6DF' : 'rgba(8, 12, 20, 0.72)'}
+                stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(255, 255, 255, 0.16)'}
                 strokeWidth="1.2"
+              />
+              <line
+                x1="89"
+                y1="68"
+                x2="89"
+                y2="228"
+                stroke={primaryAccent}
+                strokeOpacity="0.22"
+                strokeWidth="1"
+                strokeDasharray="3 3"
               />
 
               {/* Animated Downward Chevrons */}
@@ -916,15 +1021,31 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 <polyline points="83,120 89,126 95,120" opacity={0.95} />
               </g>
 
-              {/* Draggable Thumb Indicator: Liquid orb with specular center */}
-              <circle
-                cx="89"
-                cy={76 + ripProgress * 144}
-                r="8"
-                fill={primaryAccent}
-                fillOpacity={isDragging ? '1' : '0.90'}
-                style={{ filter: `drop-shadow(0 0 8px ${primaryAccent})` }}
-              />
+              {/* Draggable Liquid Glass Pearl Indicator */}
+              <g transform={`translate(0, ${ripProgress * 144})`}>
+                {/* Ambient glow halo */}
+                <circle cx="89" cy="76" r="15" fill={primaryAccent} fillOpacity="0.22" />
+                {/* Outer glass ring bevel */}
+                <circle cx="89" cy="76" r="10.5" fill="none" stroke="rgba(255, 255, 255, 0.45)" strokeWidth="1" />
+                {/* Glowing pearl core */}
+                <circle
+                  cx="89"
+                  cy="76"
+                  r="9.5"
+                  fill={`url(#${thumbGradId})`}
+                  style={{ filter: `drop-shadow(0 0 10px ${primaryAccent})` }}
+                />
+                {/* Specular light glint reflection */}
+                <ellipse
+                  cx="86.5"
+                  cy="73"
+                  rx="2.6"
+                  ry="1.4"
+                  fill="#FFFFFF"
+                  fillOpacity="0.9"
+                  transform="rotate(-28 86.5 73)"
+                />
+              </g>
 
               {/* Vertical Stub Label */}
               <text

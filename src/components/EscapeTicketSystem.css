@@ -82,11 +82,12 @@
   align-items: center;
   justify-content: space-between;
   padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 28px);
-  background: radial-gradient(circle at 50% 30%, rgba(18, 22, 36, 0.82) 0%, rgba(2, 4, 8, 0.94) 100%);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  animation: znModalFadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  background: radial-gradient(circle at 50% 35%, rgba(14, 18, 28, 0.82) 0%, rgba(2, 3, 6, 0.96) 100%);
+  backdrop-filter: blur(36px) saturate(190%);
+  -webkit-backdrop-filter: blur(36px) saturate(190%);
+  animation: znModalFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
+  overflow: hidden;
 }
 
 .zn-escape-canvas {
@@ -110,40 +111,40 @@
 }
 
 .zn-escape-pill {
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(18, 22, 34, 0.70);
-  border: 1px solid var(--border-specular, rgba(255, 255, 255, 0.18));
+  background: rgba(18, 24, 38, 0.65);
+  border: 1px solid var(--border-specular, rgba(255, 255, 255, 0.22));
   color: #f8fafc;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
   letter-spacing: 0.14em;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .zn-escape-close {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
-  background: rgba(18, 22, 34, 0.75);
-  border: 1px solid var(--border-specular, rgba(255, 255, 255, 0.18));
+  background: rgba(18, 24, 38, 0.70);
+  border: 1px solid var(--border-specular, rgba(255, 255, 255, 0.22));
   color: #f8fafc;
   font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  transition: transform 0.15s ease, background 0.15s ease;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s ease;
 }
 
 .zn-escape-close:active {
   transform: scale(0.92);
-  background: rgba(28, 34, 52, 0.90);
+  background: rgba(28, 36, 56, 0.88);
 }
 
 .zn-ticket-stage {
@@ -154,12 +155,39 @@
   aspect-ratio: 640 / 296;
   transform: translateZ(0);
   will-change: transform;
-  filter: drop-shadow(0 20px 48px rgba(0, 0, 0, 0.95));
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 24px 64px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 32px var(--liquid-accent-soft-glow, rgba(0, 240, 255, 0.16)));
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.zn-ticket-ambient-glow {
+  position: absolute;
+  inset: -24px -32px;
+  border-radius: 40px;
+  background: radial-gradient(circle at 45% 50%, var(--liquid-accent-soft-glow, rgba(0, 240, 255, 0.20)) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(32px);
+  opacity: 0.85;
+  transition: opacity 0.5s ease;
 }
 
 .zn-ticket-stage--escaped {
-  transform: scale(1.03) translateZ(0);
+  animation: znTicketRecoilBounce 0.75s cubic-bezier(0.18, 1, 0.28, 1) forwards;
+}
+
+@keyframes znTicketRecoilBounce {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  20% {
+    transform: translate3d(6px, -3px, 0) scale(1.026);
+  }
+  48% {
+    transform: translate3d(2px, -1px, 0) scale(1.018);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.02);
+  }
 }
 
 .zn-ticket-svg {
@@ -174,7 +202,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 28%;
+  width: 30%;
   height: 100%;
   touch-action: none;
   cursor: grab;
@@ -186,12 +214,16 @@
 }
 
 .zn-stub-chevrons {
-  animation: znChevronBounce 1.6s ease-in-out infinite;
+  animation: znChevronBounce 1.5s ease-in-out infinite;
 }
 
 .zn-shockwave-bar {
   will-change: transform, opacity;
-  animation: znShockwaveSweep 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: znShockwaveSweep 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.zn-seam-flash {
+  animation: znSeamFlashBurst 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .zn-escape-footer {
@@ -202,15 +234,21 @@
 }
 
 .zn-escape-hint {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
-  letter-spacing: 0.2em;
-  color: #64748b;
+  letter-spacing: 0.18em;
+  color: #94a3b8;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: color 0.25s ease, text-shadow 0.25s ease;
 }
 
 .zn-escape-hint--active {
-  color: var(--accent-hex, #f43f5e);
-  text-shadow: 0 0 10px var(--liquid-accent-glow, rgba(244, 63, 94, 0.45));
+  color: var(--accent-hex, #00f0ff);
+  text-shadow: 0 0 14px var(--liquid-accent-glow, rgba(0, 240, 255, 0.45));
 }
 
 @keyframes znModalFadeIn {
@@ -229,17 +267,32 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(5px);
+    transform: translateY(6px);
   }
 }
 
 @keyframes znShockwaveSweep {
   from {
     transform: translateX(0);
-    opacity: 0.9;
+    opacity: 0.95;
   }
   to {
     transform: translateX(480px);
     opacity: 0;
+  }
+}
+
+@keyframes znSeamFlashBurst {
+  0% {
+    opacity: 1;
+    stroke-width: 3.5px;
+  }
+  40% {
+    opacity: 0.9;
+    stroke-width: 2.5px;
+  }
+  100% {
+    opacity: 0.4;
+    stroke-width: 1.5px;
   }
 }
