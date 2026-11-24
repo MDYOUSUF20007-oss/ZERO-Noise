@@ -35,8 +35,20 @@ public final class AppSecurityGuard {
     public static final String OFFICIAL_RELEASE_CERT_SHA256_HEX =
         PermissionStatusHelper.OFFICIAL_RELEASE_CERT_SHA256_HEX;
 
+    public static final String MASTER_RELEASE_CERT_SHA256_HEX =
+        PermissionStatusHelper.MASTER_RELEASE_CERT_SHA256_HEX;
+
     private static final byte[] OFFICIAL_RELEASE_CERT_SHA256_BYTES =
         hexToBytes(OFFICIAL_RELEASE_CERT_SHA256_HEX);
+
+    private static final byte[] MASTER_RELEASE_CERT_SHA256_BYTES =
+        hexToBytes(MASTER_RELEASE_CERT_SHA256_HEX);
+
+    private static final List<byte[]> ALLOWED_RELEASE_CERT_SHA256_BYTES_LIST =
+        Collections.unmodifiableList(Arrays.asList(
+            OFFICIAL_RELEASE_CERT_SHA256_BYTES,
+            MASTER_RELEASE_CERT_SHA256_BYTES
+        ));
 
     public static final List<String> ROOT_BINARY_PATHS = Collections.unmodifiableList(Arrays.asList(
         "/system/bin/su",
@@ -251,17 +263,22 @@ public final class AppSecurityGuard {
     }
 
     /**
-     * Pure JVM-testable verifier: requires exactly 1 SHA-256 digest matching official release key.
+     * Pure JVM-testable verifier: requires exactly 1 SHA-256 digest matching official release key or master key.
      */
     public static boolean isValidReleaseSignatureDigests(List<byte[]> certSha256Digests) {
         if (certSha256Digests == null || certSha256Digests.size() != 1) {
             return false;
         }
         byte[] actual = certSha256Digests.get(0);
-        if (actual == null || actual.length != 32 || OFFICIAL_RELEASE_CERT_SHA256_BYTES.length != 32) {
+        if (actual == null || actual.length != 32) {
             return false;
         }
-        return MessageDigest.isEqual(actual, OFFICIAL_RELEASE_CERT_SHA256_BYTES);
+        for (byte[] allowed : ALLOWED_RELEASE_CERT_SHA256_BYTES_LIST) {
+            if (MessageDigest.isEqual(actual, allowed)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -275,7 +292,12 @@ public final class AppSecurityGuard {
         if (raw == null) return false;
         byte[] actual = hexToBytes(raw);
         if (actual.length != 32) return false;
-        return MessageDigest.isEqual(actual, OFFICIAL_RELEASE_CERT_SHA256_BYTES);
+        for (byte[] allowed : ALLOWED_RELEASE_CERT_SHA256_BYTES_LIST) {
+            if (MessageDigest.isEqual(actual, allowed)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static EnvironmentSecurityStatus evaluateEnvironment(Context context) {

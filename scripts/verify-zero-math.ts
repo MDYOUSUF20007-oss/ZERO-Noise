@@ -1819,6 +1819,34 @@ failIf(
   'Escape ticket deployment should fail when ticket balance is 0'
 );
 
+// Case 5: Recurring Schedule Burn the Boats Isolation & Limit Verification
+function evaluateScheduleBurnEligibility(startTime: string, endTime: string, requestedBurn: boolean): boolean {
+  if (!requestedBurn) return false;
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  const startMins = sh * 60 + sm;
+  const endMins = eh * 60 + em;
+  const durationMins = endMins >= startMins ? endMins - startMins : 1440 - startMins + endMins;
+  return durationMins <= 240; // Max 4 hours
+}
+
+failIf(
+  evaluateScheduleBurnEligibility('09:00', '12:00', true) === true,
+  '3-hour schedule with Burn the Boats requested should be eligible'
+);
+failIf(
+  evaluateScheduleBurnEligibility('09:00', '13:00', true) === true,
+  'Exact 4-hour schedule with Burn the Boats requested should be eligible'
+);
+failIf(
+  evaluateScheduleBurnEligibility('09:00', '14:00', true) === false,
+  '5-hour schedule with Burn the Boats requested must be strictly rejected'
+);
+failIf(
+  evaluateScheduleBurnEligibility('09:00', '12:00', false) === false,
+  'Schedule without Burn the Boats requested must remain false even for short sessions'
+);
+
 console.log('PASS: Burn the Boats Strict 4-Hour Limit & Escape Ticket Lockout Verified');
 
 console.log('\n>>> ALL SPECIFICATION AND ANTI-EXPLOIT TESTS PASSED WITH 100% SUCCESS! <<<');

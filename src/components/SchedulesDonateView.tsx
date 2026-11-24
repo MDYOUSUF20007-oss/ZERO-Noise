@@ -46,7 +46,7 @@ import {
   saveUserCustomMod,
   validateThemeModJson,
 } from '../utils/themeMods';
-import { isOvernightSchedule } from '../utils/routineEngine';
+import { isOvernightSchedule, getScheduleDurationMinutes } from '../utils/routineEngine';
 import { haptics } from '../utils/haptics';
 import {
   Plus,
@@ -91,6 +91,7 @@ interface SchedulesDonateViewProps {
   environmentSecurity?: NativeEnvironmentSecurity;
   onRefreshPermissions: () => void;
   onToggleSchedule: (id: string) => void;
+  onToggleScheduleBurnTheBoats?: (id: string) => { ok: boolean; message?: string };
   onAddSchedule: (sched: Omit<RecurringSchedule, 'id'>) => void;
   onDeleteSchedule: (id: string) => void;
   onTriggerTestWarning: (scheduleName: string) => void;
@@ -179,6 +180,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   environmentSecurity,
   onRefreshPermissions,
   onToggleSchedule,
+  onToggleScheduleBurnTheBoats,
   onAddSchedule,
   onDeleteSchedule,
   onTriggerTestWarning,
@@ -322,6 +324,9 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   const [newStartTime, setNewStartTime] = useState('14:00');
   const [newEndTime, setNewEndTime] = useState('16:30');
   const [newTag, setNewTag] = useState<SessionTag>('Deep Work');
+  const [newBurnTheBoats, setNewBurnTheBoats] = useState<boolean>(false);
+  const [burnBoatsWarning, setBurnBoatsWarning] = useState<string | null>(null);
+  const [scheduleNotice, setScheduleNotice] = useState<{ id: string; message: string } | null>(null);
 
   const handleOpenExternal = (e: React.MouseEvent, url: string) => {
     handleOpenExternalUrl(e, url);
@@ -337,6 +342,9 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
     e.preventDefault();
     if (!newName.trim() || newDays.length === 0) return;
 
+    const durationMins = getScheduleDurationMinutes(newStartTime, newEndTime);
+    const safeBurn = newBurnTheBoats && durationMins <= 240;
+
     onAddSchedule({
       name: newName.trim(),
       days: newDays,
@@ -345,8 +353,11 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
       tag: newTag,
       isEnabled: true,
       preLockWarningMinutes: 5,
+      burnTheBoats: safeBurn,
     });
 
+    setNewBurnTheBoats(false);
+    setBurnBoatsWarning(null);
     setShowAddModal(false);
   };
 
@@ -693,18 +704,24 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
               })}
             </div>
 
-            {/* 2 Choosable Accent Colors — hidden in Aero UI (palette replaces it) */}
+            {/* Choosable Accent Colors — hidden in Aero UI (palette replaces it) */}
             {!isAero && (
             <div className="pt-3 border-t theme-border space-y-2.5">
               <label className="text-[11px] font-semibold theme-text-primary block">
                 Accent Color
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
-                  { id: 'purple', name: 'Deep Purple', color: '#D0BCFF', bg: '#4F378B' },
-                  { id: 'cyan', name: 'Cyber Cyan', color: '#67D4FF', bg: '#004E5F' },
+                  { id: 'amber' as const, name: 'Golden Amber', color: '#FCD34D', bg: '#78350F' },
+                  { id: 'emerald' as const, name: 'Radiant Emerald', color: '#6EE7B7', bg: '#064E3B' },
+                  { id: 'cyan' as const, name: 'Cyber Cyan', color: '#67D4FF', bg: '#004E5F' },
+                  { id: 'purple' as const, name: 'Deep Purple', color: '#D0BCFF', bg: '#4F378B' },
+                  { id: 'crimson' as const, name: 'Crimson Rose', color: '#FDA4AF', bg: '#881337' },
                 ].map((seed) => {
-                  const isSelected = !activeModId && (activeAccent === seed.id || (seed.id === 'purple' && activeAccent !== 'cyan'));
+                  const isSelected =
+                    !activeModId &&
+                    (activeAccent === seed.id ||
+                      (seed.id === 'purple' && !['amber', 'emerald', 'cyan', 'crimson'].includes(activeAccent)));
                   return (
                     <button
                       key={seed.id}
@@ -751,11 +768,12 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                   {aeroPalette}
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {[
                   { id: 'ink' as const, name: 'Ink', preview: '#0f172a' },
                   { id: 'azure' as const, name: 'Azure', preview: '#0284C7' },
                   { id: 'emerald' as const, name: 'Emerald', preview: '#059669' },
+                  { id: 'amber' as const, name: 'Amber', preview: '#D97706' },
                 ].map((palette) => {
                   const isSelected = aeroPalette === palette.id;
                   return (
@@ -1565,6 +1583,68 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                         </span>
                       ))}
                     </div>
+
+                    {/* Burn the Boats Option Switch / Badge */}
+                    {(() => {
+                      const schedDurationMins = getScheduleDurationMinutes(sched.startTime, sched.endTime);
+                      const isOverMaxBurn = schedDurationMins > 240;
+                      return (
+                        <div className="pt-2 border-t border-white/5 mt-2 flex items-center justify-between gap-2 flex-wrap">
+                          <button
+                            type="button"
+                            disabled={isOverMaxBurn}
+                            onClick={() => {
+                              if (isOverMaxBurn) return;
+                              const res = onToggleScheduleBurnTheBoats?.(sched.id);
+                              if (res && !res.ok && res.message) {
+                                setScheduleNotice({ id: sched.id, message: res.message });
+                                setTimeout(() => setScheduleNotice(null), 3500);
+                              }
+                            }}
+                            title={
+                              isOverMaxBurn
+                                ? 'Burn the Boats is limited to routines ≤ 4 hours (240 min)'
+                                : sched.burnTheBoats
+                                ? 'Burn the Boats is active: Escape tickets are strictly disabled during this block'
+                                : 'Enable Burn the Boats to strictly disable escape tickets for this routine (Max 4h)'
+                            }
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] transition-all rounded-lg cursor-pointer ${
+                              isOverMaxBurn
+                                ? 'opacity-40 cursor-not-allowed bg-zinc-900/40 text-zinc-500 border border-white/5'
+                                : sched.burnTheBoats
+                                ? isAero
+                                  ? 'bg-amber-600 text-white font-black shadow-xs'
+                                  : 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold shadow-xs'
+                                : isAero
+                                ? 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 font-semibold'
+                                : 'obsidian-inset-neutral hover:text-zinc-200 text-zinc-400 font-medium'
+                            }`}
+                          >
+                            <Flame
+                              size={12}
+                              className={`shrink-0 ${
+                                sched.burnTheBoats ? (isAero ? 'text-white' : 'text-amber-400') : 'text-zinc-500'
+                              }`}
+                            />
+                            <span>
+                              Burn Boats: {sched.burnTheBoats ? 'Active (Strict No-Escape)' : 'Off (Max 4h)'}
+                            </span>
+                          </button>
+
+                          {sched.burnTheBoats && (
+                            <span className="text-[10px] text-amber-400/90 font-mono">
+                              Escape Tickets Disabled
+                            </span>
+                          )}
+
+                          {scheduleNotice?.id === sched.id && (
+                            <div className="w-full text-[10px] text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-md font-sans">
+                              {scheduleNotice.message}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </>
                 }
                 footerContent={
@@ -3821,6 +3901,69 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                     ))}
                   </select>
                 </div>
+
+                {/* Burn the Boats Option */}
+                {(() => {
+                  const durationMins = getScheduleDurationMinutes(newStartTime, newEndTime);
+                  const isDurationOverMax = durationMins > 240;
+                  return (
+                    <div className={`p-3 rounded-xl border transition-all ${
+                      newBurnTheBoats && !isDurationOverMax
+                        ? 'bg-amber-500/10 border-amber-500/30'
+                        : 'obsidian-inset-neutral border-white/5'
+                    }`}>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="space-y-0.5 min-w-0 flex-1">
+                          <div className="text-xs font-semibold flex items-center gap-1.5 text-white">
+                            <Flame size={13} className={newBurnTheBoats && !isDurationOverMax ? 'text-amber-400' : 'text-zinc-400'} />
+                            <span>Burn the Boats</span>
+                          </div>
+                          <p className="text-[10px] text-zinc-400">
+                            Strictly disables escape tickets for this routine (Max 4h)
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={isDurationOverMax}
+                          onClick={() => {
+                            if (isDurationOverMax) {
+                              setBurnBoatsWarning('Burn the Boats is limited to sessions under 4 hours (240 min).');
+                              return;
+                            }
+                            const next = !newBurnTheBoats;
+                            setNewBurnTheBoats(next);
+                            if (!next) setBurnBoatsWarning(null);
+                          }}
+                          className={`relative w-11 h-6 rounded-full border transition-colors shrink-0 ${
+                            isDurationOverMax
+                              ? 'opacity-40 cursor-not-allowed bg-zinc-900 border-white/10'
+                              : newBurnTheBoats
+                              ? 'bg-amber-600 border-amber-500'
+                              : 'bg-zinc-800 border-zinc-700'
+                          }`}
+                        >
+                          <div
+                            className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                              newBurnTheBoats && !isDurationOverMax ? 'translate-x-5' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      {isDurationOverMax && (
+                        <div className="text-[10px] text-amber-300 mt-2 flex items-center gap-1">
+                          <span>Routine duration ({Math.floor(durationMins / 60)}h {durationMins % 60}m) exceeds 4-hour limit for Burn the Boats</span>
+                        </div>
+                      )}
+                      {burnBoatsWarning && (
+                        <div className="text-[10px] text-amber-300 mt-2">
+                          {burnBoatsWarning}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </>
             }
             footerContent={
@@ -3849,7 +3992,11 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowAddModal(false)}
+                    onClick={() => {
+                      setNewBurnTheBoats(false);
+                      setBurnBoatsWarning(null);
+                      setShowAddModal(false);
+                    }}
                     className={`py-2.5 px-4 obsidian-inset-neutral text-zinc-300 text-xs font-semibold hover:text-white ${
                       isBespoke ? 'rounded-md transition-colors duration-75' : 'rounded-xl font-bold transition-colors'
                     }`}

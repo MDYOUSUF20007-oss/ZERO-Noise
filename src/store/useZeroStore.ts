@@ -48,6 +48,7 @@ import {
   isScheduleActiveNow,
   isScheduleWarningActive,
   getScheduleRemainingSeconds,
+  getScheduleDurationMinutes,
 } from '../utils/routineEngine';
 import { syncCompulsoryStudyAppsToNative } from '../utils/compulsoryStudyApps';
 import {
@@ -505,12 +506,14 @@ export function useZeroStore() {
 
   const [materialYouSeed, setMaterialYouSeedState] = useState<MaterialYouSeed>(() => {
     const saved = localStorage.getItem(UI_STORAGE_KEYS.MATERIAL_YOU_SEED);
-    return saved === 'cyan' || saved === 'emerald' || saved === 'crimson' ? saved : 'purple';
+    return saved === 'amber' || saved === 'cyan' || saved === 'emerald' || saved === 'crimson' ? saved : 'purple';
   });
 
   const setMaterialYouSeed = useCallback((nextSeed: MaterialYouSeed) => {
     const validSeed =
-      nextSeed === 'cyan' || nextSeed === 'emerald' || nextSeed === 'crimson' ? nextSeed : 'purple';
+      nextSeed === 'amber' || nextSeed === 'cyan' || nextSeed === 'emerald' || nextSeed === 'crimson'
+        ? nextSeed
+        : 'purple';
     setMaterialYouSeedState(validSeed);
     localStorage.setItem(UI_STORAGE_KEYS.MATERIAL_YOU_SEED, validSeed);
   }, []);
@@ -1425,7 +1428,11 @@ export function useZeroStore() {
 
   const MAX_BURN_THE_BOATS_SECONDS = 4 * 3600; // 4-hour hard ceiling
 
-  const igniteSession = (durationSeconds: number, tag: SessionTag): boolean => {
+  const igniteSession = (
+    durationSeconds: number,
+    tag: SessionTag,
+    burnTheBoatsOverride?: boolean
+  ): boolean => {
     const latestPerms = readPermissionsFromNative();
     const latestSecurity = readEnvironmentSecurityFromNative();
     setPermissions(latestPerms);
@@ -1437,6 +1444,12 @@ export function useZeroStore() {
     }
 
     const safeDuration = Math.max(60, Math.round(durationSeconds));
+    const isBurnTheBoats = (() => {
+      if (burnTheBoatsOverride !== undefined) {
+        return burnTheBoatsOverride && safeDuration <= MAX_BURN_THE_BOATS_SECONDS;
+      }
+      return false;
+    })();
 
     try {
       if (window.ZeroNative && activeBag) {
@@ -1483,14 +1496,6 @@ export function useZeroStore() {
             activeTokensNow.badgeText
           );
         }
-        const isBurnTheBoats = (() => {
-          try {
-            const enabled = localStorage.getItem('zero_burn_the_boats_v1') === 'true';
-            return enabled && safeDuration <= MAX_BURN_THE_BOATS_SECONDS;
-          } catch {
-            return false;
-          }
-        })();
 
         const started = window.ZeroNative.igniteSessionWithBurnBoats
           ? window.ZeroNative.igniteSessionWithBurnBoats(safeDuration, tag, isBurnTheBoats)
@@ -1513,15 +1518,6 @@ export function useZeroStore() {
     webStartPerfMsRef.current = performance.now();
 
     haptics.lockEngaged();
-
-    const isBurnTheBoats = (() => {
-      try {
-        const enabled = localStorage.getItem('zero_burn_the_boats_v1') === 'true';
-        return enabled && safeDuration <= MAX_BURN_THE_BOATS_SECONDS;
-      } catch {
-        return false;
-      }
-    })();
 
     const newLock: ActiveLockSession = {
       isLocked: true,
@@ -1575,6 +1571,47 @@ export function useZeroStore() {
 
     return true;
   };
+
+  const extendLock = useCallback(
+    (additionalSeconds: number): boolean => {
+      const current = activeLockRef.current;
+      if (!current.isLocked) return false;
+      const addSec = Math.max(0, Math.floor(additionalSeconds));
+      if (addSec === 0) return true;
+
+      const newDuration = current.durationSeconds + addSec;
+      if (current.burnTheBoats && newDuration > MAX_BURN_THE_BOATS_SECONDS) {
+        return false;
+      }
+
+      const newTarget = current.targetEndTime + addSec * 1000;
+      const newRemaining = current.remainingSeconds + addSec;
+
+      const updatedLock: ActiveLockSession = {
+        ...current,
+        durationSeconds: newDuration,
+        targetEndTime: newTarget,
+        remainingSeconds: newRemaining,
+      };
+
+      activeLockRef.current = updatedLock;
+      setActiveLock(updatedLock);
+      try {
+        localStorage.setItem(UI_STORAGE_KEYS.ACTIVE_LOCK, JSON.stringify(updatedLock));
+      } catch {}
+
+      try {
+        if (window.ZeroNative?.extendSession) {
+          window.ZeroNative.extendSession(addSec);
+        }
+      } catch {}
+
+      haptics.thud();
+      queueSilentCloudWriteRef.current?.();
+      return true;
+    },
+    [MAX_BURN_THE_BOATS_SECONDS]
+  );
 
   const setActiveBagId = (bagId: string) => {
     if (activeLock.isLocked || environmentSecurity.restrictions.presetBagEditingDisabled) return;
@@ -1689,6 +1726,28 @@ export function useZeroStore() {
     setSchedules((prev) =>
       prev.map((s) => (s.id === id ? { ...s, isEnabled: !s.isEnabled } : s))
     );
+  };
+
+  const toggleScheduleBurnTheBoats = (id: string): { ok: boolean; message?: string } => {
+    let result: { ok: boolean; message?: string } = { ok: true };
+    setSchedules((prev) =>
+      prev.map((s) => {
+        if (s.id !== id) return s;
+        const willEnable = !s.burnTheBoats;
+        if (willEnable) {
+          const durationMins = getScheduleDurationMinutes(s.startTime, s.endTime);
+          if (durationMins > 240) {
+            result = {
+              ok: false,
+              message: 'Burn the Boats is limited to sessions under 4 hours (240 min).',
+            };
+            return s;
+          }
+        }
+        return { ...s, burnTheBoats: willEnable };
+      })
+    );
+    return result;
   };
 
   const addSchedule = (sched: Omit<RecurringSchedule, 'id'>) => {
@@ -1941,7 +2000,7 @@ export function useZeroStore() {
               } catch {
                 // Ignore
               }
-              igniteSessionRef.current(remSecs, sched.tag || sched.name);
+              igniteSessionRef.current(remSecs, sched.tag || sched.name, Boolean(sched.burnTheBoats));
               break;
             }
           }
@@ -2570,8 +2629,10 @@ export function useZeroStore() {
     blockTipPromptForFiveSessions,
     resetTipPromptBlock,
     igniteSession,
+    extendLock,
     deployParachute,
     toggleSchedule,
+    toggleScheduleBurnTheBoats,
     addSchedule,
     deleteSchedule,
     triggerTestWarning,

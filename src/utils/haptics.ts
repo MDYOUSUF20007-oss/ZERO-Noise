@@ -132,6 +132,34 @@ class HapticsEngine {
     }
   }
 
+  // Rejection / Anti-Tamper Buzz (double buzz + low detent)
+  reject() {
+    try {
+      if (navigator.vibrate) navigator.vibrate([40, 50, 60]);
+      const ctx = this.getContext();
+      if (!ctx) return;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(90, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 0.12);
+
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      this.cleanupAfterPlay(osc, gain);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.13);
+    } catch {
+      // Ignored
+    }
+  }
+
   // Escalating hold-to-lock hum (starts at 110Hz, rises to 600Hz over 3s)
   startHoldCharge() {
     try {

@@ -454,6 +454,13 @@ public class MainActivity extends BridgeActivity {
     public void onResume() {
         super.onResume();
         TheVoidActivity.isInForeground = true;
+        TheVoidActivity.resetBagSession();
+        try {
+            android.app.NotificationManager nm = (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+            if (nm != null) {
+                nm.cancel(2002);
+            }
+        } catch (Throwable ignored) {}
         if (!signatureVerified || !AppSecurityGuard.isAppSignatureValid(this)) {
             signatureVerified = false;
             showTamperAlertAndTerminate();

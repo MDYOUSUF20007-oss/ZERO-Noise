@@ -42,7 +42,7 @@ import {
 } from 'lucide-react';
 
 interface LockDialViewProps {
-  onIgnite: (durationSeconds: number, tag: SessionTag) => boolean;
+  onIgnite: (durationSeconds: number, tag: SessionTag, burnTheBoats?: boolean) => boolean;
   parachuteMetrics: ParachuteMetrics;
   activeBag: OccasionBag;
   permissions: NativePermissionStatus;
@@ -543,11 +543,17 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
       return;
     }
 
-    const started = onIgnite(durationSeconds, selectedTag);
+    const started = onIgnite(durationSeconds, selectedTag, burnTheBoatsEnabled);
     if (started === false) {
       onOpenPermissionGate();
+    } else if (burnTheBoatsEnabled) {
+      // Auto-reset Burn the Boats after ignition so it is never accidentally left active for future sessions
+      setBurnTheBoatsEnabled(false);
+      try {
+        localStorage.setItem('zero_burn_the_boats_v1', 'false');
+      } catch {}
     }
-  }, [durationSeconds, selectedTag, onIgnite, permissions.isNativeAndroid, permissions.strictReady, onOpenPermissionGate]);
+  }, [durationSeconds, selectedTag, burnTheBoatsEnabled, onIgnite, permissions.isNativeAndroid, permissions.strictReady, onOpenPermissionGate]);
 
   const updateHold = useCallback(() => {
     if (!holdStartTimeRef.current) return;

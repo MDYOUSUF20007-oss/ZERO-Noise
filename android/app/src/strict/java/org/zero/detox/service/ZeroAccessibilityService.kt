@@ -153,6 +153,8 @@ class ZeroAccessibilityService : AccessibilityService() {
                 lastObservedAppPackage = null
                 overlayController.hideBlockingOverlay()
                 overlayController.hideNudgeBanner()
+                overlayController.hideFiveMinuteReminderBanner()
+                TheVoidActivity.resetBagSession()
                 engageEngine.onForegroundTick(
                     foregroundPkg = packageName,
                     nowElapsedMs = nowElapsed,
@@ -165,6 +167,8 @@ class ZeroAccessibilityService : AccessibilityService() {
                 if (!resolvedPkg.isNullOrBlank()) {
                     if (resolvedPkg == "com.android.settings" || BagStore.PROTECTED_SYSTEM_PACKAGES.contains(resolvedPkg)) {
                         overlayController.hideBlockingOverlay()
+                        overlayController.hideFiveMinuteReminderBanner()
+                        TheVoidActivity.resetBagSession()
                         performGlobalAction(GLOBAL_ACTION_BACK)
                         performGlobalAction(GLOBAL_ACTION_HOME)
                         snapToVoid(nowElapsed)
@@ -172,12 +176,32 @@ class ZeroAccessibilityService : AccessibilityService() {
                         nowElapsed <= TheVoidActivity.dialerGraceUntilElapsed ||
                         cachedPaymentPackages.contains(resolvedPkg) ||
                         BagStore.SYSTEM_CUSTOMIZATION_GESTURE_PACKAGES.contains(resolvedPkg) ||
-                        BagStore.COMPULSORY_AI_ASSISTANT_PACKAGES.contains(resolvedPkg)
+                        BagStore.COMPULSORY_AI_ASSISTANT_PACKAGES.contains(resolvedPkg) ||
+                        bagStore.isPackageAllowedDuringLock(resolvedPkg) ||
+                        (TheVoidActivity.activeBagPackage != null && BagStore.isCompanionHelperPackage(resolvedPkg))
                     ) {
                         overlayController.hideBlockingOverlay()
                         overlayController.hideNudgeBanner()
                     } else {
                         evaluateDecisionAndUpdateUi(resolvedPkg, nowElapsed)
+                    }
+                }
+
+                // 5-minute recurring reminder check for active Bag / Void apps
+                if (TheVoidActivity.activeBagPackage != null) {
+                    val milestone = TheVoidActivity.getDueOverlayMilestone(nowElapsed)
+                    if (milestone != null) {
+                        overlayController.showFiveMinuteReminderBanner(
+                            minutes = milestone,
+                            onSnooze = {
+                                TheVoidActivity.snoozeSession(10)
+                            },
+                            onExitToVoid = {
+                                TheVoidActivity.resetBagSession()
+                                overlayController.hideFiveMinuteReminderBanner()
+                                snapToVoid(SystemClock.elapsedRealtime())
+                            }
+                        )
                     }
                 }
             }
@@ -452,12 +476,14 @@ class ZeroAccessibilityService : AccessibilityService() {
             return
         }
 
-        // 4. Dialers, Payment/Wallet apps, System Customization / Gestures (One Hand Operation +, AOD, Good Lock) and AI Assistants: always permitted without blocking overlays
+        // 4. Dialers, Payment/Wallet apps, System Customization / Gestures (One Hand Operation +, AOD, Good Lock), AI Assistants and allowed Bag apps: always permitted without blocking overlays
         if (cachedDialerPackages.contains(eventPkg) ||
             nowElapsed <= TheVoidActivity.dialerGraceUntilElapsed ||
             cachedPaymentPackages.contains(eventPkg) ||
             BagStore.SYSTEM_CUSTOMIZATION_GESTURE_PACKAGES.contains(eventPkg) ||
-            BagStore.COMPULSORY_AI_ASSISTANT_PACKAGES.contains(eventPkg)
+            BagStore.COMPULSORY_AI_ASSISTANT_PACKAGES.contains(eventPkg) ||
+            bagStore.isPackageAllowedDuringLock(eventPkg) ||
+            (TheVoidActivity.activeBagPackage != null && BagStore.isCompanionHelperPackage(eventPkg))
         ) {
             overlayController.hideBlockingOverlay()
             overlayController.hideNudgeBanner()
@@ -472,6 +498,7 @@ class ZeroAccessibilityService : AccessibilityService() {
                 nowElapsed > TheVoidActivity.dialerGraceUntilElapsed
             ) {
                 overlayController.hideBlockingOverlay()
+                TheVoidActivity.resetBagSession()
                 snapToVoid(nowElapsed)
             }
             return
@@ -543,6 +570,12 @@ class ZeroAccessibilityService : AccessibilityService() {
         // 8. Scroll Velocity Guard (10-second sliding ring buffer)
         if (eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
             if (overlayController.isBlockingOverlayVisible()) return
+            // Do not block scrolling for Bag apps, PDF readers, comic viewers, or video editors
+            if (bagStore.isPackageAllowedDuringLock(eventPkg) ||
+                (TheVoidActivity.activeBagPackage != null && BagStore.isCompanionHelperPackage(eventPkg))
+            ) {
+                return
+            }
             val rule = engageEngine.getRuleForPackage(eventPkg) ?: return
             if (rule.mode != EngageConfig.AccessMode.CONTROLLED || rule.scrollVelocityLimit <= 0) return
 
@@ -567,6 +600,14 @@ class ZeroAccessibilityService : AccessibilityService() {
     }
 
     private fun evaluateDecisionAndUpdateUi(fgPkg: String, nowElapsed: Long) {
+        // Void screen apps should not be closed at all
+        if (bagStore.isPackageAllowedDuringLock(fgPkg) ||
+            (TheVoidActivity.activeBagPackage != null && BagStore.isCompanionHelperPackage(fgPkg))
+        ) {
+            overlayController.hideBlockingOverlay()
+            return
+        }
+
         val decision = engageEngine.onForegroundTick(
             foregroundPkg = fgPkg,
             nowElapsedMs = nowElapsed,

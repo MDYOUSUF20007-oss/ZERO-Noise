@@ -23,7 +23,7 @@ import { setNativeTargetFps } from '../plugins/zeroBridge';
 export type { CanonicalThemeId, AccentColorId, InterfaceStyle, ThemeEngineDefinition };
 export { AVAILABLE_THEMES, normalizeThemeId };
 export type GlassEngineType = 'acrylic' | 'eco';
-export type AeroPaletteId = 'ink' | 'azure' | 'emerald';
+export type AeroPaletteId = 'ink' | 'azure' | 'emerald' | 'amber';
 
 const STORAGE_KEY_THEME = 'zero_isolated_theme_engine_v5';
 const STORAGE_KEY_ACCENT = 'zero_theme_accent_seed_v5';
@@ -151,9 +151,16 @@ function mountIsolatedThemeEngine(
     let aeroPal: AeroPaletteId = 'ink';
     try {
       const savedPal = window.localStorage.getItem(STORAGE_KEY_AERO_PALETTE);
-      if (savedPal === 'azure' || savedPal === 'emerald' || savedPal === 'ink') aeroPal = savedPal;
+      if (savedPal === 'azure' || savedPal === 'emerald' || savedPal === 'amber' || savedPal === 'ink') aeroPal = savedPal;
     } catch {}
-    const palColor = aeroPal === 'azure' ? '#0284C7' : aeroPal === 'emerald' ? '#059669' : '#0f172a';
+    const palColor =
+      aeroPal === 'azure'
+        ? '#0284C7'
+        : aeroPal === 'emerald'
+        ? '#059669'
+        : aeroPal === 'amber'
+        ? '#D97706'
+        : '#0f172a';
     root.setAttribute('data-aero-palette', aeroPal);
     root.style.setProperty('--aero-palette-color', palColor);
     root.style.setProperty('--aero-ink-primary', palColor);
@@ -309,35 +316,62 @@ export function InterfaceStyleProvider({
   const isBespokeActive = interfaceStyleProp === 'bespoke' || interfaceStyleProp === 'minimalist';
 
   const [accent, setAccentState] = useState<AccentColorId>(() => {
-    if (typeof window === 'undefined') return 'purple';
-    if (materialYouSeedProp === 'cyan' || materialYouSeedProp === 'purple') {
-      return materialYouSeedProp;
-    }
+    if (typeof window === 'undefined') return 'amber';
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY_ACCENT);
-      return saved === 'cyan' ? 'cyan' : 'purple';
-    } catch {
-      return 'purple';
+      if (
+        saved === 'amber' ||
+        saved === 'emerald' ||
+        saved === 'cyan' ||
+        saved === 'purple' ||
+        saved === 'crimson'
+      ) {
+        return saved;
+      }
+    } catch {}
+    if (
+      materialYouSeedProp === 'amber' ||
+      materialYouSeedProp === 'emerald' ||
+      materialYouSeedProp === 'cyan' ||
+      materialYouSeedProp === 'crimson' ||
+      materialYouSeedProp === 'purple'
+    ) {
+      return materialYouSeedProp as AccentColorId;
     }
+    return 'amber';
   });
 
   const [aeroPalette, setAeroPaletteState] = useState<AeroPaletteId>(() => {
     if (typeof window === 'undefined') return 'ink';
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY_AERO_PALETTE);
-      if (saved === 'azure' || saved === 'emerald' || saved === 'ink') return saved;
+      if (saved === 'azure' || saved === 'emerald' || saved === 'amber' || saved === 'ink') return saved;
     } catch {}
     return 'ink';
   });
 
-  const aeroAccentColor = aeroPalette === 'azure' ? '#0284C7' : aeroPalette === 'emerald' ? '#059669' : '#0f172a';
+  const aeroAccentColor =
+    aeroPalette === 'azure'
+      ? '#0284C7'
+      : aeroPalette === 'emerald'
+      ? '#059669'
+      : aeroPalette === 'amber'
+      ? '#D97706'
+      : '#0f172a';
 
   const setAeroPalette = useCallback((nextPalette: AeroPaletteId) => {
     setAeroPaletteState(nextPalette);
     try {
       window.localStorage.setItem(STORAGE_KEY_AERO_PALETTE, nextPalette);
     } catch {}
-    const color = nextPalette === 'azure' ? '#0284C7' : nextPalette === 'emerald' ? '#059669' : '#0f172a';
+    const color =
+      nextPalette === 'azure'
+        ? '#0284C7'
+        : nextPalette === 'emerald'
+        ? '#059669'
+        : nextPalette === 'amber'
+        ? '#D97706'
+        : '#0f172a';
     if (typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-aero-palette', nextPalette);
       document.documentElement.style.setProperty('--aero-palette-color', color);
@@ -436,9 +470,15 @@ export function InterfaceStyleProvider({
   });
 
   useEffect(() => {
-    if (materialYouSeedProp === 'cyan' || materialYouSeedProp === 'purple') {
+    if (
+      materialYouSeedProp === 'amber' ||
+      materialYouSeedProp === 'emerald' ||
+      materialYouSeedProp === 'cyan' ||
+      materialYouSeedProp === 'purple' ||
+      materialYouSeedProp === 'crimson'
+    ) {
       if (materialYouSeedProp !== accent) {
-        setAccentState(materialYouSeedProp);
+        setAccentState(materialYouSeedProp as AccentColorId);
       }
     }
   }, [materialYouSeedProp, accent]);
@@ -609,7 +649,10 @@ export function InterfaceStyleProvider({
   }, []);
 
   const setAccent = useCallback((nextAccent: AccentColorId) => {
-    const safeAccent = nextAccent === 'cyan' ? 'cyan' : 'purple';
+    const safeAccent: AccentColorId =
+      nextAccent === 'amber' || nextAccent === 'emerald' || nextAccent === 'cyan' || nextAccent === 'crimson'
+        ? nextAccent
+        : 'purple';
     removeActiveModStyles();
     mountIsolatedThemeEngine(theme, safeAccent, isBespokeActive ? 0 : fluentOrbIntensity, fluentGlassStrength);
     setAccentState(safeAccent);

@@ -9,8 +9,52 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   }
 
   /* -------------------------------------------------------------
-     Dynamic 2-Color Accent Palette Overrides: [data-accent="..."]
+     Dynamic Accent Palette Overrides: [data-accent="..."]
      ------------------------------------------------------------- */
+  /* Amber Accent (Golden Sun / Ember Focus) */
+  [data-accent="amber"],
+  html[data-accent="amber"] {
+    --accent-primary: #f59e0b !important;
+    --accent-secondary: #fbbf24 !important;
+    --accent-soft: rgba(245, 158, 11, 0.18) !important;
+    --accent-border: rgba(245, 158, 11, 0.55) !important;
+    --text-on-accent: #000000 !important;
+    --zero-accent: #f59e0b !important;
+    --zero-dial-stroke: #f59e0b !important;
+    --accent-hex: #f59e0b !important;
+    --accent-rgb: 245, 158, 11 !important;
+    --liquid-accent-glow: rgba(245, 158, 11, 0.40) !important;
+    --liquid-accent-soft-glow: rgba(245, 158, 11, 0.18) !important;
+    --liquid-accent-vibrant: #f59e0b !important;
+    --liquid-accent-tint: #fbbf24 !important;
+    --accent-shift-1: #d97706 !important; /* Deep Amber */
+    --accent-shift-2: #f59e0b !important; /* Vibrant Amber */
+    --accent-shift-3: #b45309 !important; /* Burnished Bronze */
+    --accent-shift-4: #fbbf24 !important; /* Golden Light */
+  }
+
+  /* Emerald Accent (Botanical Forest / Radiance) */
+  [data-accent="emerald"],
+  html[data-accent="emerald"] {
+    --accent-primary: #10b981 !important;
+    --accent-secondary: #34d399 !important;
+    --accent-soft: rgba(16, 185, 129, 0.18) !important;
+    --accent-border: rgba(16, 185, 129, 0.55) !important;
+    --text-on-accent: #022c22 !important;
+    --zero-accent: #10b981 !important;
+    --zero-dial-stroke: #10b981 !important;
+    --accent-hex: #10b981 !important;
+    --accent-rgb: 16, 185, 129 !important;
+    --liquid-accent-glow: rgba(16, 185, 129, 0.40) !important;
+    --liquid-accent-soft-glow: rgba(16, 185, 129, 0.18) !important;
+    --liquid-accent-vibrant: #10b981 !important;
+    --liquid-accent-tint: #34d399 !important;
+    --accent-shift-1: #059669 !important; /* Pine */
+    --accent-shift-2: #10b981 !important; /* Emerald */
+    --accent-shift-3: #047857 !important; /* Deep Forest */
+    --accent-shift-4: #34d399 !important; /* Spring Mint */
+  }
+
   /* Purple Accent */
   :root,
   [data-accent="purple"],
@@ -54,6 +98,28 @@ export const BASE_ENGINE_BRIDGE_CSS = `
     --accent-shift-2: #14b8a6 !important; /* Radiant Teal */
     --accent-shift-3: #0284c7 !important; /* Cobalt Azure */
     --accent-shift-4: #06b6d4 !important; /* Vibrant Cyan */
+  }
+
+  /* Crimson Rose Accent */
+  [data-accent="crimson"],
+  html[data-accent="crimson"] {
+    --accent-primary: #f43f5e !important;
+    --accent-secondary: #fb7185 !important;
+    --accent-soft: rgba(244, 63, 94, 0.18) !important;
+    --accent-border: rgba(244, 63, 94, 0.55) !important;
+    --text-on-accent: #ffffff !important;
+    --zero-accent: #f43f5e !important;
+    --zero-dial-stroke: #f43f5e !important;
+    --accent-hex: #f43f5e !important;
+    --accent-rgb: 244, 63, 94 !important;
+    --liquid-accent-glow: rgba(244, 63, 94, 0.40) !important;
+    --liquid-accent-soft-glow: rgba(244, 63, 94, 0.18) !important;
+    --liquid-accent-vibrant: #f43f5e !important;
+    --liquid-accent-tint: #fb7185 !important;
+    --accent-shift-1: #e11d48 !important; /* Ruby */
+    --accent-shift-2: #f43f5e !important; /* Crimson */
+    --accent-shift-3: #be123c !important; /* Deep Velvet */
+    --accent-shift-4: #fb7185 !important; /* Rose Blossom */
   }
 
   /* -------------------------------------------------------------

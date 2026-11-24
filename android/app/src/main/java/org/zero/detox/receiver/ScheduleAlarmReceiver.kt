@@ -80,7 +80,8 @@ class ScheduleAlarmReceiver : BroadcastReceiver() {
             fallbackDurationSeconds: Long,
             tag: String,
             occurrenceKey: String,
-            endMillis: Long
+            endMillis: Long,
+            burnTheBoats: Boolean = false
         ) {
             if (occurrenceKey.isNotBlank() &&
                 !ScheduleAlarmManager.markOccurrenceLockFired(context, occurrenceKey)
@@ -106,7 +107,7 @@ class ScheduleAlarmReceiver : BroadcastReceiver() {
             }
 
             if (remainingSeconds >= 60L) {
-                lockEngine.igniteSession(remainingSeconds, tag.ifBlank { scheduleName })
+                lockEngine.igniteSession(remainingSeconds, tag.ifBlank { scheduleName }, burnTheBoats)
             }
 
             ScheduleAlarmManager.rescheduleAll(context)
@@ -142,7 +143,8 @@ class ScheduleAlarmReceiver : BroadcastReceiver() {
                 val duration = intent.getLongExtra(PreLockScheduleWorker.KEY_DURATION_SECONDS, 3600L)
                 val tag = intent.getStringExtra(PreLockScheduleWorker.KEY_TAG) ?: "Deep Work"
                 val endMillis = intent.getLongExtra(EXTRA_END_MILLIS, 0L)
-                triggerScheduledLock(context, name, duration, tag, occurrenceKey, endMillis)
+                val burnTheBoats = intent.getBooleanExtra(PreLockScheduleWorker.KEY_BURN_THE_BOATS, false)
+                triggerScheduledLock(context, name, duration, tag, occurrenceKey, endMillis, burnTheBoats)
             }
         }
     }

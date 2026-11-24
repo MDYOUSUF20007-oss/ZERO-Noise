@@ -315,6 +315,11 @@ public class LockEngineUnitTest {
                 "A1:4A:36:1E:D4:B7:F7:D6:6E:57:69:92:99:9D:02:8A:05:32:65:85:0A:6C:A4:AF:EE:4F:C1:2F:29:48:CE:11"
             )
         );
+        assertTrue(
+            PermissionStatusHelper.isOfficialReleaseCertHex(
+                "83:BB:4C:78:07:B3:A0:D2:C9:31:87:F9:64:12:58:B9:B6:5E:2A:26:F9:D1:B3:84:C6:B2:5E:E6:D0:5C:3E:47"
+            )
+        );
         assertFalse(
             PermissionStatusHelper.isOfficialReleaseCertHex(
                 "0D:6F:3C:19:9D:C8:F1:81:D1:0F:02:0A:4C:7B:46:2A:CD:08:61:2A:47:70:91:72:D5:D1:9A:8D:BE:89:E6:93"
@@ -536,13 +541,21 @@ public class LockEngineUnitTest {
     public void appSecurityGuard_validatesOfficialReleaseSignatureAndRejectsTamperedOrMultiSigner() throws Exception {
         String officialHex =
             "A1:4A:36:1E:D4:B7:F7:D6:6E:57:69:92:99:9D:02:8A:05:32:65:85:0A:6C:A4:AF:EE:4F:C1:2F:29:48:CE:11";
+        String masterHex =
+            "83:BB:4C:78:07:B3:A0:D2:C9:31:87:F9:64:12:58:B9:B6:5E:2A:26:F9:D1:B3:84:C6:B2:5E:E6:D0:5C:3E:47";
         String attackerHex =
             "0D:6F:3C:19:9D:C8:F1:81:D1:0F:02:0A:4C:7B:46:2A:CD:08:61:2A:47:70:91:72:D5:D1:9A:8D:BE:89:E6:93";
 
         assertTrue(AppSecurityGuard.isValidReleaseSignatureHexList(Collections.singletonList(officialHex)));
+        assertTrue(AppSecurityGuard.isValidReleaseSignatureHexList(Collections.singletonList(masterHex)));
         assertTrue(
             AppSecurityGuard.isValidReleaseSignatureHexList(
                 Collections.singletonList(officialHex.replace(":", "").toLowerCase())
+            )
+        );
+        assertTrue(
+            AppSecurityGuard.isValidReleaseSignatureHexList(
+                Collections.singletonList(masterHex.replace(":", "").toLowerCase())
             )
         );
         assertFalse(AppSecurityGuard.isValidReleaseSignatureHexList(Collections.singletonList(attackerHex)));
@@ -552,18 +565,28 @@ public class LockEngineUnitTest {
         assertFalse(
             AppSecurityGuard.isValidReleaseSignatureHexList(Arrays.asList(officialHex, attackerHex))
         );
+        assertFalse(
+            AppSecurityGuard.isValidReleaseSignatureHexList(Arrays.asList(masterHex, attackerHex))
+        );
 
         byte[] officialDigest = new byte[32];
-        String cleanHex = officialHex.replace(":", "");
+        String cleanOfficial = officialHex.replace(":", "");
         for (int i = 0; i < 32; i++) {
-            officialDigest[i] = (byte) Integer.parseInt(cleanHex.substring(i * 2, i * 2 + 2), 16);
+            officialDigest[i] = (byte) Integer.parseInt(cleanOfficial.substring(i * 2, i * 2 + 2), 16);
+        }
+        byte[] masterDigest = new byte[32];
+        String cleanMaster = masterHex.replace(":", "");
+        for (int i = 0; i < 32; i++) {
+            masterDigest[i] = (byte) Integer.parseInt(cleanMaster.substring(i * 2, i * 2 + 2), 16);
         }
         byte[] fakeDigest = MessageDigest.getInstance("SHA-256").digest("tampered-apk".getBytes("UTF-8"));
 
         assertTrue(AppSecurityGuard.isValidReleaseSignatureDigests(Collections.singletonList(officialDigest)));
+        assertTrue(AppSecurityGuard.isValidReleaseSignatureDigests(Collections.singletonList(masterDigest)));
         assertFalse(AppSecurityGuard.isValidReleaseSignatureDigests(Collections.singletonList(fakeDigest)));
         assertFalse(AppSecurityGuard.isValidReleaseSignatureDigests(Collections.singletonList(new byte[16])));
         assertFalse(AppSecurityGuard.isValidReleaseSignatureDigests(Arrays.asList(officialDigest, fakeDigest)));
+        assertFalse(AppSecurityGuard.isValidReleaseSignatureDigests(Arrays.asList(masterDigest, fakeDigest)));
     }
 
     @Test

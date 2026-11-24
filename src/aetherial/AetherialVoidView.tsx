@@ -4,6 +4,8 @@ import { resolveAppBrandVisual } from '../utils/appBrandColors';
 import { voidAudio } from '../utils/voidAudio';
 import { getRandomVoidQuote, type VoidQuote } from '../utils/voidQuotes';
 import { haptics } from '../utils/haptics';
+import { hexToRgba } from '../utils/themes';
+import { useInterfaceStyle } from '../context/InterfaceStyleContext';
 import { AmbientBackground } from '../components/AmbientBackground';
 import { ZeroTubeModal } from '../components/ZeroTubeModal';
 import { EscapeTicketDockButton, EscapeTicketModal } from '../components/EscapeTicketSystem';
@@ -27,6 +29,7 @@ import {
   GraduationCap,
   Flame,
   AlertTriangle,
+  Moon,
 } from 'lucide-react';
 
 interface AetherialVoidViewProps {
@@ -35,6 +38,7 @@ interface AetherialVoidViewProps {
   activeBag: OccasionBag;
   profile?: ZeroProfile | null;
   onDeployParachute: () => boolean;
+  onExtendLock?: (additionalSeconds: number) => boolean;
 }
 
 interface PaymentAppOption {
@@ -58,13 +62,109 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
   activeBag,
   profile,
   onDeployParachute,
+  onExtendLock,
 }) => {
+  const { accent, isAero, aeroAccentColor } = useInterfaceStyle();
+  const activeAccent = useMemo(() => {
+    if (isAero) return aeroAccentColor || '#0f172a';
+
+    // 1. Direct accent prop from InterfaceStyleContext
+    if (accent === 'amber') return '#F59E0B';
+    if (accent === 'emerald') return '#10B981';
+    if (accent === 'crimson') return '#F43F5E';
+    if (accent === 'cyan') return '#00F0FF';
+    if (accent === 'purple') return '#A855F7';
+
+    // 2. Profile accent
+    const profileColor = profile?.accentColor as string | undefined;
+    if (profileColor === 'amber') return '#F59E0B';
+    if (profileColor === 'emerald') return '#10B981';
+    if (profileColor === 'cyan') return '#00F0FF';
+    if (profileColor === 'crimson') return '#F43F5E';
+    if (profileColor === 'purple') return '#A855F7';
+    if (profileColor === 'white') return '#FFFFFF';
+    if (profileColor?.startsWith('#')) return profileColor;
+
+    // 3. User explicit selections in localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        const savedAccent = window.localStorage.getItem('zero_theme_accent_seed_v5');
+        if (savedAccent === 'amber') return '#F59E0B';
+        if (savedAccent === 'emerald') return '#10B981';
+        if (savedAccent === 'crimson') return '#F43F5E';
+        if (savedAccent === 'cyan') return '#00F0FF';
+        if (savedAccent === 'purple') return '#A855F7';
+
+        const savedSeed = window.localStorage.getItem('zero_material_you_seed');
+        if (savedSeed === 'amber') return '#F59E0B';
+        if (savedSeed === 'emerald') return '#10B981';
+        if (savedSeed === 'crimson') return '#F43F5E';
+        if (savedSeed === 'cyan') return '#00F0FF';
+        if (savedSeed === 'purple') return '#A855F7';
+
+        const savedStyle = window.localStorage.getItem('zero_theme_style');
+        if (savedStyle === 'amber') return '#F59E0B';
+        if (savedStyle === 'emerald') return '#10B981';
+      } catch {}
+    }
+
+    // 4. HTML root attributes set by theme engine
+    if (typeof document !== 'undefined') {
+      const dataAccent = document.documentElement.getAttribute('data-accent');
+      if (dataAccent === 'amber') return '#F59E0B';
+      if (dataAccent === 'emerald') return '#10B981';
+      if (dataAccent === 'crimson') return '#F43F5E';
+      if (dataAccent === 'cyan') return '#00F0FF';
+      if (dataAccent === 'purple') return '#A855F7';
+
+      const docAccent =
+        document.documentElement.style.getPropertyValue('--accent-primary')?.trim() ||
+        document.documentElement.style.getPropertyValue('--zero-accent')?.trim();
+      if (docAccent && docAccent.startsWith('#')) return docAccent;
+    }
+
+    return '#F59E0B';
+  }, [isAero, aeroAccentColor, accent, profile?.accentColor]);
+
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   const [showEscapeTicketModal, setShowEscapeTicketModal] = useState(false);
   const [showZeroTube, setShowZeroTube] = useState(false);
   const [tamperWarning, setTamperWarning] = useState<string | null>(null);
+
+  // AOD Glanceable Clock Mode
+  const [isAodMode, setIsAodMode] = useState<boolean>(false);
+  const [aodDrift, setAodDrift] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (!isAodMode) return;
+    const interval = setInterval(() => {
+      setAodDrift({
+        x: Math.floor(Math.random() * 9) - 4,
+        y: Math.floor(Math.random() * 9) - 4,
+      });
+    }, 45_000);
+    return () => clearInterval(interval);
+  }, [isAodMode]);
+
+  const clockText = useMemo(() => {
+    const d = new Date();
+    const rawH = d.getHours();
+    const suf = rawH >= 12 ? 'PM' : 'AM';
+    const h12 = rawH % 12 === 0 ? 12 : rawH % 12;
+    const m = d.getMinutes().toString().padStart(2, '0');
+    return `${h12}:${m} ${suf}`;
+  }, [activeLock.remainingSeconds]);
+
+  const [batteryPct] = useState<number>(() => {
+    if (typeof window !== 'undefined' && window.ZeroNative) {
+      try {
+        return window.ZeroNative.getBatteryPercentage();
+      } catch {}
+    }
+    return 100;
+  });
 
   const effectiveTicketCount = activeLock.burnTheBoats ? 0 : (parachuteMetrics.currentBalance || 0);
   const [studyAppsConfig, setStudyAppsConfig] = useState<CompulsoryStudyAppsConfig>(() =>
@@ -86,6 +186,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
   useEffect(() => {
     try {
       window.ZeroNative?.setImmersiveVoidMode?.(true);
+      window.ZeroNative?.resetVoidBagSession?.();
     } catch {}
     return () => {
       try {
@@ -311,13 +412,99 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
     <div
       data-void-terminal="true"
       className="fixed inset-0 z-50 flex flex-col justify-between overflow-x-hidden overflow-y-auto select-none px-4 py-3 sm:px-6 bg-[#11131b] text-[#e2e1ed] font-sans"
-      style={{
-        paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
-        paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
-      }}
+      style={
+        {
+          paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
+          paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
+          '--accent-primary': activeAccent,
+          '--accent-soft': hexToRgba(activeAccent, 0.25),
+          '--zero-accent': activeAccent,
+        } as React.CSSProperties
+      }
     >
       {/* Minimal Living 2-Corner Ambient Mesh Background */}
       <AmbientBackground />
+
+      {/* FEATURE: AOD GLANCEABLE PIXEL TIMER OVERLAY (AMOLED BURN-IN DRIFT) */}
+      {isAodMode && (
+        <div
+          role="presentation"
+          onClick={() => {
+            haptics.tick(700);
+            setIsAodMode(false);
+          }}
+          className="fixed inset-0 z-[255] bg-black flex flex-col items-center justify-center p-6 text-center select-none cursor-pointer"
+        >
+          {/* Subtle Ambient Depth Halo (Burn-in Safe 0.16 opacity) */}
+          <div
+            aria-hidden="true"
+            className="w-56 h-56 rounded-full pointer-events-none blur-3xl absolute -z-10 transition-all duration-1000"
+            style={{
+              background: `radial-gradient(circle, ${hexToRgba(activeAccent, 0.16)} 0%, transparent 70%)`,
+            }}
+          />
+
+          <div
+            className="flex flex-col items-center transition-transform duration-1000"
+            style={{
+              transform: `translate(${aodDrift.x}px, ${aodDrift.y}px)`,
+            }}
+          >
+            <span
+              className="text-[10px] font-mono tracking-widest uppercase mb-3 flex items-center gap-2 font-semibold"
+              style={{ color: activeAccent }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{ backgroundColor: activeAccent, boxShadow: `0 0 10px ${activeAccent}` }}
+              />
+              <span>AOD GLANCEABLE // {activeLock.tag || activeBag.name || 'DEEP FOCUS'}</span>
+            </span>
+
+            {/* Central Digital Timer */}
+            <div className="flex items-baseline justify-center tracking-tight text-white my-3">
+              <span
+                className="text-6xl sm:text-7xl font-light tabular-nums"
+                style={{
+                  filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.92)) drop-shadow(0 2px 16px ${activeAccent}77)`,
+                }}
+              >
+                {timeDisplay.m}
+              </span>
+              <span
+                className="text-6xl sm:text-7xl font-extralight animate-pulse px-1"
+                style={{ color: activeAccent }}
+              >
+                :
+              </span>
+              <span
+                className="text-6xl sm:text-7xl font-light tabular-nums"
+                style={{
+                  filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.92)) drop-shadow(0 2px 16px ${activeAccent}77)`,
+                }}
+              >
+                {timeDisplay.s}
+              </span>
+            </div>
+
+            {/* Dim system clock, battery indicator & finish target */}
+            <div className="mt-4 flex flex-col items-center gap-1.5 font-mono text-zinc-400">
+              <div className="flex items-center gap-3 text-xs tabular-nums font-medium">
+                <span className="text-zinc-300">{clockText}</span>
+                <span style={{ color: activeAccent }}>•</span>
+                <span className="text-zinc-300">{batteryPct}%</span>
+              </div>
+              <div className="text-[10px] tracking-wider uppercase text-zinc-500">
+                Target Finish {targetTimeStr}
+              </div>
+            </div>
+
+            <p className="mt-8 text-[9px] font-mono tracking-widest text-zinc-500 uppercase animate-pulse">
+              TAP ANYWHERE TO RETURN TO THE VOID
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <header className="relative z-10 w-full flex items-center justify-between pb-2">
@@ -327,9 +514,22 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
             FOCUS SESSION
           </span>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1d1f28]/60 backdrop-blur-md border border-white/5">
-          <span className="w-2 h-2 rounded-full bg-[#4edea3] animate-pulse" />
-          <span className="text-[11px] text-[#4edea3] font-semibold">Active Session</span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              haptics.tick(700);
+              setIsAodMode(true);
+            }}
+            title="AOD Glanceable Clock"
+            className="p-1.5 rounded-full bg-[#1d1f28]/60 backdrop-blur-md border border-white/5 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+          >
+            <Moon size={13} strokeWidth={1.75} />
+          </button>
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1d1f28]/60 backdrop-blur-md border border-white/5">
+            <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: activeAccent }} />
+            <span className="text-[11px] font-semibold" style={{ color: activeAccent }}>Active Session</span>
+          </div>
         </div>
       </header>
 
@@ -338,7 +538,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
         {/* Mission Tag & Pomodoro Freedom Break Button */}
         <div className="flex items-center gap-2 flex-wrap justify-center">
           <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#282a32]/60 backdrop-blur-xl border border-white/5 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-[#38bdf8] shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: activeAccent, boxShadow: `0 0 8px ${activeAccent}` }} />
             <span className="text-[11px] font-semibold text-[#e2e1ed] tracking-wider uppercase">
               #{activeLock.tag || activeBag.name || 'DEEP FOCUS'}
             </span>
@@ -400,7 +600,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
               cy="140"
               fill="transparent"
               r="118"
-              stroke="#38bdf8"
+              stroke={activeAccent}
               strokeDasharray="741.4"
               strokeDashoffset={strokeOffset}
               strokeLinecap="round"
@@ -421,34 +621,97 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
             />
             <defs>
               <linearGradient id="voidTimerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#38bdf8" />
-                <stop offset="70%" stopColor="#7bd0ff" />
-                <stop offset="100%" stopColor="#4edea3" />
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity={1} />
+                <stop offset="50%" stopColor="#FFFFFF" stopOpacity={1} />
+                <stop offset="82%" stopColor="#FFFBEB" stopOpacity={0.98} />
+                <stop offset="100%" stopColor={activeAccent} stopOpacity={1} />
               </linearGradient>
             </defs>
           </svg>
 
           {/* Central Digital Timer */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <div className="w-3.5 h-3.5 rounded-full bg-[#38bdf8] shadow-[0_0_16px_#38bdf8] mb-1.5 animate-ping opacity-75" />
-            <div className="flex items-baseline justify-center tracking-tight text-[#e2e1ed]">
-              <span className="text-5xl sm:text-6xl font-light drop-shadow-[0_0_24px_rgba(56,189,248,0.25)] tabular-nums">
+            <div
+              className="w-3.5 h-3.5 rounded-full mb-1.5 animate-ping opacity-75"
+              style={{ backgroundColor: activeAccent, boxShadow: `0 0 16px ${activeAccent}` }}
+            />
+            <div className="flex items-baseline justify-center tracking-tight text-white">
+              <span
+                className="text-5xl sm:text-6xl font-light tabular-nums"
+                style={{
+                  filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.95)) drop-shadow(0 2px 16px ${activeAccent}88)`,
+                }}
+              >
                 {timeDisplay.m}
               </span>
-              <span className="text-5xl sm:text-6xl font-extralight text-[#38bdf8] animate-pulse px-0.5">
+              <span
+                className="text-5xl sm:text-6xl font-extralight animate-pulse px-0.5"
+                style={{ color: activeAccent }}
+              >
                 :
               </span>
-              <span className="text-5xl sm:text-6xl font-light drop-shadow-[0_0_24px_rgba(56,189,248,0.25)] tabular-nums">
+              <span
+                className="text-5xl sm:text-6xl font-light tabular-nums"
+                style={{
+                  filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.95)) drop-shadow(0 2px 16px ${activeAccent}88)`,
+                }}
+              >
                 {timeDisplay.s}
               </span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1 mt-2 rounded-full bg-[#0c0e16]/60 backdrop-blur-md border border-white/5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3]" />
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeAccent }} />
               <span className="text-[11px] text-[#bdc8d1] font-medium">
                 Target {targetTimeStr} · {elapsedMins}m elapsed
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Session Extension Controls: +15m, +30m, +1h */}
+        <div className="flex items-center justify-center gap-2">
+          {[
+            { label: '+15m', sec: 15 * 60 },
+            { label: '+30m', sec: 30 * 60 },
+            { label: '+1h', sec: 60 * 60 },
+          ].map(({ label, sec }) => {
+            const wouldExceedBurnBoats =
+              activeLock.burnTheBoats && activeLock.durationSeconds + sec > 14400;
+            return (
+              <button
+                key={label}
+                type="button"
+                disabled={wouldExceedBurnBoats}
+                onClick={() => {
+                  if (wouldExceedBurnBoats) {
+                    haptics.reject();
+                    setTamperWarning('Burn the Boats sessions cannot exceed 4 hours.');
+                    setTimeout(() => setTamperWarning(null), 3000);
+                    return;
+                  }
+                  haptics.tick(850);
+                  onExtendLock?.(sec);
+                }}
+                title={
+                  wouldExceedBurnBoats
+                    ? 'Burn the Boats limit is 4 hours'
+                    : `Add ${label.replace('+', '')} to current session`
+                }
+                className={`px-3 py-1 rounded-full text-xs font-mono font-semibold transition-all cursor-pointer ${
+                  wouldExceedBurnBoats
+                    ? 'opacity-35 cursor-not-allowed bg-white/5 text-zinc-600 border border-white/5'
+                    : 'bg-white/[0.06] hover:bg-white/[0.12] text-white border transition-colors active:scale-95 shadow-sm'
+                }`}
+                style={
+                  !wouldExceedBurnBoats
+                    ? { borderColor: `${activeAccent}40`, color: '#FFFFFF' }
+                    : undefined
+                }
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Time-Saving & Productivity Quote Card */}
@@ -457,7 +720,14 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
           onClick={handleNextQuote}
           className="w-full max-w-sm text-left p-3.5 rounded-2xl bg-[#191b24]/75 backdrop-blur-xl border border-white/10 shadow-sm flex items-start gap-2.5 cursor-pointer active:scale-[0.99] transition-transform"
         >
-          <div className="w-7 h-7 rounded-xl bg-[#38bdf8]/15 border border-[#38bdf8]/30 flex items-center justify-center text-[#38bdf8] shrink-0 mt-0.5">
+          <div
+            className="w-7 h-7 rounded-xl border flex items-center justify-center shrink-0 mt-0.5"
+            style={{
+              backgroundColor: `${activeAccent}18`,
+              borderColor: `${activeAccent}40`,
+              color: activeAccent,
+            }}
+          >
             <Quote size={13} />
           </div>
           <div className="min-w-0 flex-1">
@@ -465,7 +735,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
               &ldquo;{currentQuote.quote}&rdquo;
             </p>
             <div className="flex items-center justify-between gap-2 mt-1.5">
-              <span className="text-[10px] font-mono font-semibold text-[#38bdf8]">
+              <span className="text-[10px] font-mono font-semibold" style={{ color: activeAccent }}>
                 — {currentQuote.author}
               </span>
               <span className="text-[9px] font-mono text-[#87929a]">Tap for next</span>
@@ -476,7 +746,14 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
         {/* Ambient Sound Card */}
         <div className="w-full max-w-sm flex items-center justify-between p-3 rounded-2xl bg-[#191b24]/70 backdrop-blur-xl border border-white/5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#38bdf8]/15 flex items-center justify-center text-[#38bdf8] shadow-[0_0_12px_rgba(56,189,248,0.15)] shrink-0">
+            <div
+              className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+              style={{
+                backgroundColor: `${activeAccent}18`,
+                color: activeAccent,
+                boxShadow: `0 0 12px ${activeAccent}33`,
+              }}
+            >
               <Headphones size={18} />
             </div>
             <div>
@@ -487,7 +764,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
           <button
             type="button"
             onClick={handleToggleAudio}
-            className="w-8 h-8 rounded-full bg-[#282a32] flex items-center justify-center text-[#e2e1ed] hover:text-[#38bdf8] transition-colors active:scale-95 cursor-pointer"
+            className="w-8 h-8 rounded-full bg-[#282a32] flex items-center justify-center text-[#e2e1ed] hover:text-white transition-colors active:scale-95 cursor-pointer"
           >
             {isPlayingAudio ? <Pause size={15} /> : <Play size={15} fill="currentColor" />}
           </button>
@@ -544,7 +821,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
               onClick={() => (window.location.href = 'sms:')}
               className="flex flex-col items-center gap-1 p-1 rounded-xl hover:scale-105 active:scale-95 cursor-pointer shrink-0 transition-transform"
             >
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-[#0284C7] text-white border border-[#38bdf8]/40 shadow-md">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-[#0284C7] text-white border border-[#38bdf8]/30 shadow-md">
                 <MessageSquare size={18} strokeWidth={2} />
               </div>
               <span className="text-[10px] font-medium text-[#bdc8d1]">SMS</span>
@@ -577,10 +854,13 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
             aria-label="Open ZeroTube Distraction-Free Study Player"
             className="flex flex-col items-center gap-1 p-1 rounded-xl hover:scale-105 active:scale-95 cursor-pointer shrink-0 transition-transform"
           >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-md bg-gradient-to-br from-[#0284c7] to-[#0369a1] text-white border border-[#38bdf8]/40">
-              <Play size={18} fill="currentColor" />
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-md bg-gradient-to-br from-[#1e293b] to-[#0f172a] text-white border"
+              style={{ borderColor: `${activeAccent}50` }}
+            >
+              <Play size={18} fill="currentColor" style={{ color: activeAccent }} />
             </div>
-            <span className="text-[10px] font-medium text-[#38bdf8]">ZeroTube</span>
+            <span className="text-[10px] font-medium" style={{ color: activeAccent }}>ZeroTube</span>
           </button>
 
           {/* 6. Compulsory Verified Study Apps (Toggleable — no Bag required) */}
@@ -611,11 +891,14 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
                       style={{
                         backgroundColor: brand.bgColor,
                         color: brand.textColor,
-                        border: '1.5px solid #38bdf8',
+                        border: `1.5px solid ${activeAccent}`,
                       }}
                     >
                       {brand.initial}
-                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#38bdf8] text-[#041220] flex items-center justify-center">
+                      <span
+                        className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-black flex items-center justify-center"
+                        style={{ backgroundColor: activeAccent }}
+                      >
                         <GraduationCap size={10} />
                       </span>
                     </div>
@@ -672,11 +955,24 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
         </div>
       </footer>
 
-      {/* ANTI-TAMPER BANNER */}
+      {/* ANTI-TAMPER / BURN THE BOATS ACTIVE BANNER */}
       {tamperWarning && (
-        <div className="fixed top-14 left-5 right-5 max-w-md mx-auto z-60 bg-red-950/90 border border-red-500/60 text-red-200 text-xs px-4 py-2.5 rounded-2xl font-sans backdrop-blur-md shadow-2xl flex items-center gap-2.5 animate-fadeIn">
-          <AlertTriangle size={16} className="text-red-400 shrink-0" />
-          <span className="font-medium">{tamperWarning}</span>
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="fixed left-4 right-4 sm:left-6 sm:right-6 max-w-md mx-auto z-[80] bg-red-950/95 border border-red-500/70 text-red-100 text-xs px-4 py-3 rounded-2xl font-sans backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.70)] flex items-center gap-3 animate-fadeIn pointer-events-auto"
+          style={{
+            top: 'calc(var(--zero-safe-top, 0px) + 4.25rem)',
+          }}
+        >
+          <div className="w-7 h-7 rounded-xl bg-red-500/20 border border-red-500/40 flex items-center justify-center shrink-0 text-red-400">
+            {tamperWarning.toLowerCase().includes('boat') || tamperWarning.toLowerCase().includes('burn') ? (
+              <Flame size={15} />
+            ) : (
+              <AlertTriangle size={15} />
+            )}
+          </div>
+          <span className="font-medium leading-relaxed flex-1">{tamperWarning}</span>
         </div>
       )}
 

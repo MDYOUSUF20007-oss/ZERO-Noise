@@ -79,6 +79,7 @@ export interface RecurringSchedule {
   tag: SessionTag;
   isEnabled: boolean;
   preLockWarningMinutes: number; // 5
+  burnTheBoats?: boolean;
 }
 
 export interface ActiveLockSession {
@@ -370,7 +371,7 @@ export type InterfaceStyle =
   | 'material'
   | 'minimal';
 
-export type MaterialYouSeed = 'purple' | 'cyan' | 'emerald' | 'crimson';
+export type MaterialYouSeed = 'purple' | 'cyan' | 'emerald' | 'crimson' | 'amber';
 
 export type AmoledGradientId =
   | 'pure'
@@ -478,6 +479,7 @@ export interface ZeroNativeBridgeInterface {
   syncLedgerStateWithBonus?(cumulativeSeconds: number, deployedCount: IntOrNum, bonusCount: IntOrNum): void;
   igniteSession(durationSeconds: number, tag: string): boolean;
   igniteSessionWithBurnBoats?(durationSeconds: number, tag: string, burnTheBoats: boolean): boolean;
+  extendSession?(additionalSeconds: number): boolean;
   startEngageSessionJson?(payloadJson: string): boolean;
   stopEngageSession?(): void;
   getEngageSessionStateJson?(): string;
@@ -501,6 +503,8 @@ export interface ZeroNativeBridgeInterface {
   isPomodoroBreakActive?(): boolean;
   getPomodoroBreakSecondsLeft?(): number;
   launchHomeScreen?(): boolean;
+  resetVoidBagSession?(): void;
+  snoozeBagReminder?(minutes: number): void;
   verifyAuthorIntegrity?(): boolean;
   exitApp?(): void;
 }

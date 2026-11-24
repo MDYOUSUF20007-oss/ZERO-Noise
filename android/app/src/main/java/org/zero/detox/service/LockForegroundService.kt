@@ -45,8 +45,11 @@ class LockForegroundService : Service() {
     companion object {
         const val ACTION_START_LOCK = "org.zero.detox.START_LOCK"
         const val ACTION_STOP_LOCK = "org.zero.detox.STOP_LOCK"
+        const val ACTION_SNOOZE_REMINDER = "org.zero.detox.ACTION_SNOOZE_REMINDER"
+        const val ACTION_EXIT_TO_VOID = "org.zero.detox.ACTION_EXIT_TO_VOID"
         const val CHANNEL_ID = "zero_void_channel"
         const val NOTIFICATION_ID = 1001
+        const val REMINDER_NOTIFICATION_ID = 2002
         private const val WATCHDOG_INTERVAL_MS = 350L
         private const val CACHE_REFRESH_MS = 30_000L
     }
@@ -99,9 +102,13 @@ class LockForegroundService : Service() {
                 val allowedNow = if (fgPkg != null) {
                     if (fgPkg == "com.android.settings" || BagStore.PROTECTED_SYSTEM_PACKAGES.contains(fgPkg)) {
                         false
+                    } else if (cachedLauncherPackages.contains(fgPkg)) {
+                        false
+                    } else if (bagStore.isPackageAllowedDuringLock(fgPkg)) {
+                        true
+                    } else if (TheVoidActivity.activeBagPackage != null && BagStore.isCompanionHelperPackage(fgPkg)) {
+                        true
                     } else if (accessibilityActive) {
-                        // In Strict Edition, ZeroAccessibilityService owns granular controlled quotas,
-                        // mindful friction, scroll guard, and TYPE_ACCESSIBILITY_OVERLAY layers.
                         bagStore.isPackageAllowedDuringLock(fgPkg)
                     } else {
                         evaluateStandardFallbackPermission(fgPkg, nowElapsed)
@@ -112,12 +119,20 @@ class LockForegroundService : Service() {
                 }
 
                 if (!allowedNow) {
-                    TheVoidActivity.activeBagPackage = null
+                    TheVoidActivity.resetBagSession()
+                    cancelReminderNotification()
                     snapBackToVoid()
+                } else {
+                    // 5-minute recurring reminder check (snoozable for 10 minutes)
+                    val milestone = TheVoidActivity.getDueNotificationMilestone(nowElapsed)
+                    if (milestone != null) {
+                        showFiveMinuteReminderNotification(milestone)
+                    }
                 }
             } else if (TheVoidActivity.isInForeground) {
                 lastKnownForegroundPkg = packageName
-                TheVoidActivity.activeBagPackage = null
+                TheVoidActivity.resetBagSession()
+                cancelReminderNotification()
                 if (!isZeroAccessibilityServiceEnabled()) {
                     fallbackEngageEngine.onForegroundTick(
                         foregroundPkg = packageName,
@@ -134,6 +149,11 @@ class LockForegroundService : Service() {
     }
 
     private fun evaluateStandardFallbackPermission(fgPkg: String, nowElapsed: Long): Boolean {
+        // Void screen apps should not be closed at all
+        if (bagStore.isPackageAllowedDuringLock(fgPkg) || TheVoidActivity.activeBagPackage != null) {
+            return true
+        }
+
         val rev = engageConfigStore.getRevision()
         val activeCfg = engageConfigStore.loadActiveConfig()
         if (activeCfg == null) {
@@ -305,8 +325,20 @@ class LockForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_STOP_LOCK) {
+            cancelReminderNotification()
             stopWatchdogAndService()
             return START_NOT_STICKY
+        }
+        if (intent?.action == ACTION_SNOOZE_REMINDER) {
+            TheVoidActivity.snoozeSession(10)
+            cancelReminderNotification()
+            return START_STICKY
+        }
+        if (intent?.action == ACTION_EXIT_TO_VOID) {
+            TheVoidActivity.resetBagSession()
+            cancelReminderNotification()
+            snapBackToVoid()
+            return START_STICKY
         }
 
         val tag = intent?.getStringExtra("EXTRA_TAG") ?: "Deep Work"
@@ -324,6 +356,49 @@ class LockForegroundService : Service() {
         }
 
         return START_STICKY
+    }
+
+    private fun showFiveMinuteReminderNotification(milestone: Int) {
+        val snoozeIntent = Intent(this, LockForegroundService::class.java).apply {
+            action = ACTION_SNOOZE_REMINDER
+        }
+        val snoozePendingIntent = PendingIntent.getService(
+            this,
+            201,
+            snoozeIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val exitIntent = Intent(this, LockForegroundService::class.java).apply {
+            action = ACTION_EXIT_TO_VOID
+        }
+        val exitPendingIntent = PendingIntent.getService(
+            this,
+            202,
+            exitIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Zero — Mindful Void Reminder")
+            .setContentText("It's been $milestone minutes you are here")
+            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setAutoCancel(true)
+            .addAction(android.R.drawable.ic_popup_sync, "Snooze 10m", snoozePendingIntent)
+            .addAction(android.R.drawable.ic_menu_revert, "Back to Void", exitPendingIntent)
+            .build()
+
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.notify(REMINDER_NOTIFICATION_ID, notification)
+    }
+
+    private fun cancelReminderNotification() {
+        try {
+            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            nm.cancel(REMINDER_NOTIFICATION_ID)
+        } catch (_: Exception) {}
     }
 
     private fun stopWatchdogAndService() {

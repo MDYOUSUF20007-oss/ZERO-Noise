@@ -40,6 +40,7 @@ android {
     signingConfigs {
         release {
             def ksPath = System.getenv("ZERO_KEYSTORE_PATH")
+            def defaultKs = file("zero-release.jks")
             if (ksPath != null && !ksPath.trim().isEmpty() && file(ksPath).exists()) {
                 def ksType = System.getenv("ZERO_KEYSTORE_TYPE")
                 if (ksType != null && !ksType.trim().isEmpty()) {
@@ -52,23 +53,28 @@ android {
                 keyAlias System.getenv("ZERO_KEYSTORE_ALIAS")
                 def keyPass = System.getenv("ZERO_KEYSTORE_KEY_PASS")
                 keyPassword (keyPass != null && !keyPass.trim().isEmpty() ? keyPass : System.getenv("ZERO_KEYSTORE_PASS"))
-                // Explicitly sign with V1 + V2 + V3 using ZERO's permanent release cert
-                // so Android 7–16 package installers & OEM file managers always accept in-place updates.
-                enableV1Signing = true
-                enableV2Signing = true
-                enableV3Signing = true
+            } else if (defaultKs.exists()) {
+                storeFile defaultKs
+                storePassword "zeronoiserelease2026"
+                keyAlias "zero_release"
+                keyPassword "zeronoiserelease2026"
             }
+            // Explicitly sign with V1 + V2 + V3 using ZERO's permanent release cert
+            // so Android 7–16 package installers & OEM file managers always accept in-place updates.
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
         }
     }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+        }
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            def ksPath = System.getenv("ZERO_KEYSTORE_PATH")
-            if (ksPath != null && !ksPath.trim().isEmpty() && file(ksPath).exists()) {
-                signingConfig signingConfigs.release
-            }
+            signingConfig signingConfigs.release
         }
     }
     dependenciesInfo {

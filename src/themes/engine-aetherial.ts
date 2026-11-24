@@ -89,6 +89,66 @@ export const aetherialEngine: ThemeEngineDefinition = {
     /* -------------------------------------------------------------
        Aetherial Focus Dynamic Accent Palette Overrides
        ------------------------------------------------------------- */
+    /* Amber Accent variant (Warm Solar Flare) */
+    [data-accent="amber"],
+    html[data-accent="amber"] {
+      --accent-primary: #f59e0b !important;
+      --accent-secondary: #fbbf24 !important;
+      --accent-soft: rgba(245, 158, 11, 0.18) !important;
+      --accent-border: rgba(245, 158, 11, 0.55) !important;
+      --text-on-accent: #000000 !important;
+      --zero-accent: #f59e0b !important;
+      --zero-dial-stroke: #f59e0b !important;
+      --accent-hex: #f59e0b !important;
+      --accent-rgb: 245, 158, 11 !important;
+      --liquid-accent-glow: rgba(245, 158, 11, 0.40) !important;
+      --liquid-accent-soft-glow: rgba(245, 158, 11, 0.18) !important;
+      --liquid-accent-vibrant: #f59e0b !important;
+      --liquid-accent-tint: #fbbf24 !important;
+      --app-backdrop-gradient: radial-gradient(circle at 50% -15%, rgba(245, 158, 11, 0.16) 0%, transparent 60%), radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.10) 0%, transparent 55%) !important;
+      --surface-gradient: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(255, 255, 255, 0.015) 45%, rgba(251, 191, 36, 0.03) 100%) !important;
+    }
+
+    /* Emerald Accent variant (Botanical Glow) */
+    [data-accent="emerald"],
+    html[data-accent="emerald"] {
+      --accent-primary: #10b981 !important;
+      --accent-secondary: #34d399 !important;
+      --accent-soft: rgba(16, 185, 129, 0.18) !important;
+      --accent-border: rgba(16, 185, 129, 0.55) !important;
+      --text-on-accent: #022c22 !important;
+      --zero-accent: #10b981 !important;
+      --zero-dial-stroke: #10b981 !important;
+      --accent-hex: #10b981 !important;
+      --accent-rgb: 16, 185, 129 !important;
+      --liquid-accent-glow: rgba(16, 185, 129, 0.40) !important;
+      --liquid-accent-soft-glow: rgba(16, 185, 129, 0.18) !important;
+      --liquid-accent-vibrant: #10b981 !important;
+      --liquid-accent-tint: #34d399 !important;
+      --app-backdrop-gradient: radial-gradient(circle at 50% -15%, rgba(16, 185, 129, 0.16) 0%, transparent 60%), radial-gradient(circle at 90% 80%, rgba(52, 211, 153, 0.10) 0%, transparent 55%) !important;
+      --surface-gradient: linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(255, 255, 255, 0.015) 45%, rgba(52, 211, 153, 0.03) 100%) !important;
+    }
+
+    /* Crimson Accent variant (Velvet Nebula) */
+    [data-accent="crimson"],
+    html[data-accent="crimson"] {
+      --accent-primary: #f43f5e !important;
+      --accent-secondary: #fb7185 !important;
+      --accent-soft: rgba(244, 63, 94, 0.18) !important;
+      --accent-border: rgba(244, 63, 94, 0.55) !important;
+      --text-on-accent: #ffffff !important;
+      --zero-accent: #f43f5e !important;
+      --zero-dial-stroke: #f43f5e !important;
+      --accent-hex: #f43f5e !important;
+      --accent-rgb: 244, 63, 94 !important;
+      --liquid-accent-glow: rgba(244, 63, 94, 0.40) !important;
+      --liquid-accent-soft-glow: rgba(244, 63, 94, 0.18) !important;
+      --liquid-accent-vibrant: #f43f5e !important;
+      --liquid-accent-tint: #fb7185 !important;
+      --app-backdrop-gradient: radial-gradient(circle at 50% -15%, rgba(244, 63, 94, 0.16) 0%, transparent 60%), radial-gradient(circle at 90% 80%, rgba(251, 113, 133, 0.10) 0%, transparent 55%) !important;
+      --surface-gradient: linear-gradient(135deg, rgba(244, 63, 94, 0.06) 0%, rgba(255, 255, 255, 0.015) 45%, rgba(251, 113, 133, 0.03) 100%) !important;
+    }
+
     /* Purple Accent variant */
     [data-accent="purple"],
     html[data-accent="purple"] {

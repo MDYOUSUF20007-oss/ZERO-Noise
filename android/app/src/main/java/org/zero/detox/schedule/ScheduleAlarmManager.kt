@@ -50,7 +50,8 @@ object ScheduleAlarmManager {
         val endMinute: Int,
         val tag: String,
         val isEnabled: Boolean,
-        val preLockWarningMinutes: Int
+        val preLockWarningMinutes: Int,
+        val burnTheBoats: Boolean = false
     )
 
     data class ScheduleOccurrence(
@@ -61,6 +62,9 @@ object ScheduleAlarmManager {
     ) {
         val durationSeconds: Long
             get() = maxOf(60L, (endMillis - startMillis) / 1000L)
+
+        val isBurnTheBoats: Boolean
+            get() = schedule.burnTheBoats && durationSeconds <= org.zero.detox.core.LockEngine.MAX_BURN_THE_BOATS_SECONDS
 
         val occurrenceKey: String
             get() = "${schedule.id}_${startMillis / 60_000L}"
@@ -95,6 +99,7 @@ object ScheduleAlarmManager {
                 val isEnabled = obj.optBoolean("isEnabled", false)
                 val tag = obj.optString("tag", "Deep Work").trim().ifEmpty { "Deep Work" }
                 val warnMins = obj.optInt("preLockWarningMinutes", 5).coerceIn(0, 60)
+                val burnTheBoats = obj.optBoolean("burnTheBoats", false)
 
                 val daysSet = mutableSetOf<Int>()
                 val daysArr = obj.optJSONArray("days")
@@ -119,7 +124,8 @@ object ScheduleAlarmManager {
                         endMinute = em,
                         tag = tag,
                         isEnabled = isEnabled,
-                        preLockWarningMinutes = warnMins
+                        preLockWarningMinutes = warnMins,
+                        burnTheBoats = burnTheBoats
                     )
                 )
             }
@@ -236,6 +242,7 @@ object ScheduleAlarmManager {
             putExtra(PreLockScheduleWorker.KEY_SCHEDULE_NAME, next.schedule.name)
             putExtra(PreLockScheduleWorker.KEY_DURATION_SECONDS, next.durationSeconds)
             putExtra(PreLockScheduleWorker.KEY_TAG, next.schedule.tag)
+            putExtra(PreLockScheduleWorker.KEY_BURN_THE_BOATS, next.isBurnTheBoats)
             putExtra(ScheduleAlarmReceiver.EXTRA_OCCURRENCE_KEY, next.occurrenceKey)
             putExtra(ScheduleAlarmReceiver.EXTRA_END_MILLIS, next.endMillis)
         }
@@ -256,6 +263,7 @@ object ScheduleAlarmManager {
                     .putString(PreLockScheduleWorker.KEY_SCHEDULE_NAME, next.schedule.name)
                     .putLong(PreLockScheduleWorker.KEY_DURATION_SECONDS, next.durationSeconds)
                     .putString(PreLockScheduleWorker.KEY_TAG, next.schedule.tag)
+                    .putBoolean(PreLockScheduleWorker.KEY_BURN_THE_BOATS, next.isBurnTheBoats)
                     .putString(ScheduleAlarmReceiver.EXTRA_OCCURRENCE_KEY, next.occurrenceKey)
                     .putLong(ScheduleAlarmReceiver.EXTRA_END_MILLIS, next.endMillis)
                     .build()

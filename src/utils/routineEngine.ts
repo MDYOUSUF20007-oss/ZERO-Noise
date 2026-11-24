@@ -22,6 +22,16 @@ export function isOvernightSchedule(startTime: string, endTime: string): boolean
   return startMins > endMins;
 }
 
+export function getScheduleDurationMinutes(startTime: string, endTime: string): number {
+  const startMins = parseTimeToMinutes(startTime);
+  const endMins = parseTimeToMinutes(endTime);
+  if (endMins >= startMins) {
+    return endMins - startMins;
+  }
+  // Crosses midnight
+  return 1440 - startMins + endMins;
+}
+
 export function isScheduleActiveNow(
   schedule: RecurringSchedule,
   now: Date = new Date()

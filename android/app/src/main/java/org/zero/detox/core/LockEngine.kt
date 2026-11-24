@@ -275,6 +275,54 @@ class LockEngine @JvmOverloads constructor(
         } catch (_: Throwable) {}
     }
 
+    /**
+     * Dynamically extends active lock session (e.g. +15m, +30m, +1h) while running.
+     * Enforces the hard 4-hour limit if Burn the Boats is active.
+     */
+    fun extendSession(additionalSeconds: Long): Boolean = synchronized(COMPLETION_LOCK) {
+        val timing = getCurrentTiming()
+        if (!timing.isLocked || timing.isExpired) return@synchronized false
+        val addSec = maxOf(0L, additionalSeconds)
+        if (addSec == 0L) return@synchronized true
+
+        val newDuration = timing.durationSeconds + addSec
+        val isBurn = prefs.getBoolean(KEY_BURN_THE_BOATS, false)
+        if (isBurn && newDuration > MAX_BURN_THE_BOATS_SECONDS) {
+            return@synchronized false
+        }
+
+        val newTargetEndTime = timing.targetEndTimeMillis + (addSec * 1000L)
+        prefs.edit()
+            .putLong(KEY_DURATION_SECONDS, newDuration)
+            .putLong(KEY_TARGET_END_TIME, newTargetEndTime)
+            .commit()
+
+        _sessionState.value = SessionState(
+            isLocked = true,
+            sessionTag = timing.sessionTag,
+            startTimeMillis = timing.startTimeMillis,
+            targetEndTimeMillis = newTargetEndTime,
+            durationSeconds = newDuration,
+            elapsedSeconds = timing.elapsedSeconds,
+            remainingSeconds = timing.remainingSeconds + addSec
+        )
+
+        try {
+            val serviceIntent = Intent(context, LockForegroundService::class.java).apply {
+                action = LockForegroundService.ACTION_START_LOCK
+                putExtra("EXTRA_TARGET_TIMESTAMP", newTargetEndTime)
+                putExtra("EXTRA_TAG", timing.sessionTag)
+            }
+            ContextCompat.startForegroundService(context, serviceIntent)
+        } catch (_: Exception) {}
+
+        try {
+            ZeroWidgetUpdater.requestAllUpdates(context)
+        } catch (_: Throwable) {}
+
+        return@synchronized true
+    }
+
     fun getCurrentTiming(): LockTimingSnapshot {
         val nowWall = wallClockProvider()
         val nowElapsed = elapsedRealtimeProvider()

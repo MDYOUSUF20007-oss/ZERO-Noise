@@ -134,16 +134,17 @@ jobs:
           KS_PASS: ${{ secrets.ZERO_KEYSTORE_PASS }}
           KS_ALIAS: ${{ secrets.ZERO_KEYSTORE_ALIAS }}
         run: |
-          if [ -z "$KEYSTORE_B64" ] || [ -z "$KS_PASS" ] || [ -z "$KS_ALIAS" ]; then
-            echo "::warning::Persistent signing secrets (ZERO_KEYSTORE_BASE64, ZERO_KEYSTORE_PASS, ZERO_KEYSTORE_ALIAS) are not set yet. Building debug-signed preview APKs so you can install and test now; add those 4 Repository secrets for update-compatible permanent releases."
-            echo "signed=false" >> "$GITHUB_OUTPUT"
-            exit 0
+          if [ -n "$KEYSTORE_B64" ] && [ -n "$KS_PASS" ] && [ -n "$KS_ALIAS" ]; then
+            echo "$KEYSTORE_B64" | tr -d '\r\n ' | base64 -d > "${{ runner.temp }}/zero-release.p12"
+            keytool -list -v -storetype PKCS12 \
+              -keystore "${{ runner.temp }}/zero-release.p12" \
+              -storepass "$KS_PASS" \
+              -alias "$KS_ALIAS" | grep -E "Alias name:|SHA256:"
+            echo "custom_keystore=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Using repository master keystore (zero-release.jks)"
+            echo "custom_keystore=false" >> "$GITHUB_OUTPUT"
           fi
-          echo "$KEYSTORE_B64" | tr -d '\r\n ' | base64 -d > "${{ runner.temp }}/zero-release.p12"
-          keytool -list -v -storetype PKCS12 \
-            -keystore "${{ runner.temp }}/zero-release.p12" \
-            -storepass "$KS_PASS" \
-            -alias "$KS_ALIAS" | grep -E "Alias name:|SHA256:"
           echo "signed=true" >> "$GITHUB_OUTPUT"
 
       - name: Run Android Unit Tests (Standard & Strict)
@@ -164,7 +165,7 @@ jobs:
       - name: Compile Signed Release APKs (v${{ env.ZERO_VERSION_NAME }} / code ${{ env.ZERO_VERSION_CODE }})
         if: steps.keystore.outputs.signed == 'true'
         env:
-          ZERO_KEYSTORE_PATH: ${{ runner.temp }}/zero-release.p12
+          ZERO_KEYSTORE_PATH: ${{ steps.keystore.outputs.custom_keystore == 'true' && format('{0}/zero-release.p12', runner.temp) || '' }}
           ZERO_KEYSTORE_TYPE: PKCS12
           ZERO_KEYSTORE_PASS: ${{ secrets.ZERO_KEYSTORE_PASS }}
           ZERO_KEYSTORE_KEY_PASS: ${{ secrets.ZERO_KEYSTORE_KEY_PASS }}

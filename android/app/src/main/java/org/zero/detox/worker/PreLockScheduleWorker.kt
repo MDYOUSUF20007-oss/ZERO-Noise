@@ -22,6 +22,7 @@ class PreLockScheduleWorker(
         const val KEY_SCHEDULE_NAME = "schedule_name"
         const val KEY_DURATION_SECONDS = "duration_seconds"
         const val KEY_TAG = "tag"
+        const val KEY_BURN_THE_BOATS = "burn_the_boats"
     }
 
     override suspend fun doWork(): Result {
@@ -32,6 +33,7 @@ class PreLockScheduleWorker(
         val occurrenceKey = inputData.getString(ScheduleAlarmReceiver.EXTRA_OCCURRENCE_KEY) ?: ""
         val endMillis = inputData.getLong(ScheduleAlarmReceiver.EXTRA_END_MILLIS, 0L)
         val warnMins = inputData.getInt(ScheduleAlarmReceiver.EXTRA_WARNING_MINUTES, 5)
+        val burnTheBoats = inputData.getBoolean(KEY_BURN_THE_BOATS, false)
 
         if (actionType == "WARNING") {
             ScheduleAlarmReceiver.triggerWarningNotification(
@@ -47,7 +49,8 @@ class PreLockScheduleWorker(
                 fallbackDurationSeconds = duration,
                 tag = tag,
                 occurrenceKey = occurrenceKey,
-                endMillis = endMillis
+                endMillis = endMillis,
+                burnTheBoats = burnTheBoats
             )
         }
 

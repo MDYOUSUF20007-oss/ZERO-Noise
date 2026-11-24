@@ -183,6 +183,73 @@ class BagStore(private val context: Context) {
             "com.oppo.gesture"
         )
 
+        val CORE_DOCUMENT_AND_MEDIA_PACKAGES = setOf(
+            // Android Document / Storage Providers
+            "com.google.android.documentsui",
+            "com.android.documentsui",
+            "com.android.externalstorage",
+            "com.google.android.providers.media.module",
+            "com.android.providers.media",
+            "com.android.providers.downloads",
+            "com.android.providers.downloads.ui",
+            // Major PDF, Comic & Document Viewers / Editors
+            "com.google.android.apps.docs",
+            "com.google.android.apps.pdfviewer",
+            "com.adobe.reader",
+            "cn.wps.moffice_eng",
+            "cn.wps.moffice",
+            "org.readera",
+            "com.foxit.mobile.pdf.lite",
+            "com.sec.android.app.myfiles",
+            "com.miui.cleanmaster",
+            "com.coloros.filemanager",
+            "com.oplus.filemanager",
+            "com.transsion.filemanager",
+            "com.asus.filemanager",
+            "com.microsoft.office.officehubrow",
+            "com.microsoft.office.word",
+            "com.microsoft.office.excel",
+            "com.microsoft.office.powerpoint",
+            "com.microsoft.office.onenote",
+            "com.mobisystems.editor.office_registered",
+            "com.mobisystems.office",
+            // System Media & Gallery Pickers (used when choosing photos/videos in editors)
+            "com.google.android.apps.photos",
+            "com.sec.android.gallery3d",
+            "com.miui.gallery",
+            "com.coloros.gallery3d",
+            "com.oplus.gallery",
+            "com.huawei.photos",
+            "com.android.gallery3d"
+        )
+
+        val COMPANION_HELPER_PACKAGES = setOf(
+            // Intent Resolver / Chooser dialogs
+            "android",
+            "com.android.internal",
+            // WebViews and Chrome Custom Tabs (crucial for payment 3DS, banking verification, in-app links)
+            "com.google.android.webview",
+            "com.android.webview",
+            "com.android.chrome",
+            "com.sec.android.app.sbrowser",
+            "org.chromium.webview_shell",
+            // Camera capture pickers
+            "com.google.android.GoogleCamera",
+            "com.sec.android.app.camera",
+            "com.android.camera",
+            // Google Play Services / Autofill / Credential helpers
+            "com.google.android.gms"
+        )
+
+        @JvmStatic
+        fun isCompanionHelperPackage(pkg: String): Boolean {
+            if (pkg.isBlank()) return false
+            if (PROTECTED_SYSTEM_PACKAGES.contains(pkg)) return false
+            if (COMPANION_HELPER_PACKAGES.contains(pkg)) return true
+            if (CORE_DOCUMENT_AND_MEDIA_PACKAGES.contains(pkg)) return true
+            return false
+        }
+
         val PROTECTED_SYSTEM_PACKAGES = setOf(
             "com.android.settings",
             "com.android.packageinstaller",
@@ -442,35 +509,52 @@ class BagStore(private val context: Context) {
         return queryIntentPackages(smsIntent).firstOrNull()
     }
 
+    fun isCallActive(): Boolean {
+        return try {
+            val telecom = context.getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
+            telecom?.isInCall == true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     fun isPackageAllowedDuringLock(pkg: String): Boolean {
         if (pkg.isBlank()) return false
         if (PROTECTED_SYSTEM_PACKAGES.contains(pkg)) return false
         if (pkg == context.packageName) return true
 
-        // Phone Calls are compulsory and always permitted during locks
-        if (getAllowedDialerPackages().contains(pkg)) return true
+        // 1. Actively running app launched from the Void screen (Void apps should not be closed at all)
+        if (org.zero.detox.ui.TheVoidActivity.activeBagPackage == pkg) return true
 
-        // Payment & UPI apps (Samsung Wallet, Navi, Paytm, PhonePe, GPay, etc.) are compulsory and always permitted
+        // 2. Companion helper, document viewer, webview, or media picker opened while user is in an active Void app
+        if (org.zero.detox.ui.TheVoidActivity.activeBagPackage != null && isCompanionHelperPackage(pkg)) {
+            return true
+        }
+
+        // 3. Core Document, PDF, Comic & Media picker packages (reading PDF in WhatsApp, editing video/photos, etc.)
+        if (CORE_DOCUMENT_AND_MEDIA_PACKAGES.contains(pkg)) return true
+
+        // 4. Phone Calls are compulsory and always permitted during locks (active call or dialer)
+        if (isCallActive() || getAllowedDialerPackages().contains(pkg)) return true
+
+        // 5. Payment & UPI apps (Samsung Wallet, Navi, Paytm, PhonePe, GPay, etc.) are compulsory and always permitted
         if (getAllowedPaymentPackages().contains(pkg)) return true
 
-        // AI & System Assistants are compulsory and always permitted during locks
+        // 6. AI & System Assistants are compulsory and always permitted during locks
         if (COMPULSORY_AI_ASSISTANT_PACKAGES.contains(pkg)) return true
 
-        // System customization, lockscreen widgets & gesture utilities (Samsung One Hand Operation +, Good Lock, AOD)
+        // 7. System customization, lockscreen widgets & gesture utilities (Samsung One Hand Operation +, Good Lock, AOD)
         // are always permitted in background and never blocked or popped over
         if (SYSTEM_CUSTOMIZATION_GESTURE_PACKAGES.contains(pkg)) return true
 
-        // Toggleable Verified Compulsory Study / Online Class Apps (max 2 lean slots)
+        // 8. Toggleable Verified Compulsory Study / Online Class Apps (max 2 lean slots)
         if (getCompulsoryStudyPackages().contains(pkg)) return true
 
-        // Phase 2 Engage rule check: explicit hard_block overrides BagStore allow list
-        if (EngageConfigStore(context).isPackageExplicitlyHardBlocked(pkg)) {
-            return false
-        }
-
+        // 9. Active Bag apps configured by user
         val customPkgs = getBagApps().map { it.packageName }.toSet()
         if (customPkgs.contains(pkg)) return true
 
+        // 10. SMS if allowed
         if (isSmsAllowed() && getAllowedSmsPackages().contains(pkg)) return true
 
         return false

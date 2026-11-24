@@ -14,7 +14,7 @@ import { resolveAppBrandVisual, type AppBrandVisual } from '../utils/appBrandCol
 import { haptics } from '../utils/haptics';
 import { voidAudio, FOCUS_SOUND_TRACKS, type FocusSoundTrack } from '../utils/voidAudio';
 import { getRandomVoidQuote, type VoidQuote } from '../utils/voidQuotes';
-import { computeThemeRuntime, DEFAULT_THEME_CONFIG } from '../utils/themes';
+import { computeThemeRuntime, DEFAULT_THEME_CONFIG, hexToRgba } from '../utils/themes';
 import { AppFrictionModal } from './AppFrictionModal';
 import { ZeroTubeModal } from './ZeroTubeModal';
 import { EscapeTicketDockButton, EscapeTicketModal } from './EscapeTicketSystem';
@@ -82,6 +82,7 @@ interface TheVoidViewProps {
   profile?: ZeroProfile | null;
   themeConfig?: ThemeConfig;
   onDeployParachute: () => boolean;
+  onExtendLock?: (additionalSeconds: number) => boolean;
 }
 
 export type PomodoroMode = 'off' | 'flexible_hourly' | '50_10' | '25_5';
@@ -101,16 +102,120 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
   profile = null,
   themeConfig,
   onDeployParachute,
+  onExtendLock,
 }) => {
-  const { fluentOrbIntensity, gpuThermalSafeguard, isAero } = useInterfaceStyle();
+  const { fluentOrbIntensity, gpuThermalSafeguard, isAero, aeroAccentColor, accent } = useInterfaceStyle();
   const themeRuntime = useMemo(
     () => computeThemeRuntime(themeConfig ?? DEFAULT_THEME_CONFIG),
     [themeConfig]
   );
-  const activeAccent =
-    themeRuntime.cssVars['--zero-accent'] ||
-    themeRuntime.cssVars['--accent-primary'] ||
-    '#38bdf8';
+  const activeAccent = useMemo(() => {
+    if (isAero) return aeroAccentColor || '#0f172a';
+
+    // 1. Direct accent prop from InterfaceStyleContext
+    if (accent === 'amber') return '#F59E0B';
+    if (accent === 'emerald') return '#10B981';
+    if (accent === 'crimson') return '#F43F5E';
+    if (accent === 'cyan') return '#00F0FF';
+    if (accent === 'purple') return '#A855F7';
+
+    // 2. Profile accent
+    const profileColor = profile?.accentColor as string | undefined;
+    if (profileColor === 'amber') return '#F59E0B';
+    if (profileColor === 'emerald') return '#10B981';
+    if (profileColor === 'cyan') return '#00F0FF';
+    if (profileColor === 'crimson') return '#F43F5E';
+    if (profileColor === 'purple') return '#A855F7';
+    if (profileColor === 'white') return '#FFFFFF';
+    if (profileColor?.startsWith('#')) return profileColor;
+
+    // 3. User explicit selections in localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        const savedAccent = window.localStorage.getItem('zero_theme_accent_seed_v5');
+        if (savedAccent === 'amber') return '#F59E0B';
+        if (savedAccent === 'emerald') return '#10B981';
+        if (savedAccent === 'crimson') return '#F43F5E';
+        if (savedAccent === 'cyan') return '#00F0FF';
+        if (savedAccent === 'purple') return '#A855F7';
+
+        const savedSeed = window.localStorage.getItem('zero_material_you_seed');
+        if (savedSeed === 'amber') return '#F59E0B';
+        if (savedSeed === 'emerald') return '#10B981';
+        if (savedSeed === 'crimson') return '#F43F5E';
+        if (savedSeed === 'cyan') return '#00F0FF';
+        if (savedSeed === 'purple') return '#A855F7';
+
+        const savedStyle = window.localStorage.getItem('zero_theme_style');
+        if (savedStyle === 'amber') return '#F59E0B';
+        if (savedStyle === 'emerald') return '#10B981';
+      } catch {}
+    }
+
+    // 4. HTML root attributes set by theme engine
+    if (typeof document !== 'undefined') {
+      const dataAccent = document.documentElement.getAttribute('data-accent');
+      if (dataAccent === 'amber') return '#F59E0B';
+      if (dataAccent === 'emerald') return '#10B981';
+      if (dataAccent === 'crimson') return '#F43F5E';
+      if (dataAccent === 'cyan') return '#00F0FF';
+      if (dataAccent === 'purple') return '#A855F7';
+
+      const docAccent =
+        document.documentElement.style.getPropertyValue('--accent-primary')?.trim() ||
+        document.documentElement.style.getPropertyValue('--zero-accent')?.trim();
+      if (docAccent && docAccent.startsWith('#')) return docAccent;
+    }
+
+    // 5. Configured theme presets
+    if (themeConfig?.amoledGradient === 'ember' || themeConfig?.amoledGradient === 'solar_gold') {
+      return '#F59E0B';
+    }
+    if (themeConfig?.amoledGradient === 'aurora' || themeConfig?.amoledGradient === 'jade_matrix') {
+      return '#10B981';
+    }
+    if (themeConfig?.amoledGradient === 'crimson' || themeConfig?.amoledGradient === 'vermilion_heat') {
+      return '#F43F5E';
+    }
+    if (themeConfig?.amoledGradient === 'cobalt' || themeConfig?.amoledGradient === 'arctic_teal') {
+      return '#00F0FF';
+    }
+    if (themeConfig?.amoledGradient === 'cosmic' || themeConfig?.amoledGradient === 'indigo_abyss') {
+      return '#A855F7';
+    }
+
+    const runtimeAccent = themeRuntime.cssVars['--zero-accent'] || themeRuntime.cssVars['--accent-primary'];
+    if (runtimeAccent && runtimeAccent !== '#FFFFFF' && runtimeAccent !== '#34D399') {
+      return runtimeAccent;
+    }
+    return '#F59E0B';
+  }, [isAero, aeroAccentColor, accent, profile?.accentColor, themeRuntime, themeConfig]);
+
+  const voidBackgroundImage = useMemo(() => {
+    if (themeRuntime.family === 'kindle' || themeRuntime.family === 'matte') {
+      return themeRuntime.cssVars['--zero-bg-image'];
+    }
+    if (themeConfig?.amoledGradient === 'pure') {
+      return 'none';
+    }
+    const norm = activeAccent.toUpperCase();
+    if (norm === '#F59E0B' || norm === '#D97706') {
+      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(245, 158, 11, 0.22) 0%, rgba(113, 63, 18, 0.28) 42%, #000000 80%)';
+    }
+    if (norm === '#10B981' || norm === '#059669' || norm === '#34D399') {
+      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(16, 185, 129, 0.22) 0%, rgba(6, 78, 59, 0.28) 42%, #000000 80%)';
+    }
+    if (norm === '#F43F5E' || norm === '#E11D48' || norm === '#FB7185') {
+      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(251, 113, 133, 0.22) 0%, rgba(136, 19, 55, 0.28) 42%, #000000 80%)';
+    }
+    if (norm === '#00F0FF' || norm === '#38BDF8' || norm === '#22D3EE') {
+      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(0, 240, 255, 0.20) 0%, rgba(12, 74, 110, 0.28) 42%, #000000 80%)';
+    }
+    if (norm === '#A855F7' || norm === '#9333EA' || norm === '#C084FC') {
+      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(168, 85, 247, 0.22) 0%, rgba(76, 29, 149, 0.28) 44%, #000000 80%)';
+    }
+    return `radial-gradient(ellipse 95% 48% at 50% 0%, ${hexToRgba(activeAccent, 0.22)} 0%, ${hexToRgba(activeAccent, 0.08)} 45%, #000000 80%)`;
+  }, [themeRuntime, themeConfig?.amoledGradient, activeAccent]);
   const isLightMode = themeRuntime.mode === 'light';
   const [clockText, setClockText] = useState<string>(() => format12HourClock(new Date()));
   const [batteryPct, setBatteryPct] = useState<number>(() => {
@@ -339,6 +444,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
   useEffect(() => {
     try {
       window.ZeroNative?.setImmersiveVoidMode?.(true);
+      window.ZeroNative?.resetVoidBagSession?.();
     } catch {}
     return () => {
       try {
@@ -668,15 +774,19 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
               paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
             }
-          : {
+          : ({
               backgroundColor: themeRuntime.cssVars['--zero-bg-primary'] || '#000000',
-              backgroundImage: themeRuntime.cssVars['--zero-bg-image'],
+              backgroundImage: voidBackgroundImage,
               backgroundSize: themeRuntime.cssVars['--zero-bg-size'],
               color: themeRuntime.cssVars['--zero-ink-primary'] || (isLightMode ? '#1C1917' : '#FFFFFF'),
               paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
               paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
               ...themeRuntime.cssVars,
-            }
+              '--zero-accent': activeAccent,
+              '--accent-primary': activeAccent,
+              '--accent-soft': hexToRgba(activeAccent, 0.25),
+              '--zero-dial-stroke': activeAccent,
+            } as React.CSSProperties)
       }
     >
       {isAero && <div className="aero-cloud-glows" />}
@@ -686,7 +796,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
           role="presentation"
           className="fixed inset-0 z-[250] bg-black flex flex-col items-center justify-center p-6 text-center select-none"
         >
-          <div className="w-2 h-2 rounded-full bg-cyan-400/40 animate-ping mb-3" />
+          <div className="w-2 h-2 rounded-full animate-ping mb-3" style={{ backgroundColor: activeAccent, opacity: 0.5 }} />
           <p className="text-[11px] font-sans tracking-widest uppercase text-zinc-600">
             FLIP-TO-FOCUS • RESTING IN THE VOID
           </p>
@@ -703,6 +813,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
           }}
           className="fixed inset-0 z-[255] bg-black flex flex-col items-center justify-center p-6 text-center select-none cursor-pointer"
         >
+          {/* Subtle Ambient Depth Halo (Burn-in Safe 0.16 opacity) */}
+          <div
+            aria-hidden="true"
+            className="w-56 h-56 rounded-full pointer-events-none blur-3xl absolute -z-10 transition-all duration-1000"
+            style={{
+              background: `radial-gradient(circle, ${hexToRgba(activeAccent, 0.16)} 0%, transparent 70%)`,
+            }}
+          />
+
           <div
             className="flex flex-col items-center transition-transform duration-1000"
             style={{
@@ -710,25 +829,32 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             }}
           >
             <span
-              className="text-[9px] font-mono tracking-widest uppercase mb-3 flex items-center gap-1.5"
+              className="text-[10px] font-mono tracking-widest uppercase mb-3 flex items-center gap-2 font-semibold"
               style={{ color: activeAccent }}
             >
-              <span className="w-1 h-1 rounded-full animate-pulse" style={{ backgroundColor: activeAccent }} />
+              <span
+                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{ backgroundColor: activeAccent, boxShadow: `0 0 10px ${activeAccent}` }}
+              />
               <span>AOD GLANCEABLE // {workTagDisplay}</span>
             </span>
 
-            {/* Ultra-dimmed 5x7 Dot-Matrix Pixel Countdown */}
+            {/* High-Contrast 5x7 Dot-Matrix Pixel Countdown: Pure White Body & Radiant Theme Rim */}
             <svg
               role="img"
               aria-label={`AOD Remaining lock time ${timerPixelLayout.normalizedText}`}
               viewBox={`0 0 ${timerPixelLayout.totalCols} ${timerPixelLayout.totalRows}`}
-              className="h-16 sm:h-20 w-auto max-w-full overflow-visible opacity-45 hover:opacity-75 transition-opacity"
+              className="h-16 sm:h-20 w-auto max-w-full overflow-visible transition-all duration-300"
+              style={{
+                filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.92)) drop-shadow(0 2px 14px ${activeAccent}77)`,
+              }}
               shapeRendering="crispEdges"
             >
               <defs>
                 <linearGradient id={`${gradId}-aod`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor={activeAccent} stopOpacity="0.5" />
+                  <stop offset="0%" stopColor="#FFFFFF" stopOpacity={1} />
+                  <stop offset="65%" stopColor="#FFFFFF" stopOpacity={0.98} />
+                  <stop offset="100%" stopColor={activeAccent} stopOpacity={1} />
                 </linearGradient>
               </defs>
               {timerPixelLayout.rects.map((rect, idx) => (
@@ -743,14 +869,19 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               ))}
             </svg>
 
-            {/* Dim system clock & battery indicator */}
-            <div className="mt-4 flex items-center gap-3 text-[11px] font-mono text-zinc-500 tabular-nums">
-              <span>{clockText}</span>
-              <span>•</span>
-              <span>{batteryPct}%</span>
+            {/* Dim system clock, battery indicator & finish target */}
+            <div className="mt-4 flex flex-col items-center gap-1.5 font-mono text-zinc-400">
+              <div className="flex items-center gap-3 text-xs tabular-nums font-medium">
+                <span className="text-zinc-300">{clockText}</span>
+                <span style={{ color: activeAccent }}>•</span>
+                <span className="text-zinc-300">{batteryPct}%</span>
+              </div>
+              <div className="text-[10px] tracking-wider uppercase text-zinc-500">
+                Target Finish {targetEndTimeFormatted}
+              </div>
             </div>
 
-            <p className="mt-10 text-[9px] font-mono tracking-widest text-zinc-600 uppercase animate-pulse">
+            <p className="mt-8 text-[9px] font-mono tracking-widest text-zinc-500 uppercase animate-pulse">
               TAP ANYWHERE TO RETURN TO THE VOID
             </p>
           </div>
@@ -759,14 +890,26 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
 
       {/* Dynamic Sub-Surface Ambient Glow Orbs */}
       {themeRuntime.family !== 'kindle' && !isAero && (
-        <div
-          aria-hidden="true"
-          className="fixed -top-20 -left-20 w-80 h-80 rounded-full pointer-events-none blur-3xl transition-all duration-700"
-          style={{
-            background: `radial-gradient(circle, ${activeAccent} 0%, rgba(56,189,248,0.25) 45%, transparent 70%)`,
-            opacity: gpuThermalSafeguard ? 0.15 : Math.max(0.2, fluentOrbIntensity * 0.75),
-          }}
-        />
+        <>
+          {/* Primary Celestial Anchor Glow (Upper Left) */}
+          <div
+            aria-hidden="true"
+            className="fixed -top-24 -left-20 w-84 h-84 rounded-full pointer-events-none blur-3xl transition-all duration-700"
+            style={{
+              background: `radial-gradient(circle at 45% 45%, ${hexToRgba(activeAccent, 0.42)} 0%, ${hexToRgba(activeAccent, 0.14)} 45%, transparent 72%)`,
+              opacity: gpuThermalSafeguard ? 0.15 : Math.max(0.2, fluentOrbIntensity * 0.75),
+            }}
+          />
+          {/* Secondary Atmospheric Depth Glow (Lower Right) */}
+          <div
+            aria-hidden="true"
+            className="fixed -bottom-28 -right-20 w-80 h-80 rounded-full pointer-events-none blur-3xl transition-all duration-700"
+            style={{
+              background: `radial-gradient(circle at 55% 55%, ${hexToRgba(activeAccent, 0.35)} 0%, ${hexToRgba(activeAccent, 0.10)} 42%, transparent 70%)`,
+              opacity: gpuThermalSafeguard ? 0.12 : Math.max(0.15, fluentOrbIntensity * 0.55),
+            }}
+          />
+        </>
       )}
 
       {/* TOP STATUS BAR: Live Clock, Status, Battery, Controls */}
@@ -811,13 +954,19 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   ? 'bg-[#111827] text-white shadow-sm'
                   : 'bg-white/80 text-[#374151] border border-white/90 shadow-sm'
                 : actionReminderConfig.enabled
-                ? 'liquid-pill-active text-emerald-300'
+                ? 'liquid-pill-active'
                 : 'liquid-pill-inactive text-zinc-400 hover:text-white'
             }`}
+            style={!isAero && actionReminderConfig.enabled ? { color: activeAccent } : undefined}
           >
             <Dumbbell size={13} strokeWidth={1.75} />
             {actionReminderConfig.enabled && (
-              <span className={`absolute -top-1 -right-1 w-2 h-2 rounded-full animate-pulse ${isAero ? 'bg-[#111827]' : 'bg-emerald-400'}`} />
+              <span
+                className={`absolute -top-1 -right-1 w-2 h-2 rounded-full animate-pulse ${
+                  isAero ? 'bg-[#111827]' : ''
+                }`}
+                style={!isAero ? { backgroundColor: activeAccent } : undefined}
+              />
             )}
           </button>
 
@@ -878,9 +1027,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   ? 'bg-[#111827] text-white shadow-sm'
                   : 'bg-white/80 text-[#9CA3AF] border border-white/90 shadow-sm'
                 : flipToFocusEnabled
-                ? 'liquid-pill-active text-cyan-300'
+                ? 'liquid-pill-active'
                 : 'liquid-pill-inactive text-zinc-500'
             }`}
+            style={!isAero && flipToFocusEnabled ? { color: activeAccent } : undefined}
           >
             <Smartphone size={13} strokeWidth={1.75} />
           </button>
@@ -899,9 +1049,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   ? 'bg-[#111827] text-white font-bold shadow-sm'
                   : 'bg-white/80 text-[#374151] border border-white/90 shadow-sm'
                 : activeSound !== 'none'
-                ? 'liquid-pill-active text-cyan-300 font-semibold'
+                ? 'liquid-pill-active font-semibold'
                 : 'liquid-pill-inactive text-zinc-400'
             }`}
+            style={!isAero && activeSound !== 'none' ? { color: activeAccent } : undefined}
           >
             {activeSound !== 'none' ? (
               <>
@@ -918,11 +1069,24 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
         </div>
       </div>
 
-      {/* ANTI-TAMPER BANNER */}
+      {/* ANTI-TAMPER / BURN THE BOATS ACTIVE BANNER */}
       {tamperWarning && (
-        <div className="fixed top-14 left-5 right-5 max-w-md mx-auto z-60 bg-red-950/90 border border-red-500/60 text-red-200 text-xs px-4 py-2.5 rounded-2xl font-sans backdrop-blur-md shadow-2xl flex items-center gap-2.5 animate-fadeIn">
-          <AlertTriangle size={16} className="text-red-400 shrink-0" />
-          <span className="font-medium">{tamperWarning}</span>
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="fixed left-4 right-4 sm:left-6 sm:right-6 max-w-md mx-auto z-[80] bg-red-950/95 border border-red-500/70 text-red-100 text-xs px-4 py-3 rounded-2xl font-sans backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.70)] flex items-center gap-3 animate-fadeIn pointer-events-auto"
+          style={{
+            top: 'calc(var(--zero-safe-top, 0px) + 4.25rem)',
+          }}
+        >
+          <div className="w-7 h-7 rounded-xl bg-red-500/20 border border-red-500/40 flex items-center justify-center shrink-0 text-red-400">
+            {tamperWarning.toLowerCase().includes('boat') || tamperWarning.toLowerCase().includes('burn') ? (
+              <Flame size={15} />
+            ) : (
+              <AlertTriangle size={15} />
+            )}
+          </div>
+          <span className="font-medium leading-relaxed flex-1">{tamperWarning}</span>
         </div>
       )}
 
@@ -953,9 +1117,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 onClick={() => handleSelectSound(track.id)}
                 className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-left liquid-spring cursor-pointer transition-all ${
                   activeSound === track.id
-                    ? 'liquid-pill-active border-cyan-400/40 text-white font-semibold'
+                    ? 'liquid-pill-active text-white font-semibold'
                     : 'liquid-pill-inactive text-zinc-300 hover:text-white'
                 }`}
+                style={activeSound === track.id ? { borderColor: `${activeAccent}66` } : undefined}
               >
                 <span className="text-sm">{track.emoji}</span>
                 <div className="min-w-0">
@@ -978,7 +1143,8 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 step="0.05"
                 value={soundVolume}
                 onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
+                style={{ accentColor: activeAccent }}
               />
               <span className="text-[10px] font-mono text-zinc-400 tabular-nums shrink-0">
                 {Math.round(soundVolume * 100)}%
@@ -1086,7 +1252,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                           ? 'bg-[#111827] text-white border-[#111827]'
                           : 'bg-white/80 text-[#374151] border-[#E2E8F0]'
                         : pomodoroMode !== 'off'
-                        ? 'border-cyan-400/30'
+                        ? 'border-transparent'
                         : isLightMode
                         ? 'text-stone-600 bg-black/[0.04] border-stone-300'
                         : 'text-zinc-400 bg-white/[0.05] border-white/10 hover:text-white'
@@ -1190,7 +1356,13 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 aria-label={`Remaining lock time ${timerPixelLayout.normalizedText}`}
                 viewBox={`0 0 ${timerPixelLayout.totalCols} ${timerPixelLayout.totalRows}`}
                 className="h-12 sm:h-14 w-auto max-w-full overflow-visible"
-                style={isAero ? undefined : { filter: `drop-shadow(0 0 20px ${activeAccent}44)` }}
+                style={
+                  isAero
+                    ? undefined
+                    : {
+                        filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.95)) drop-shadow(0 2px 14px ${activeAccent}88)`,
+                      }
+                }
                 shapeRendering="crispEdges"
               >
                 <defs>
@@ -1204,11 +1376,23 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                           ? (themeRuntime.cssVars['--zero-ink-primary'] || '#1C1917')
                           : '#FFFFFF'
                       }
+                      stopOpacity={1}
                     />
-                    <stop offset="45%" stopColor={isAero ? '#111827' : activeAccent} />
+                    <stop
+                      offset="65%"
+                      stopColor={
+                        isAero
+                          ? '#1E293B'
+                          : isLightMode
+                          ? (themeRuntime.cssVars['--zero-ink-primary'] || '#1C1917')
+                          : '#FFFFFF'
+                      }
+                      stopOpacity={1}
+                    />
                     <stop
                       offset="100%"
-                      stopColor={isAero ? '#111827' : (themeRuntime.cssVars['--zero-dial-stroke'] || activeAccent)}
+                      stopColor={isAero ? (aeroAccentColor || '#0F172A') : activeAccent}
+                      stopOpacity={1}
                     />
                   </linearGradient>
                 </defs>
@@ -1225,6 +1409,56 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               </svg>
               <div className={`flex items-center gap-1.5 text-[10px] uppercase font-semibold tracking-widest mt-2 ${isAero ? 'text-[#5B6B79]' : isLightMode ? 'text-stone-500' : 'text-zinc-400'}`}>
                 <span>Target Finish {targetEndTimeFormatted}</span>
+              </div>
+
+              {/* Session Extension Controls: +15m, +30m, +1h */}
+              <div className="flex items-center justify-center gap-2 mt-2.5">
+                {[
+                  { label: '+15m', sec: 15 * 60 },
+                  { label: '+30m', sec: 30 * 60 },
+                  { label: '+1h', sec: 60 * 60 },
+                ].map(({ label, sec }) => {
+                  const wouldExceedBurnBoats =
+                    activeLock.burnTheBoats && activeLock.durationSeconds + sec > 14400;
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      disabled={wouldExceedBurnBoats}
+                      onClick={() => {
+                        if (wouldExceedBurnBoats) {
+                          haptics.reject();
+                          setTamperWarning('Burn the Boats sessions cannot exceed 4 hours.');
+                          setTimeout(() => setTamperWarning(null), 3000);
+                          return;
+                        }
+                        haptics.tick(850);
+                        onExtendLock?.(sec);
+                      }}
+                      title={
+                        wouldExceedBurnBoats
+                          ? 'Burn the Boats limit is 4 hours'
+                          : `Add ${label.replace('+', '')} to current session`
+                      }
+                      className={`px-3 py-1 rounded-full text-xs font-mono font-semibold transition-all cursor-pointer ${
+                        wouldExceedBurnBoats
+                          ? 'opacity-35 cursor-not-allowed bg-white/5 text-zinc-600 border border-white/5'
+                          : isAero
+                          ? 'bg-white border border-[#CBD5E1] text-[#0F172A] hover:bg-[#F1F5F9] shadow-xs active:scale-95'
+                          : isLightMode
+                          ? 'bg-amber-100/70 border border-amber-300 text-amber-900 hover:bg-amber-100 shadow-xs active:scale-95'
+                          : 'bg-white/[0.06] hover:bg-white/[0.12] text-white border transition-colors active:scale-95 shadow-sm'
+                      }`}
+                      style={
+                        !isAero && !isLightMode && !wouldExceedBurnBoats
+                          ? { borderColor: `${activeAccent}40`, color: '#FFFFFF' }
+                          : undefined
+                      }
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -1247,7 +1481,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                       }
                     : {
                         width: `${progressPct}%`,
-                        background: `linear-gradient(90deg, ${activeAccent}, ${themeRuntime.cssVars['--zero-dial-stroke'] || activeAccent})`,
+                        background: `linear-gradient(90deg, ${activeAccent}, ${hexToRgba(activeAccent, 0.85)})`,
                         boxShadow: `0 0 10px ${activeAccent}66`,
                       }
                 }
@@ -1307,7 +1541,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
         {/* Status Anti-Tamper & Phone Silence Shield Indicator */}
         <div className="flex items-center justify-between px-1 text-[11px] font-sans text-zinc-400">
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 size={12} className="text-cyan-400" />
+            <CheckCircle2 size={12} style={{ color: isAero ? '#111827' : activeAccent }} />
             <span className="truncate">Silent Mode • Calls &amp; WhatsApp Live</span>
           </div>
           <div className="flex items-center gap-2">

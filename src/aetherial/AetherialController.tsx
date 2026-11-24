@@ -65,6 +65,7 @@ export const AetherialController: React.FC<AetherialControllerProps> = ({
             environmentSecurity={store.environmentSecurity}
             onRefreshPermissions={store.refreshPermissions}
             onToggleSchedule={store.toggleSchedule}
+            onToggleScheduleBurnTheBoats={store.toggleScheduleBurnTheBoats}
             onAddSchedule={store.addSchedule}
             onDeleteSchedule={store.deleteSchedule}
             onTriggerTestWarning={store.triggerTestWarning}

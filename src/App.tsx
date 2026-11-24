@@ -299,13 +299,25 @@ export function App() {
   if (store.activeLock.isLocked) {
     if (isAetherial) {
       return (
-        <AetherialVoidView
-          activeLock={store.activeLock}
-          parachuteMetrics={store.parachuteMetrics}
-          activeBag={store.activeBag}
-          profile={store.profile}
-          onDeployParachute={store.deployParachute}
-        />
+        <InterfaceStyleProvider
+          interfaceStyle={store.interfaceStyle}
+          setInterfaceStyle={store.setInterfaceStyle}
+          materialYouSeed={store.materialYouSeed}
+          setMaterialYouSeed={store.setMaterialYouSeed}
+          materialYouAmoled={store.materialYouAmoled}
+          setMaterialYouAmoled={store.setMaterialYouAmoled}
+          themeConfig={store.themeConfig}
+          setThemeConfig={store.setThemeConfig}
+        >
+          <AetherialVoidView
+            activeLock={store.activeLock}
+            parachuteMetrics={store.parachuteMetrics}
+            activeBag={store.activeBag}
+            profile={store.profile}
+            onDeployParachute={store.deployParachute}
+            onExtendLock={store.extendLock}
+          />
+        </InterfaceStyleProvider>
       );
     }
     return (
@@ -326,6 +338,7 @@ export function App() {
           profile={store.profile}
           themeConfig={store.themeConfig}
           onDeployParachute={store.deployParachute}
+          onExtendLock={store.extendLock}
         />
       </InterfaceStyleProvider>
     );
@@ -699,6 +712,7 @@ export function App() {
             environmentSecurity={store.environmentSecurity}
             onRefreshPermissions={store.refreshPermissions}
             onToggleSchedule={store.toggleSchedule}
+            onToggleScheduleBurnTheBoats={store.toggleScheduleBurnTheBoats}
             onAddSchedule={store.addSchedule}
             onDeleteSchedule={store.deleteSchedule}
             onTriggerTestWarning={store.triggerTestWarning}

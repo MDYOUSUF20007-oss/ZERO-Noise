@@ -127,6 +127,9 @@ class AccessibilityOverlayController(
     private var nudgeView: View? = null
     private var nudgeAutoDismissRunnable: Runnable? = null
 
+    private var reminderBannerView: View? = null
+    private var reminderAutoDismissRunnable: Runnable? = null
+
     private fun dp(value: Int): Int {
         return maxOf(1, (value * serviceContext.resources.displayMetrics.density).toInt())
     }
@@ -746,6 +749,145 @@ class AccessibilityOverlayController(
         nudgeAutoDismissRunnable = null
         val view = nudgeView ?: return
         nudgeView = null
+        try {
+            windowManager?.removeViewImmediate(view)
+        } catch (_: Exception) {
+            try {
+                windowManager?.removeView(view)
+            } catch (_: Exception) {}
+        }
+    }
+
+    fun showFiveMinuteReminderBanner(
+        minutes: Int,
+        onSnooze: () -> Unit,
+        onExitToVoid: () -> Unit
+    ) {
+        val wm = windowManager ?: return
+        hideFiveMinuteReminderBanner()
+
+        val palette = resolveOverlayPalette()
+        val bannerContainer = LinearLayout(serviceContext).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(44), dp(16), dp(8))
+        }
+
+        val card = LinearLayout(serviceContext).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(14), dp(16), dp(14))
+            background = boxDrawable(
+                fillColor = VoidThemeStore.withAlpha(palette.cardBgColor, 248),
+                borderColor = palette.accentColor,
+                cornerRadiusPx = palette.controlRadiusPx,
+                strokePx = dpF(if (palette.isBespoke) 1.5f else 2f)
+            )
+        }
+
+        val title = TextView(serviceContext).apply {
+            text = "MINDFUL VOID REMINDER"
+            setTextColor(palette.accentColor)
+            textSize = 10.5f
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+            letterSpacing = 0.08f
+        }
+        card.addView(title)
+
+        val body = TextView(serviceContext).apply {
+            text = "It's been $minutes minutes you are here"
+            setTextColor(Color.WHITE)
+            textSize = 13.5f
+            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+            setPadding(0, dp(4), 0, dp(12))
+        }
+        card.addView(body)
+
+        val buttonRow = LinearLayout(serviceContext).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val snoozeButton = Button(serviceContext).apply {
+            text = "Snooze 10m"
+            isAllCaps = false
+            textSize = 11.5f
+            setTextColor(Color.WHITE)
+            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+            background = boxDrawable(
+                fillColor = palette.secondaryBgColor,
+                borderColor = palette.accentColor,
+                cornerRadiusPx = palette.controlRadiusPx,
+                strokePx = dpF(1f)
+            )
+            setPadding(dp(14), dp(6), dp(14), dp(6))
+            val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                dp(34)
+            ).apply {
+                marginEnd = dp(10)
+            }
+            layoutParams = lp
+            setOnClickListener {
+                hideFiveMinuteReminderBanner()
+                onSnooze()
+            }
+        }
+        buttonRow.addView(snoozeButton)
+
+        val exitButton = Button(serviceContext).apply {
+            text = "Back to Void"
+            isAllCaps = false
+            textSize = 11.5f
+            setTextColor(Color.BLACK)
+            typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+            background = boxDrawable(
+                fillColor = palette.accentColor,
+                borderColor = palette.accentColor,
+                cornerRadiusPx = palette.controlRadiusPx,
+                strokePx = dpF(1f)
+            )
+            setPadding(dp(14), dp(6), dp(14), dp(6))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                dp(34)
+            )
+            setOnClickListener {
+                hideFiveMinuteReminderBanner()
+                onExitToVoid()
+            }
+        }
+        buttonRow.addView(exitButton)
+
+        card.addView(buttonRow)
+        bannerContainer.addView(card)
+
+        val params = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+        }
+
+        try {
+            wm.addView(bannerContainer, params)
+            reminderBannerView = bannerContainer
+            val dismissTask = Runnable { hideFiveMinuteReminderBanner() }
+            reminderAutoDismissRunnable = dismissTask
+            mainHandler.postDelayed(dismissTask, 20_000L)
+        } catch (_: Exception) {
+            reminderBannerView = null
+        }
+    }
+
+    fun hideFiveMinuteReminderBanner() {
+        reminderAutoDismissRunnable?.let { mainHandler.removeCallbacks(it) }
+        reminderAutoDismissRunnable = null
+        val view = reminderBannerView ?: return
+        reminderBannerView = null
         try {
             windowManager?.removeViewImmediate(view)
         } catch (_: Exception) {

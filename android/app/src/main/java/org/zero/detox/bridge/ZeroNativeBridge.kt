@@ -863,6 +863,11 @@ class ZeroNativeBridge(
     }
 
     @JavascriptInterface
+    fun extendSession(additionalSeconds: Long): Boolean {
+        return lockEngine.extendSession(additionalSeconds)
+    }
+
+    @JavascriptInterface
     fun deployParachute(): Boolean {
         val timing = lockEngine.getCurrentTiming()
         if (timing.burnTheBoats) return false
@@ -913,8 +918,7 @@ class ZeroNativeBridge(
         if (!bagStore.isPackageAllowedDuringLock(packageName)) {
             return false
         }
-        TheVoidActivity.activeBagPackage = packageName
-        TheVoidActivity.bagLaunchGraceUntilElapsed = SystemClock.elapsedRealtime() + 3500L
+        TheVoidActivity.startBagSession(packageName)
         return try {
             val launchIntent = activity.packageManager.getLaunchIntentForPackage(packageName)
                 ?: if (packageName.contains("morphe") || packageName.contains("youtube")) {
@@ -943,8 +947,7 @@ class ZeroNativeBridge(
 
     @JavascriptInterface
     fun launchYouTubeOrMorphApp(): Boolean {
-        TheVoidActivity.activeBagPackage = "com.google.android.youtube"
-        TheVoidActivity.bagLaunchGraceUntilElapsed = SystemClock.elapsedRealtime() + 5000L
+        TheVoidActivity.startBagSession("com.google.android.youtube")
         val candidates = listOf(
             "app.morphe.android.youtube",
             "app.morphe.youtube",
@@ -969,7 +972,7 @@ class ZeroNativeBridge(
 
     @JavascriptInterface
     fun openYouTubeUrl(url: String): Boolean {
-        TheVoidActivity.bagLaunchGraceUntilElapsed = SystemClock.elapsedRealtime() + 5000L
+        TheVoidActivity.startBagSession("com.google.android.youtube")
         return try {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -984,10 +987,9 @@ class ZeroNativeBridge(
     @JavascriptInterface
     fun launchDialerApp(): Boolean {
         val nowElapsed = SystemClock.elapsedRealtime()
-        TheVoidActivity.dialerGraceUntilElapsed = nowElapsed + 15000L
-        TheVoidActivity.bagLaunchGraceUntilElapsed = nowElapsed + 5000L
-        val primary = bagStore.getPrimaryDialerPackage()
-        TheVoidActivity.activeBagPackage = primary ?: "dialer"
+        TheVoidActivity.dialerGraceUntilElapsed = nowElapsed + 3600_000L
+        val primary = bagStore.getPrimaryDialerPackage() ?: "com.google.android.dialer"
+        TheVoidActivity.startBagSession(primary)
 
         // 1. Try ACTION_DIAL with tel:
         try {
@@ -1009,13 +1011,11 @@ class ZeroNativeBridge(
 
         // 3. Try primary dialer explicit launch intent
         try {
-            if (primary != null) {
-                val launchIntent = activity.packageManager.getLaunchIntentForPackage(primary)
-                if (launchIntent != null) {
-                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    activity.startActivity(launchIntent)
-                    return true
-                }
+            val launchIntent = activity.packageManager.getLaunchIntentForPackage(primary)
+            if (launchIntent != null) {
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity.startActivity(launchIntent)
+                return true
             }
         } catch (_: Exception) {}
 
@@ -1026,7 +1026,7 @@ class ZeroNativeBridge(
                 if (launchIntent != null) {
                     launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     activity.startActivity(launchIntent)
-                    TheVoidActivity.activeBagPackage = candidate
+                    TheVoidActivity.startBagSession(candidate)
                     return true
                 }
             }
@@ -1037,7 +1037,8 @@ class ZeroNativeBridge(
 
     @JavascriptInterface
     fun launchPaymentApp(packageName: String): Boolean {
-        TheVoidActivity.bagLaunchGraceUntilElapsed = SystemClock.elapsedRealtime() + 5000L
+        val target = if (packageName == "upi" || packageName.isBlank()) "in.org.npci.upiapp" else packageName
+        TheVoidActivity.startBagSession(target)
         return try {
             if (packageName == "upi" || packageName.isBlank()) {
                 val upiIntent = Intent(Intent.ACTION_VIEW, Uri.parse("upi://pay")).apply {
@@ -1058,6 +1059,16 @@ class ZeroNativeBridge(
         } catch (_: Exception) {
             false
         }
+    }
+
+    @JavascriptInterface
+    fun resetVoidBagSession() {
+        TheVoidActivity.resetBagSession()
+    }
+
+    @JavascriptInterface
+    fun snoozeBagReminder(minutes: Int) {
+        TheVoidActivity.snoozeSession(if (minutes > 0) minutes else 10)
     }
 
     @JavascriptInterface

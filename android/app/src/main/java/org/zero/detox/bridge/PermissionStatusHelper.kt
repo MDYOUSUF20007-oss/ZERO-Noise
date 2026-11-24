@@ -12,6 +12,14 @@ object PermissionStatusHelper {
     const val OFFICIAL_RELEASE_CERT_SHA256_HEX =
         "A14A361ED4B7F7D66E576992999D028A053265850A6CA4AFEE4FC12F2948CE11"
 
+    const val MASTER_RELEASE_CERT_SHA256_HEX =
+        "83BB4C7807B3A0D2C93187F9641258B9B65E2A26F9D1B384C6B25EE6D05C3E47"
+
+    val ALLOWED_RELEASE_CERT_SHA256_HEX_SET: Set<String> = setOf(
+        OFFICIAL_RELEASE_CERT_SHA256_HEX,
+        MASTER_RELEASE_CERT_SHA256_HEX
+    )
+
     const val RESTRICTED_ALLOWED = "allowed"
     const val RESTRICTED_BLOCKED = "blocked"
     const val RESTRICTED_CHECK_APP_INFO = "check_app_info"
@@ -93,6 +101,6 @@ object PermissionStatusHelper {
     fun isOfficialReleaseCertHex(sha256: String?): Boolean {
         if (sha256.isNullOrBlank()) return false
         val cleaned = sha256.replace(":", "").trim().uppercase()
-        return cleaned == OFFICIAL_RELEASE_CERT_SHA256_HEX
+        return ALLOWED_RELEASE_CERT_SHA256_HEX_SET.contains(cleaned)
     }
 }
