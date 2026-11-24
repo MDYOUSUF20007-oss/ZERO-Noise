@@ -18,7 +18,7 @@ export interface EscapeTicketDockButtonProps {
 export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
   ticketCount = 0,
   onOpen,
-  accentColor,
+  accentColor: _accentColor,
   className = '',
   style,
   isAero = false,
@@ -36,7 +36,7 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
 
   if (!ticketCount || ticketCount <= 0) return null;
 
-  const primaryAccent = isAeroTheme ? 'var(--aero-palette-color, #0f172a)' : (accentColor || 'var(--accent-hex, #7dd3fc)');
+  const primaryAccent = '#E69F86';
 
   return (
     <button
@@ -59,21 +59,20 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
           <linearGradient id={bgGradId} x1="0" y1="0" x2="296" y2="124" gradientUnits="userSpaceOnUse">
             {isAeroTheme ? (
               <>
-                <stop offset="0%" stopColor="#FFFFFF" />
-                <stop offset="100%" stopColor="#FFFFFF" />
+                <stop offset="0%" stopColor="#F8F4F0" />
+                <stop offset="100%" stopColor="#F3EDE8" />
               </>
             ) : (
               <>
-                <stop offset="0%" stopColor="#0c1118" />
-                <stop offset="55%" stopColor="#070a0f" />
-                <stop offset="100%" stopColor="#040609" />
+                <stop offset="0%" stopColor="#2C314C" />
+                <stop offset="100%" stopColor="#24283F" />
               </>
             )}
           </linearGradient>
           <linearGradient id={specularGradId} x1="0" y1="0" x2="296" y2="124" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor={primaryAccent} stopOpacity={isAeroTheme ? 0.9 : 0.85} />
-            <stop offset="45%" stopColor={primaryAccent} stopOpacity={isAeroTheme ? 0.6 : 0.35} />
-            <stop offset="100%" stopColor={isAeroTheme ? '#E2E8F0' : '#1e293b'} stopOpacity="0.6" />
+            <stop offset="0%" stopColor={primaryAccent} stopOpacity={0.9} />
+            <stop offset="45%" stopColor={primaryAccent} stopOpacity={0.5} />
+            <stop offset="100%" stopColor={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(243, 237, 232, 0.12)'} stopOpacity="0.6" />
           </linearGradient>
           <clipPath id={clipId}>
             <path d="M 16 2 L 68 2 L 74 8 L 80 2 L 280 2 A 14 14 0 0 1 294 16 L 294 48 A 14 14 0 0 0 294 76 L 294 108 A 14 14 0 0 1 280 122 L 80 122 L 74 116 L 68 122 L 16 122 A 14 14 0 0 1 2 108 L 2 76 A 14 14 0 0 0 2 48 L 2 16 A 14 14 0 0 1 16 2 Z" />
@@ -82,24 +81,22 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
 
         <g clipPath={`url(#${clipId})`}>
           {/* Base Fill */}
-          <rect x="0" y="0" width="296" height="124" fill={isAeroTheme ? '#FFFFFF' : `url(#${bgGradId})`} />
+          <rect x="0" y="0" width="296" height="124" fill={`url(#${bgGradId})`} />
 
           {/* Subtle Left Stub Tint */}
-          <rect x="0" y="0" width="74" height="124" fill={isAeroTheme ? '#F8FAFC' : primaryAccent} fillOpacity={isAeroTheme ? 1 : 0.035} />
+          <rect x="0" y="0" width="74" height="124" fill={isAeroTheme ? '#EDE6DF' : '#202438'} />
 
-          {/* Ambient Specular Sheen Sweep (dark only) */}
-          {!isAeroTheme && (
-            <rect
-              className="zn-dock-sheen"
-              x="-120"
-              y="0"
-              width="90"
-              height="124"
-              fill={primaryAccent}
-              fillOpacity="0.07"
-              transform="skewX(-22)"
-            />
-          )}
+          {/* Ambient Specular Sheen Sweep */}
+          <rect
+            className="zn-dock-sheen"
+            x="-120"
+            y="0"
+            width="90"
+            height="124"
+            fill={primaryAccent}
+            fillOpacity={isAeroTheme ? 0.04 : 0.08}
+            transform="skewX(-22)"
+          />
 
           {/* Vertical Perforation Seam at 25% (x=74) */}
           <line
@@ -107,28 +104,41 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
             y1="10"
             x2="74"
             y2="114"
-            stroke={isAeroTheme ? '#CBD5E1' : primaryAccent}
-            strokeOpacity={isAeroTheme ? 0.8 : 0.45}
+            stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.16)' : 'rgba(243, 237, 232, 0.16)'}
             strokeWidth="1.5"
             strokeDasharray="4 4"
           />
 
           {/* Left Stub Grip Dots */}
-          <circle cx="38" cy="48" r="2" fill={primaryAccent} fillOpacity={isAeroTheme ? 0.8 : 0.45} />
-          <circle cx="38" cy="62" r="2" fill={primaryAccent} fillOpacity={isAeroTheme ? 1 : 0.7} />
-          <circle cx="38" cy="76" r="2" fill={primaryAccent} fillOpacity={isAeroTheme ? 0.8 : 0.45} />
+          <circle cx="38" cy="48" r="2" fill={primaryAccent} fillOpacity="0.7" />
+          <circle cx="38" cy="62" r="2" fill={primaryAccent} fillOpacity="1" />
+          <circle cx="38" cy="76" r="2" fill={primaryAccent} fillOpacity="0.7" />
 
-          {/* Aero In-Ticket Typography */}
-          {isAeroTheme && (
-            <>
-              <text x="180" y="38" textAnchor="middle" fill="#0f172a" fontSize="11" fontWeight="800" letterSpacing="0.08em" fontFamily="system-ui, sans-serif">
-                ESCAPE TICKET
-              </text>
-              <text x="180" y="96" textAnchor="middle" fill="#0f172a" fontSize="10.5" fontWeight="700" letterSpacing="0.04em" fontFamily="system-ui, sans-serif">
-                {ticketCount} {ticketCount === 1 ? 'TICKET' : 'TICKETS'} AVAILABLE
-              </text>
-            </>
-          )}
+          {/* In-Ticket Typography */}
+          <text
+            x="180"
+            y="38"
+            textAnchor="middle"
+            fill={isAeroTheme ? '#353B5B' : '#F3EDE8'}
+            fontSize="11"
+            fontWeight="800"
+            letterSpacing="0.08em"
+            fontFamily="system-ui, sans-serif"
+          >
+            ESCAPE TICKET
+          </text>
+          <text
+            x="180"
+            y="96"
+            textAnchor="middle"
+            fill={isAeroTheme ? '#353B5B' : '#F3EDE8'}
+            fontSize="10.5"
+            fontWeight="700"
+            letterSpacing="0.04em"
+            fontFamily="system-ui, sans-serif"
+          >
+            {ticketCount} {ticketCount === 1 ? 'TICKET' : 'TICKETS'} AVAILABLE
+          </text>
 
           {/* Right Body Live Breathing Damped Waveform */}
           <path
@@ -144,18 +154,18 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
           {/* Outer & Inner Concentric Hairline Borders */}
           <path
             d="M 16 2 L 68 2 L 74 8 L 80 2 L 280 2 A 14 14 0 0 1 294 16 L 294 48 A 14 14 0 0 0 294 76 L 294 108 A 14 14 0 0 1 280 122 L 80 122 L 74 116 L 68 122 L 16 122 A 14 14 0 0 1 2 108 L 2 76 A 14 14 0 0 0 2 48 L 2 16 A 14 14 0 0 1 16 2 Z"
-            stroke={isAeroTheme ? '#CBD5E1' : '#1e293b'}
-            strokeWidth={isAeroTheme ? "1.75" : "2"}
+            stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(243, 237, 232, 0.12)'}
+            strokeWidth="1.75"
           />
           <path
             d="M 19 7 L 66 7 L 74 14 L 82 7 L 277 7 A 10 10 0 0 1 289 19 L 289 45 A 17 17 0 0 0 289 79 L 289 105 A 10 10 0 0 1 277 117 L 82 117 L 74 110 L 66 117 L 19 117 A 10 10 0 0 1 277 117 L 82 117 L 74 110 L 66 117 L 19 117 A 10 10 0 0 1 7 105 L 7 79 A 17 17 0 0 0 7 45 L 7 19 A 10 10 0 0 1 19 7 Z"
-            stroke={isAeroTheme ? '#F1F5F9' : `url(#${specularGradId})`}
+            stroke={`url(#${specularGradId})`}
             strokeWidth="1.25"
           />
         </g>
       </svg>
 
-      <span className={`zn-dock-ticket-badge ${isAeroTheme ? 'border-2 border-white shadow-md' : ''}`}>
+      <span className="zn-dock-ticket-badge">
         ×{ticketCount}
       </span>
     </button>
@@ -210,7 +220,7 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
   ticketCount,
   onClose,
   onEscapeConfirmed,
-  accentColor,
+  accentColor = '#E69F86',
   isAero = false,
   parachuteMetrics,
 }) => {
@@ -247,7 +257,7 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
   const stubClipId = `znStubClip_${uid}`;
   const mainClipId = `znMainClip_${uid}`;
 
-  const primaryAccent = isAeroTheme ? 'var(--aero-palette-color, #0f172a)' : (accentColor || 'var(--accent-hex, #7dd3fc)');
+  const primaryAccent = '#E69F86';
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -609,15 +619,11 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label="Escape Ticket"
-      style={
-        isAeroTheme
-          ? {
-              background: 'rgba(218, 234, 243, 0.92)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-            }
-          : undefined
-      }
+      style={{
+        background: isAeroTheme ? 'rgba(243, 237, 232, 0.95)' : 'rgba(36, 40, 63, 0.95)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+      }}
     >
       {/* 2D Particle Sparks & Void Fracture Canvas */}
       <canvas ref={canvasRef} className="zn-escape-canvas" />
@@ -627,8 +633,8 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
         <span
           className={`zn-escape-pill ${
             isAeroTheme
-              ? 'bg-white border border-[#CBD5E1] text-[#0f172a] shadow-sm font-bold'
-              : ''
+              ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.12)] text-[#353B5B] shadow-sm font-bold'
+              : 'bg-[#2C314C] border border-[rgba(243,237,232,0.12)] text-[#F3EDE8] shadow-sm font-bold'
           }`}
         >
           {isEscaped ? 'VOID LOCK // RELEASED' : `TICKETS AVAILABLE: ${effectiveTicketCount}`}
@@ -638,8 +644,8 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
             type="button"
             className={`zn-escape-close ${
               isAeroTheme
-                ? 'bg-white border border-[#CBD5E1] text-[#0f172a] hover:bg-[#F1F5F9] shadow-sm'
-                : ''
+                ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.12)] text-[#353B5B] hover:bg-[#EDE6DF] shadow-sm'
+                : 'bg-[#2C314C] border border-[rgba(243,237,232,0.12)] text-[#F3EDE8] hover:bg-[#202438] shadow-sm'
             }`}
             onClick={() => {
               haptics.tick(150);
@@ -667,28 +673,26 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
             <linearGradient id={mainBgId} x1="160" y1="0" x2="640" y2="296" gradientUnits="userSpaceOnUse">
               {isAeroTheme ? (
                 <>
-                  <stop offset="0%" stopColor="#FFFFFF" />
-                  <stop offset="70%" stopColor="#FFFFFF" />
-                  <stop offset="100%" stopColor="#F8FAFC" />
+                  <stop offset="0%" stopColor="#F8F4F0" />
+                  <stop offset="100%" stopColor="#F3EDE8" />
                 </>
               ) : (
                 <>
-                  <stop offset="0%" stopColor="#0a0e14" />
-                  <stop offset="55%" stopColor="#06080c" />
-                  <stop offset="100%" stopColor="#030407" />
+                  <stop offset="0%" stopColor="#2C314C" />
+                  <stop offset="100%" stopColor="#24283F" />
                 </>
               )}
             </linearGradient>
             <linearGradient id={stubBgId} x1="0" y1="0" x2="160" y2="296" gradientUnits="userSpaceOnUse">
               {isAeroTheme ? (
                 <>
-                  <stop offset="0%" stopColor="#F8FAFC" />
-                  <stop offset="100%" stopColor="#F1F5F9" />
+                  <stop offset="0%" stopColor="#EDE6DF" />
+                  <stop offset="100%" stopColor="#E5DDD5" />
                 </>
               ) : (
                 <>
-                  <stop offset="0%" stopColor="#0e1520" />
-                  <stop offset="100%" stopColor="#070a10" />
+                  <stop offset="0%" stopColor="#202438" />
+                  <stop offset="100%" stopColor="#1A1D2E" />
                 </>
               )}
             </linearGradient>
@@ -696,14 +700,14 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               {isAeroTheme ? (
                 <>
                   <stop offset="0%" stopColor={primaryAccent} stopOpacity="0.85" />
-                  <stop offset="50%" stopColor="#CBD5E1" stopOpacity="0.9" />
-                  <stop offset="100%" stopColor="#E2E8F0" stopOpacity="0.8" />
+                  <stop offset="50%" stopColor="rgba(53, 59, 91, 0.16)" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="rgba(53, 59, 91, 0.08)" stopOpacity="0.8" />
                 </>
               ) : (
                 <>
-                  <stop offset="0%" stopColor={primaryAccent} stopOpacity={isEscaped ? '1' : '0.82'} />
-                  <stop offset="50%" stopColor={primaryAccent} stopOpacity={isEscaped ? '0.9' : '0.32'} />
-                  <stop offset="100%" stopColor="#334155" stopOpacity="0.65" />
+                  <stop offset="0%" stopColor={primaryAccent} stopOpacity="0.85" />
+                  <stop offset="50%" stopColor="rgba(243, 237, 232, 0.16)" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="rgba(243, 237, 232, 0.08)" stopOpacity="0.8" />
                 </>
               )}
             </linearGradient>
@@ -743,10 +747,9 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
             <text
               x="204"
               y="44"
-              fill={isAeroTheme ? '#475569' : primaryAccent}
-              fillOpacity={isAeroTheme ? 1 : 0.7}
+              fill={isAeroTheme ? 'rgba(53, 59, 91, 0.75)' : 'rgba(243, 237, 232, 0.75)'}
               fontSize="10.5"
-              fontWeight={isAeroTheme ? '700' : 'normal'}
+              fontWeight="700"
               fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
               letterSpacing="2.4"
             >
@@ -757,7 +760,7 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
             <text
               x="204"
               y="102"
-              fill={isAeroTheme ? '#0f172a' : (isEscaped ? primaryAccent : '#f8fafc')}
+              fill={isAeroTheme ? '#353B5B' : (isEscaped ? primaryAccent : '#F3EDE8')}
               fontSize="36"
               fontWeight="800"
               fontFamily="system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
@@ -779,9 +782,9 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               x="594"
               y="142"
               textAnchor="end"
-              fill={isAeroTheme ? '#64748b' : '#64748b'}
+              fill={isAeroTheme ? 'rgba(53, 59, 91, 0.60)' : 'rgba(243, 237, 232, 0.60)'}
               fontSize="9.5"
-              fontWeight={isAeroTheme ? '600' : 'normal'}
+              fontWeight="600"
               fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
               letterSpacing="1.6"
             >
@@ -789,18 +792,18 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
             </text>
 
             {/* Bottom Divider & Destination Line Only */}
-            <line x1="204" y1="228" x2="594" y2="228" stroke={isAeroTheme ? '#E2E8F0' : '#1e293b'} strokeWidth="1" />
+            <line x1="204" y1="228" x2="594" y2="228" stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(243, 237, 232, 0.12)'} strokeWidth="1" />
             <text
               x="204"
               y="258"
-              fill={isAeroTheme ? '#475569' : '#94a3b8'}
+              fill={isAeroTheme ? 'rgba(53, 59, 91, 0.75)' : 'rgba(243, 237, 232, 0.75)'}
               fontSize="11.5"
-              fontWeight={isAeroTheme ? '600' : 'normal'}
+              fontWeight="600"
               fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
               letterSpacing="2.6"
             >
               DESTINATION:{' '}
-              <tspan fill={isAeroTheme ? '#0f172a' : '#f8fafc'} fontWeight="700">
+              <tspan fill={isAeroTheme ? '#353B5B' : '#F3EDE8'} fontWeight="700">
                 ESCAPE
               </tspan>
             </text>
@@ -808,12 +811,12 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
             {/* Outer & Inner Specular Borders (Main Body) */}
             <path
               d="M 160 14 L 168 4 L 618 4 A 18 18 0 0 1 636 22 L 636 120 A 28 28 0 0 0 636 176 L 636 274 A 18 18 0 0 1 618 292 L 168 292 L 160 282"
-              stroke={isAeroTheme ? '#CBD5E1' : '#1e293b'}
+              stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(243, 237, 232, 0.12)'}
               strokeWidth="2"
             />
             <path
               d="M 166 20 L 172 11 L 614 11 A 12 12 0 0 1 629 25 L 629 115 A 34 34 0 0 0 629 181 L 629 271 A 12 12 0 0 1 614 285 L 172 285 L 166 276"
-              stroke={isAeroTheme ? '#F1F5F9' : `url(#${iceBorderId})`}
+              stroke={`url(#${iceBorderId})`}
               strokeWidth="1.25"
             />
           </g>
@@ -826,8 +829,8 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               y1={tearY}
               x2="160"
               y2="282"
-              stroke={isAeroTheme ? '#94A3B8' : primaryAccent}
-              strokeOpacity={isAeroTheme ? 0.9 : 0.5}
+              stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.16)' : 'rgba(243, 237, 232, 0.16)'}
+              strokeOpacity={0.9}
               strokeWidth="1.6"
               strokeDasharray="5 5"
             />
@@ -857,8 +860,8 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
                 width="26"
                 height="184"
                 rx="13"
-                fill={isAeroTheme ? '#E2E8F0' : '#030508'}
-                stroke={isAeroTheme ? '#CBD5E1' : '#1e293b'}
+                fill={isAeroTheme ? '#EDE6DF' : '#202438'}
+                stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(243, 237, 232, 0.12)'}
                 strokeWidth="1.2"
               />
 
@@ -888,9 +891,9 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               <text
                 x="48"
                 y="148"
-                fill={isAeroTheme ? '#64748b' : '#64748b'}
+                fill={isAeroTheme ? 'rgba(53, 59, 91, 0.60)' : 'rgba(243, 237, 232, 0.60)'}
                 fontSize="9.5"
-                fontWeight={isAeroTheme ? '700' : 'normal'}
+                fontWeight="700"
                 fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
                 letterSpacing="2.2"
                 textAnchor="middle"
@@ -902,12 +905,12 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
               {/* Outer & Inner Specular Borders (Left Stub) */}
               <path
                 d="M 160 14 L 152 4 L 22 4 A 18 18 0 0 0 4 22 L 4 120 A 28 28 0 0 1 4 176 L 4 274 A 18 18 0 0 0 22 292 L 152 292 L 160 282"
-                stroke={isAeroTheme ? '#CBD5E1' : '#1e293b'}
+                stroke={isAeroTheme ? 'rgba(53, 59, 91, 0.12)' : 'rgba(243, 237, 232, 0.12)'}
                 strokeWidth="2"
               />
               <path
                 d="M 154 20 L 148 11 L 26 11 A 12 12 0 0 0 11 25 L 11 115 A 34 34 0 0 1 11 181 L 11 271 A 12 12 0 0 0 26 285 L 148 285 L 154 276"
-                stroke={isAeroTheme ? '#F1F5F9' : `url(#${iceBorderId})`}
+                stroke={`url(#${iceBorderId})`}
                 strokeWidth="1.25"
               />
             </g>
@@ -930,11 +933,19 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
       {/* Minimal Bottom Hint */}
       <div className="zn-escape-footer">
         {isEscaped ? (
-          <span className={`zn-escape-hint zn-escape-hint--active ${isAeroTheme ? 'bg-white border border-[#CBD5E1] text-[#0f172a] shadow-sm font-bold' : ''}`}>
+          <span className={`zn-escape-hint zn-escape-hint--active ${
+            isAeroTheme
+              ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.12)] text-[#353B5B] shadow-sm font-bold'
+              : 'bg-[#2C314C] border border-[rgba(243,237,232,0.12)] text-[#F3EDE8] shadow-sm font-bold'
+          }`}>
             ESCAPING THE VOID...
           </span>
         ) : (
-          <span className={`zn-escape-hint ${isAeroTheme ? 'bg-white border border-[#CBD5E1] text-[#0f172a] shadow-sm font-bold' : ''}`}>
+          <span className={`zn-escape-hint ${
+            isAeroTheme
+              ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.12)] text-[#353B5B] shadow-sm font-bold'
+              : 'bg-[#2C314C] border border-[rgba(243,237,232,0.12)] text-[#F3EDE8] shadow-sm font-bold'
+          }`}>
             SLIDE LEFT STUB DOWN TO RIP
           </span>
         )}

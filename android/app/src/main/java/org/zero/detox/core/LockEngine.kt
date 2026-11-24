@@ -12,6 +12,7 @@ import org.zero.detox.MainActivity
 import org.zero.detox.data.ParachuteStore
 import org.zero.detox.engage.EngageConfigStore
 import org.zero.detox.service.LockForegroundService
+import org.zero.detox.service.ZeroTileService
 import org.zero.detox.ui.TheVoidActivity
 import org.zero.detox.widget.WidgetDataStore
 import org.zero.detox.widget.ZeroWidgetUpdater
@@ -272,6 +273,7 @@ class LockEngine @JvmOverloads constructor(
 
         try {
             ZeroWidgetUpdater.requestAllUpdates(context)
+            ZeroTileService.requestTileUpdate(context)
         } catch (_: Throwable) {}
     }
 
@@ -318,6 +320,7 @@ class LockEngine @JvmOverloads constructor(
 
         try {
             ZeroWidgetUpdater.requestAllUpdates(context)
+            ZeroTileService.requestTileUpdate(context)
         } catch (_: Throwable) {}
 
         return@synchronized true
@@ -464,6 +467,7 @@ class LockEngine @JvmOverloads constructor(
 
         try {
             ZeroWidgetUpdater.requestAllUpdates(context)
+            ZeroTileService.requestTileUpdate(context)
         } catch (_: Throwable) {}
     }
 

@@ -2,9 +2,8 @@
 import { useInterfaceStyle } from '../context/InterfaceStyleContext';
 
 /**
- * Ambient Background Mesh (Zero-Heat Optical Glass Core)
- * Optimized 2-corner radial glow layout (Upper Left & Lower Right).
- * When Aero UI is active, renders airy mist-blue sky with two soft sunlit cloud glows.
+ * Ambient Background Mesh (Strict 3-Color Ceramic & Twilight Core)
+ * Warm Porcelain (Day) & Twilight Dusk (Night) soft low-fatigue glows.
  */
 export const AmbientBackground: React.FC = memo(() => {
   const { isAero } = useInterfaceStyle();
@@ -13,25 +12,28 @@ export const AmbientBackground: React.FC = memo(() => {
     return (
       <div
         aria-hidden="true"
-        className="fixed inset-0 z-0 pointer-events-none overflow-hidden aero-canvas"
-        style={{ contain: 'strict' }}
+        className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+        style={{
+          background: 'linear-gradient(180deg, #F3EDE8 0%, #EDE6DF 40%, #F8F4F0 100%)',
+          contain: 'strict',
+        }}
       >
-        {/* Sunlit Cloud Glow 1 (Upper Left) */}
+        {/* Soft Porcelain Surface Light (Upper Left) */}
         <div
-          className="absolute -top-16 -left-12 w-[440px] h-[440px] rounded-full pointer-events-none"
+          className="absolute -top-16 -left-12 w-[480px] h-[480px] rounded-full pointer-events-none"
           style={{
             background:
-              'radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.40) 42%, transparent 70%)',
-            filter: 'blur(32px)',
+              'radial-gradient(circle at 40% 40%, rgba(248, 244, 240, 0.95) 0%, rgba(243, 237, 232, 0.50) 45%, transparent 72%)',
+            filter: 'blur(36px)',
           }}
         />
-        {/* Sunlit Cloud Glow 2 (Upper Right) */}
+        {/* Soothing Sunset Peach Depth (Lower Right) */}
         <div
-          className="absolute -top-12 -right-16 w-[420px] h-[420px] rounded-full pointer-events-none"
+          className="absolute -bottom-24 -right-20 w-[440px] h-[440px] rounded-full pointer-events-none"
           style={{
             background:
-              'radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.35) 45%, transparent 70%)',
-            filter: 'blur(36px)',
+              'radial-gradient(circle at 75% 75%, rgba(230, 159, 134, 0.14) 0%, rgba(243, 237, 232, 0.20) 45%, transparent 70%)',
+            filter: 'blur(48px)',
           }}
         />
       </div>
@@ -41,16 +43,28 @@ export const AmbientBackground: React.FC = memo(() => {
   return (
     <div
       aria-hidden="true"
-      className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-black zero-ambient-canvas"
-      style={{ contain: 'strict' }}
+      className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, #24283F 0%, #1E2135 40%, #2C314C 100%)',
+        contain: 'strict',
+      }}
     >
-      {/* Node 1: Celestial Anchor (Upper Left Corner) */}
+      {/* Twilight Indigo Anchor (Upper Left) */}
       <div
-        className="ambient-mesh-node-1 absolute -top-28 -left-24 w-[480px] h-[480px] sm:w-[620px] sm:h-[620px] rounded-full pointer-events-none"
+        className="absolute -top-28 -left-24 w-[480px] h-[480px] sm:w-[620px] sm:h-[620px] rounded-full pointer-events-none"
         style={{
           background:
-            'radial-gradient(circle at 45% 45%, var(--accent-primary) 0%, var(--accent-soft) 32%, transparent 70%)',
-          opacity: 'calc(var(--ambient-glow-opacity, 0.35) * 0.90)',
+            'radial-gradient(circle at 45% 45%, rgba(53, 59, 91, 0.40) 0%, rgba(36, 40, 63, 0.20) 45%, transparent 70%)',
+          filter: 'blur(40px)',
+        }}
+      />
+      {/* Soothing Sunset Peach Glow (Lower Right) */}
+      <div
+        className="absolute -bottom-28 -right-24 w-[460px] h-[460px] rounded-full pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(circle at 75% 75%, rgba(230, 159, 134, 0.15) 0%, transparent 65%)',
+          filter: 'blur(44px)',
         }}
       />
     </div>

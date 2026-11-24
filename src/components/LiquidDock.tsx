@@ -39,7 +39,7 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
     >
       <div
         className={`liquid-dock rounded-[2rem] p-1.5 relative overflow-hidden ${
-          isAero ? 'bg-white border border-[#F1F5F9] shadow-[0_-4px_20px_rgba(15,23,42,0.05),0_10px_30px_rgba(15,23,42,0.08)]' : ''
+          isAero ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] shadow-[0_-4px_20px_rgba(53,59,91,0.05),0_10px_30px_rgba(53,59,91,0.08)]' : ''
         }`}
       >
         {/* Top specular refraction highlight */}
@@ -69,8 +69,8 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
               style={
                 isAero
                   ? {
-                      background: 'rgba(17, 24, 39, 0.08)',
-                      border: '1px solid rgba(17, 24, 39, 0.12)',
+                      background: 'rgba(232, 104, 38, 0.12)',
+                      border: '1px solid rgba(232, 104, 38, 0.28)',
                       boxShadow: 'none',
                     }
                   : {
@@ -97,8 +97,8 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
                 className={`relative z-10 flex flex-col items-center justify-center py-2 px-1 rounded-full liquid-spring ${
                   isAero
                     ? active
-                      ? 'text-[#111827]'
-                      : 'text-[#9CA3AF] hover:text-[#111827]'
+                      ? 'text-[var(--accent-primary,#E69F86)]'
+                      : 'text-[#353B5B]/70 hover:text-[#353B5B]'
                     : active
                     ? 'text-white'
                     : 'text-zinc-400 hover:text-zinc-200'
@@ -109,14 +109,14 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
                     <Clock
                       size={17}
                       strokeWidth={1.8}
-                      className={isAero ? (active ? 'text-[#111827]' : 'text-[#9CA3AF]') : (active ? 'text-white' : undefined)}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-white' : undefined)}
                     />
                   )}
                   {tab.id === 'dashboard' && (
                     <BarChart3
                       size={17}
                       strokeWidth={1.8}
-                      className={isAero ? (active ? 'text-[#111827]' : 'text-[#9CA3AF]') : (active ? 'text-white' : undefined)}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-white' : undefined)}
                     />
                   )}
                   {tab.id === 'zerotube' && (
@@ -124,21 +124,21 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
                       size={17}
                       strokeWidth={1.8}
                       fill={active ? 'currentColor' : 'none'}
-                      className={isAero ? (active ? 'text-[#111827]' : 'text-[#9CA3AF]') : (active ? 'text-cyan-300' : undefined)}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-cyan-300' : undefined)}
                     />
                   )}
                   {tab.id === 'schedules' && (
                     <Settings
                       size={17}
                       strokeWidth={1.8}
-                      className={isAero ? (active ? 'text-[#111827]' : 'text-[#9CA3AF]') : (active ? 'text-white' : undefined)}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-white' : undefined)}
                     />
                   )}
                   {tab.id === 'support' && (
                     <Heart
                       size={17}
                       strokeWidth={1.8}
-                      className={isAero ? (active ? 'text-[#111827]' : 'text-[#9CA3AF]') : (active ? 'text-white' : undefined)}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-white' : undefined)}
                     />
                   )}
                 </div>
@@ -146,8 +146,8 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
                   className={`text-[10px] mt-1 tracking-tight whitespace-nowrap font-sans ${
                     isAero
                       ? active
-                        ? 'font-bold text-[#111827]'
-                        : 'font-medium text-[#9CA3AF]'
+                        ? 'font-bold text-[var(--accent-primary,#E69F86)]'
+                        : 'font-medium text-[#353B5B]/70'
                       : active
                       ? 'font-bold text-white'
                       : 'font-medium text-zinc-400'

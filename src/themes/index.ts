@@ -1,30 +1,40 @@
 import { type CanonicalThemeId, type ThemeEngineDefinition } from './types';
-import { fluentEngine } from './engine-fluent';
-import { aetherialEngine } from './engine-aetherial';
 import { aeroEngine } from './engine-aero';
+import { duskEngine } from './engine-dusk';
 
 export * from './types';
+export { aeroEngine } from './engine-aero';
+export { duskEngine } from './engine-dusk';
 
 export const THEME_ENGINES: Record<CanonicalThemeId, ThemeEngineDefinition> = {
-  fluent: fluentEngine,
-  aetherial: aetherialEngine,
   aero: aeroEngine,
+  dusk: duskEngine,
+  fluent: duskEngine, // Consolidates legacy glass themes directly into Twilight Dusk
+  aetherial: duskEngine,
 };
 
 export const AVAILABLE_THEMES: readonly ThemeEngineDefinition[] = [
-  fluentEngine,
-  aetherialEngine,
   aeroEngine,
+  duskEngine,
 ] as const;
 
 export function normalizeThemeId(raw?: string | null): CanonicalThemeId {
-  if (!raw) return 'fluent';
+  if (!raw) return 'aero';
   const cleaned = raw.toLowerCase().trim();
-  if (cleaned === 'aero' || cleaned === 'aero_ui' || cleaned === 'aeroui') {
-    return 'aero';
+  if (
+    cleaned === 'dusk' ||
+    cleaned === 'twilight' ||
+    cleaned === 'night' ||
+    cleaned === 'fluent' ||
+    cleaned === 'fluent_glass' ||
+    cleaned === 'glass' ||
+    cleaned === 'liquid_glass' ||
+    cleaned === 'aetherial' ||
+    cleaned === 'aetherial_focus' ||
+    cleaned === 'cosmic' ||
+    cleaned === 'dark'
+  ) {
+    return 'dusk';
   }
-  if (cleaned === 'aetherial' || cleaned === 'aetherial_focus' || cleaned === 'cosmic') {
-    return 'aetherial';
-  }
-  return 'fluent';
+  return 'aero';
 }

@@ -364,6 +364,7 @@ export type InterfaceStyle =
   | 'fluent_glass'
   | 'aetherial'
   | 'aero'
+  | 'dusk'
   | 'trantor'
   | 'onyx'
   | 'fintech'
@@ -507,6 +508,19 @@ export interface ZeroNativeBridgeInterface {
   snoozeBagReminder?(minutes: number): void;
   verifyAuthorIntegrity?(): boolean;
   exitApp?(): void;
+  // Quick Settings Tile
+  syncQuickSettingsConfig?(durationSeconds: number, tag: string, bagId: string, bagName: string): void;
+  getQuickSettingsConfigJson?(): string;
+  // Battery Optimization & OEM Killer Resilience
+  isIgnoringBatteryOptimizations?(): boolean;
+  requestIgnoreBatteryOptimizations?(): void;
+  getDeviceManufacturer?(): string;
+  openOemAutostartSettings?(): void;
+  // Native Do Not Disturb (DND)
+  hasNotificationPolicyAccess?(): boolean;
+  requestNotificationPolicyAccess?(): void;
+  setDoNotDisturb?(enabled: boolean): boolean;
+  isDoNotDisturbActive?(): boolean;
 }
 
 type StringOrStr = string;

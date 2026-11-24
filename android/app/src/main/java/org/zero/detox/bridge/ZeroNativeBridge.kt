@@ -4,6 +4,7 @@ import android.Manifest
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.Activity
 import android.app.AppOpsManager
+import android.app.NotificationManager
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
@@ -12,6 +13,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.BatteryManager
 import android.os.Build
+import android.os.PowerManager
 import android.os.Process
 import android.os.SystemClock
 import android.provider.Settings
@@ -38,6 +40,7 @@ import org.zero.detox.ui.TheVoidActivity
 import org.zero.detox.ui.VoidThemeStore
 import org.zero.detox.widget.WidgetDataStore
 import org.zero.detox.widget.ZeroWidgetUpdater
+import org.zero.detox.service.ZeroTileService
 import java.io.File
 
 /**
@@ -1134,5 +1137,153 @@ class ZeroNativeBridge(
         } catch (_: Exception) {
             false
         }
+    }
+
+    // --- QUICK SETTINGS TILE CONFIGURATION ---
+
+    @JavascriptInterface
+    fun syncQuickSettingsConfig(durationSeconds: Long, tag: String, bagId: String, bagName: String) {
+        ZeroTileService.saveConfig(activity, durationSeconds, tag, bagId, bagName)
+    }
+
+    @JavascriptInterface
+    fun getQuickSettingsConfigJson(): String {
+        val prefs = ZeroTileService.getPrefs(activity)
+        return JSONObject().apply {
+            put("durationSeconds", prefs.getLong(ZeroTileService.KEY_DURATION_SECONDS, ZeroTileService.DEFAULT_DURATION_SECONDS))
+            put("tag", prefs.getString(ZeroTileService.KEY_SESSION_TAG, ZeroTileService.DEFAULT_TAG) ?: ZeroTileService.DEFAULT_TAG)
+            put("bagId", prefs.getString(ZeroTileService.KEY_BAG_ID, ZeroTileService.DEFAULT_BAG_ID) ?: ZeroTileService.DEFAULT_BAG_ID)
+            put("bagName", prefs.getString(ZeroTileService.KEY_BAG_NAME, ZeroTileService.DEFAULT_BAG_NAME) ?: ZeroTileService.DEFAULT_BAG_NAME)
+        }.toString()
+    }
+
+    // --- OEM BATTERY KILLER RESILIENCE & DIAGNOSTICS ---
+
+    @JavascriptInterface
+    fun isIgnoringBatteryOptimizations(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val pm = activity.getSystemService(Context.POWER_SERVICE) as? PowerManager
+            pm?.isIgnoringBatteryOptimizations(activity.packageName) ?: true
+        } else {
+            true
+        }
+    }
+
+    @JavascriptInterface
+    fun requestIgnoreBatteryOptimizations() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = Uri.parse("package:${activity.packageName}")
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                activity.startActivity(intent)
+            } catch (_: Exception) {
+                try {
+                    val fallback = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    activity.startActivity(fallback)
+                } catch (_: Exception) {
+                    openAppSettingsDetails()
+                }
+            }
+        }
+    }
+
+    @JavascriptInterface
+    fun getDeviceManufacturer(): String {
+        return Build.MANUFACTURER.lowercase()
+    }
+
+    @JavascriptInterface
+    fun openOemAutostartSettings() {
+        val mfg = Build.MANUFACTURER.lowercase()
+        val intents = mutableListOf<Intent>()
+
+        if (mfg.contains("xiaomi") || mfg.contains("redmi") || mfg.contains("poco")) {
+            intents.add(Intent().setComponent(ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")))
+        } else if (mfg.contains("samsung")) {
+            intents.add(Intent().setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.battery.ui.BatteryActivity")))
+            intents.add(Intent().setComponent(ComponentName("com.samsung.android.sm", "com.samsung.android.sm.battery.ui.BatteryActivity")))
+        } else if (mfg.contains("oppo") || mfg.contains("realme") || mfg.contains("oneplus")) {
+            intents.add(Intent().setComponent(ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")))
+            intents.add(Intent().setComponent(ComponentName("com.coloros.safecenter", "com.coloros.safecenter.startupapp.StartupAppListActivity")))
+            intents.add(Intent().setComponent(ComponentName("com.oplus.battery", "com.oplus.battery.BatteryActivity")))
+        } else if (mfg.contains("vivo") || mfg.contains("iqoo")) {
+            intents.add(Intent().setComponent(ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity")))
+            intents.add(Intent().setComponent(ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.PurviewTabActivity")))
+        } else if (mfg.contains("huawei") || mfg.contains("honor")) {
+            intents.add(Intent().setComponent(ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity")))
+            intents.add(Intent().setComponent(ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.optimize.bootstart.BootStartActivity")))
+        }
+
+        for (intent in intents) {
+            try {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity.startActivity(intent)
+                return
+            } catch (_: Exception) {}
+        }
+        openAppSettingsDetails()
+    }
+
+    // --- NATIVE DO NOT DISTURB (DND) INTERFACE ---
+
+    @JavascriptInterface
+    fun hasNotificationPolicyAccess(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val nm = activity.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+            nm?.isNotificationPolicyAccessGranted == true
+        } else {
+            true
+        }
+    }
+
+    @JavascriptInterface
+    fun requestNotificationPolicyAccess() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                activity.startActivity(intent)
+            } catch (_: Exception) {
+                openAppSettingsDetails()
+            }
+        }
+    }
+
+    @JavascriptInterface
+    fun setDoNotDisturb(enabled: Boolean): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val nm = activity.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                ?: return false
+            if (!nm.isNotificationPolicyAccessGranted) {
+                return false
+            }
+            return try {
+                if (enabled) {
+                    nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY)
+                } else {
+                    nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+                }
+                true
+            } catch (_: Exception) {
+                false
+            }
+        }
+        return true
+    }
+
+    @JavascriptInterface
+    fun isDoNotDisturbActive(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val nm = activity.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                ?: return false
+            val filter = nm.currentInterruptionFilter
+            return filter != NotificationManager.INTERRUPTION_FILTER_ALL && filter != NotificationManager.INTERRUPTION_FILTER_UNKNOWN
+        }
+        return false
     }
 }

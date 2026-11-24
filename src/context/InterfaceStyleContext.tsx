@@ -23,7 +23,7 @@ import { setNativeTargetFps } from '../plugins/zeroBridge';
 export type { CanonicalThemeId, AccentColorId, InterfaceStyle, ThemeEngineDefinition };
 export { AVAILABLE_THEMES, normalizeThemeId };
 export type GlassEngineType = 'acrylic' | 'eco';
-export type AeroPaletteId = 'ink' | 'azure' | 'emerald' | 'amber';
+export type AeroPaletteId = 'orange' | 'espresso' | 'terracotta';
 
 const STORAGE_KEY_THEME = 'zero_isolated_theme_engine_v5';
 const STORAGE_KEY_ACCENT = 'zero_theme_accent_seed_v5';
@@ -148,28 +148,21 @@ function mountIsolatedThemeEngine(
     root.setAttribute('data-interface-style', 'aero');
     root.classList.remove('dark');
     root.classList.add('light');
-    let aeroPal: AeroPaletteId = 'ink';
-    try {
-      const savedPal = window.localStorage.getItem(STORAGE_KEY_AERO_PALETTE);
-      if (savedPal === 'azure' || savedPal === 'emerald' || savedPal === 'amber' || savedPal === 'ink') aeroPal = savedPal;
-    } catch {}
-    const palColor =
-      aeroPal === 'azure'
-        ? '#0284C7'
-        : aeroPal === 'emerald'
-        ? '#059669'
-        : aeroPal === 'amber'
-        ? '#D97706'
-        : '#0f172a';
-    root.setAttribute('data-aero-palette', aeroPal);
+    const palColor = '#E69F86';
+    root.setAttribute('data-aero-palette', 'orange');
     root.style.setProperty('--aero-palette-color', palColor);
-    root.style.setProperty('--aero-ink-primary', palColor);
+    root.style.setProperty('--aero-ink-primary', '#353B5B');
     root.style.setProperty('--accent-primary', palColor);
     root.style.setProperty('--accent-hex', palColor);
+    root.style.setProperty('--accent-rgb', '230, 159, 134');
   } else {
-    root.removeAttribute('data-interface-style');
+    root.setAttribute('data-interface-style', 'dusk');
     root.classList.remove('light');
     root.classList.add('dark');
+    const palColor = '#E69F86';
+    root.style.setProperty('--accent-primary', palColor);
+    root.style.setProperty('--accent-hex', palColor);
+    root.style.setProperty('--accent-rgb', '230, 159, 134');
     // Set real-time ambient glow parameters
     root.style.setProperty('--ambient-glow-opacity', glowIntensity.toString());
     root.style.setProperty('--ambient-glow-scale', (0.75 + glowIntensity * 0.45).toString());
@@ -211,7 +204,7 @@ function mountIsolatedThemeEngine(
     document.head.appendChild(styleTag);
   }
 
-  const engine = THEME_ENGINES[themeId] ?? THEME_ENGINES.fluent;
+  const engine = THEME_ENGINES[themeId] ?? THEME_ENGINES.aero;
   styleTag.textContent = engine.css;
 }
 
@@ -242,6 +235,7 @@ export interface InterfaceStyleContextValue {
   isLiquidGlass: boolean;
   isAetherial: boolean;
   isAero: boolean;
+  isDusk: boolean;
   aeroPalette: AeroPaletteId;
   setAeroPalette: (palette: AeroPaletteId) => void;
   aeroAccentColor: string;
@@ -342,22 +336,22 @@ export function InterfaceStyleProvider({
   });
 
   const [aeroPalette, setAeroPaletteState] = useState<AeroPaletteId>(() => {
-    if (typeof window === 'undefined') return 'ink';
+    if (typeof window === 'undefined') return 'orange';
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY_AERO_PALETTE);
-      if (saved === 'azure' || saved === 'emerald' || saved === 'amber' || saved === 'ink') return saved;
+      if (saved === 'orange' || saved === 'espresso' || saved === 'terracotta') return saved as AeroPaletteId;
+      if (saved === 'ink') return 'espresso';
+      if (saved === 'azure' || saved === 'emerald' || saved === 'amber') return 'orange';
     } catch {}
-    return 'ink';
+    return 'orange';
   });
 
   const aeroAccentColor =
-    aeroPalette === 'azure'
-      ? '#0284C7'
-      : aeroPalette === 'emerald'
-      ? '#059669'
-      : aeroPalette === 'amber'
-      ? '#D97706'
-      : '#0f172a';
+    aeroPalette === 'espresso'
+      ? '#353B5B'
+      : aeroPalette === 'terracotta'
+      ? '#D87255'
+      : '#E69F86';
 
   const setAeroPalette = useCallback((nextPalette: AeroPaletteId) => {
     setAeroPaletteState(nextPalette);
@@ -365,17 +359,15 @@ export function InterfaceStyleProvider({
       window.localStorage.setItem(STORAGE_KEY_AERO_PALETTE, nextPalette);
     } catch {}
     const color =
-      nextPalette === 'azure'
-        ? '#0284C7'
-        : nextPalette === 'emerald'
-        ? '#059669'
-        : nextPalette === 'amber'
-        ? '#D97706'
-        : '#0f172a';
+      nextPalette === 'espresso'
+        ? '#353B5B'
+        : nextPalette === 'terracotta'
+        ? '#D87255'
+        : '#E69F86';
     if (typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-aero-palette', nextPalette);
       document.documentElement.style.setProperty('--aero-palette-color', color);
-      document.documentElement.style.setProperty('--aero-ink-primary', color);
+      document.documentElement.style.setProperty('--aero-ink-primary', '#353B5B');
       document.documentElement.style.setProperty('--accent-primary', color);
       document.documentElement.style.setProperty('--accent-hex', color);
     }
@@ -457,7 +449,7 @@ export function InterfaceStyleProvider({
   });
 
   const [theme, setThemeState] = useState<CanonicalThemeId>(() => {
-    if (typeof window === 'undefined') return 'fluent';
+    if (typeof window === 'undefined') return 'aero';
     try {
       for (const oldKey of LEGACY_STORAGE_KEYS) {
         window.localStorage.removeItem(oldKey);
@@ -465,7 +457,7 @@ export function InterfaceStyleProvider({
       const saved = window.localStorage.getItem(STORAGE_KEY_THEME);
       return normalizeThemeId(saved);
     } catch {
-      return 'fluent';
+      return 'aero';
     }
   });
 
@@ -675,7 +667,7 @@ export function InterfaceStyleProvider({
       setInterfaceStyle,
       style: isBespokeActive ? 'bespoke' : theme,
       setStyle: setInterfaceStyle,
-      activeEngine: THEME_ENGINES[theme] ?? THEME_ENGINES.fluent,
+      activeEngine: THEME_ENGINES[theme] ?? THEME_ENGINES.aero,
       availableThemes: AVAILABLE_THEMES,
 
       engine: isBespokeActive ? 'bespoke' : theme,
@@ -691,9 +683,10 @@ export function InterfaceStyleProvider({
       isLiquidGlass: theme === 'fluent' && !isBespokeActive,
       isAetherial: theme === 'aetherial' && !isBespokeActive,
       isAero: theme === 'aero' && !isBespokeActive,
-      aeroPalette,
-      setAeroPalette,
-      aeroAccentColor,
+      isDusk: (theme === 'dusk' || theme === 'fluent' || theme === 'aetherial') && !isBespokeActive,
+      aeroPalette: 'orange',
+      setAeroPalette: () => {},
+      aeroAccentColor: '#E69F86',
       isMinimalist: isBespokeActive,
       isBespoke: isBespokeActive,
 

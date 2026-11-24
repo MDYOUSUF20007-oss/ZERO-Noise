@@ -9,4 +9,6 @@
     <string name="widget_focus_description">Shows time saved today, next scheduled focus session, streak, and a 42-day focus heatmap.</string>
     <string name="widget_compact_label">Zero-Noise Quick Bar</string>
     <string name="widget_compact_description">Compact home screen bar with time saved today, next session countdown, and 7-day activity.</string>
+    <string name="quick_settings_tile_label">ZERO: Engage</string>
+    <string name="quick_settings_tile_description">One-click immediate deep focus lock without opening the dial</string>
 </resources>

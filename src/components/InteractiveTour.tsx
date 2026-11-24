@@ -56,8 +56,7 @@ export function InteractiveTour({ onComplete, onNavigateTab }: InteractiveTourPr
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentStep = TOUR_STEPS[currentIndex];
   const StepIcon = currentStep.icon;
-  const { accent } = useInterfaceStyle();
-  const isCyan = accent === 'cyan';
+  const { isAero } = useInterfaceStyle();
 
   useEffect(() => {
     onNavigateTab(TOUR_STEPS[0].tab);
@@ -92,59 +91,61 @@ export function InteractiveTour({ onComplete, onNavigateTab }: InteractiveTourPr
       <div className="relative pointer-events-none w-full flex justify-center pt-3 animate-fadeIn">
         <div
           className={`px-3.5 py-1.5 rounded-full border shadow-lg flex items-center gap-2 backdrop-blur-md ${
-            isCyan
-              ? 'bg-cyan-950/80 border-cyan-400/50 shadow-cyan-500/20 text-cyan-200'
-              : 'bg-purple-950/80 border-purple-400/50 shadow-purple-500/20 text-purple-200'
+            isAero
+              ? 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B]'
+              : 'bg-[#2C314C] border-[rgba(243,237,232,0.10)] text-[#F3EDE8]'
           }`}
         >
           <span
-            className={`w-2 h-2 rounded-full animate-ping shrink-0 ${
-              isCyan ? 'bg-cyan-400' : 'bg-purple-400'
-            }`}
+            className="w-2 h-2 rounded-full animate-ping shrink-0 bg-[#E69F86]"
           />
           <span className="text-xs font-semibold">{currentStep.spotlight}</span>
         </div>
       </div>
 
       {/* Floating Tour Card Docked Neatly at Bottom */}
-      <div className="relative pointer-events-auto max-w-md mx-auto w-full bg-zinc-950/95 border border-white/20 rounded-2xl p-5 shadow-2xl space-y-4 backdrop-blur-xl animate-slideUp">
+      <div
+        className={`relative pointer-events-auto max-w-md mx-auto w-full rounded-2xl p-5 shadow-2xl space-y-4 backdrop-blur-xl animate-slideUp border ${
+          isAero
+            ? 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B]'
+            : 'bg-[#2C314C] border-[rgba(243,237,232,0.10)] text-[#F3EDE8]'
+        }`}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div
-              className={`p-2 rounded-xl border ${
-                isCyan
-                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/20'
-                  : 'bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm shadow-purple-500/20'
-              }`}
+              className="p-2 rounded-xl border bg-[rgba(230,159,134,0.18)] text-[#E69F86] border-[rgba(230,159,134,0.40)] shadow-sm"
             >
               <StepIcon size={18} />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <Sparkles size={11} className={isCyan ? 'text-cyan-400' : 'text-purple-400'} />
-                <span
-                  className={`text-[10px] font-mono uppercase tracking-wider font-bold ${
-                    isCyan ? 'text-cyan-400' : 'text-purple-400'
-                  }`}
-                >
+                <Sparkles size={11} className="text-[#E69F86]" />
+                <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#E69F86]">
                   {currentStep.badge}
                 </span>
               </div>
-              <h3 className="text-base font-bold text-white">{currentStep.title}</h3>
+              <h3 className={`text-base font-bold ${isAero ? 'text-[#353B5B]' : 'text-[#F3EDE8]'}`}>
+                {currentStep.title}
+              </h3>
             </div>
           </div>
 
           <button
             type="button"
             onClick={handleSkip}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            className={`p-1.5 rounded-lg transition-colors ${
+              isAero ? 'text-[rgba(53,59,91,0.60)] hover:text-[#353B5B] hover:bg-[#EDE6DF]' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+            }`}
             title="Skip Tour"
           >
             <X size={16} />
           </button>
         </div>
 
-        <p className="text-xs text-zinc-200 leading-relaxed font-sans">{currentStep.description}</p>
+        <p className={`text-xs leading-relaxed font-sans ${isAero ? 'text-[rgba(53,59,91,0.75)]' : 'text-[rgba(243,237,232,0.75)]'}`}>
+          {currentStep.description}
+        </p>
 
         {/* Step indicators & Next Button */}
         <div className="flex items-center justify-between pt-1">
@@ -154,10 +155,10 @@ export function InteractiveTour({ onComplete, onNavigateTab }: InteractiveTourPr
                 key={i}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
                   i === currentIndex
-                    ? isCyan
-                      ? 'w-6 bg-cyan-400 shadow-sm shadow-cyan-400/50'
-                      : 'w-6 bg-purple-400 shadow-sm shadow-purple-400/50'
-                    : 'w-1.5 bg-zinc-700'
+                    ? 'w-6 bg-[#E69F86] shadow-sm'
+                    : isAero
+                    ? 'w-1.5 bg-[#EDE6DF]'
+                    : 'w-1.5 bg-[#202438]'
                 }`}
               />
             ))}
@@ -166,10 +167,10 @@ export function InteractiveTour({ onComplete, onNavigateTab }: InteractiveTourPr
           <button
             type="button"
             onClick={handleNext}
-            className={`py-2 px-4 rounded-xl text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md ${
-              isCyan
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-cyan-500/25'
-                : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 shadow-purple-600/25'
+            className={`py-2 px-4 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md ${
+              isAero
+                ? 'bg-[#353B5B] text-[#F3EDE8] hover:bg-[#434A70]'
+                : 'bg-[#E69F86] text-[#24283F] hover:bg-[#EEB9A4]'
             }`}
           >
             <span>{currentIndex === TOUR_STEPS.length - 1 ? 'Finish Tour' : 'Next Glance'}</span>

@@ -112,7 +112,7 @@ const DialTickRing = React.memo(function DialTickRing({ isAero }: { isAero?: boo
       cy="144"
       r="132"
       fill="none"
-      stroke={isAero ? 'rgba(17, 24, 39, 0.20)' : 'rgba(255, 255, 255, 0.18)'}
+      stroke={isAero ? 'rgba(28, 25, 23, 0.16)' : 'rgba(255, 255, 255, 0.18)'}
       strokeOpacity="0.85"
       strokeWidth="9"
       strokeDasharray="1.5 8.5"
@@ -304,11 +304,11 @@ const DialWheelSection = React.memo(function DialWheelSection({
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         className={`zero-dial-surface zero-dial-ring liquid-dial-outer relative w-60 h-60 sm:w-68 sm:h-68 rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing transition-shadow ${
-          isAero ? 'border border-white/90 shadow-[0_10px_30px_rgba(15,23,42,0.06)]' : ''
+          isAero ? 'border border-[#E8E0D2] shadow-[0_10px_30px_rgba(44,38,34,0.06)]' : ''
         }`}
         style={{
           touchAction: 'none',
-          backgroundColor: isAero ? 'rgba(255, 255, 255, 0.72)' : undefined,
+          backgroundColor: isAero ? 'rgba(255, 253, 249, 0.88)' : undefined,
           backdropFilter: isAero ? 'blur(20px)' : undefined,
           WebkitBackdropFilter: isAero ? 'blur(20px)' : undefined,
         }}
@@ -331,7 +331,7 @@ const DialWheelSection = React.memo(function DialWheelSection({
             cy="144"
             r="132"
             fill="none"
-            stroke={isAero ? (aeroAccentColor || '#0f172a') : 'url(#zeroLiquidDialGrad)'}
+            stroke={isAero ? (aeroAccentColor || '#E69F86') : 'url(#zeroLiquidDialGrad)'}
             strokeWidth="5"
             strokeDasharray={`${(initialAngle / 360) * DIAL_ARC_CIRCUMFERENCE} ${DIAL_ARC_CIRCUMFERENCE}`}
             strokeLinecap="round"
@@ -1381,14 +1381,14 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
               }}
               style={
                 isAero && intentionRitualEnabled
-                  ? { backgroundColor: aeroAccentColor || '#0f172a' }
+                  ? { backgroundColor: aeroAccentColor || '#E69F86' }
                   : undefined
               }
               className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-sans transition-all cursor-pointer ${
                 isAero
                   ? intentionRitualEnabled
-                    ? 'text-white font-black rounded-2xl shadow-sm'
-                    : 'bg-white text-[#0f172a] font-bold border border-[#CBD5E1] rounded-2xl shadow-xs'
+                    ? 'text-[#353B5B] font-black rounded-2xl shadow-sm'
+                    : 'bg-[#F8F4F0] text-[#353B5B] font-bold border border-[rgba(53,59,91,0.08)] rounded-2xl shadow-xs'
                   : intentionRitualEnabled
                   ? 'liquid-pill-active font-medium text-cyan-300 rounded-full'
                   : 'liquid-pill-inactive text-zinc-400 rounded-full'
@@ -1426,14 +1426,14 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                   ? 'opacity-40 cursor-not-allowed bg-zinc-900/40 text-zinc-500 border border-white/5 rounded-full'
                   : isAero
                   ? burnTheBoatsEnabled
-                    ? 'bg-amber-600 text-white font-black rounded-2xl shadow-sm'
-                    : 'bg-white text-[#0f172a] font-bold border border-[#CBD5E1] rounded-2xl shadow-xs'
+                    ? 'bg-[#E69F86] text-[#353B5B] font-black rounded-2xl shadow-sm'
+                    : 'bg-[#F8F4F0] text-[#353B5B] font-bold border border-[rgba(53,59,91,0.08)] rounded-2xl shadow-xs'
                   : burnTheBoatsEnabled
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold rounded-full'
                   : 'liquid-pill-inactive text-zinc-400 rounded-full'
               }`}
             >
-              <Flame size={12} strokeWidth={2} className={burnTheBoatsEnabled ? (isAero ? 'text-white' : 'text-amber-400') : (isAero ? 'text-[#0f172a]' : 'text-zinc-500')} />
+              <Flame size={12} strokeWidth={2} className={burnTheBoatsEnabled ? (isAero ? 'text-[#353B5B]' : 'text-amber-400') : (isAero ? 'text-[#353B5B]' : 'text-zinc-500')} />
               <span>Burn Boats: {burnTheBoatsEnabled ? 'Active (Max 4h)' : 'Off (Max 4h)'}</span>
             </button>
           </div>

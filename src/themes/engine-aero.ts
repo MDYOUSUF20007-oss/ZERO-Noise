@@ -2,97 +2,100 @@ import { type ThemeEngineDefinition } from './types';
 
 export const aeroEngine: ThemeEngineDefinition = {
   id: 'aero',
-  name: 'Aero UI',
-  badge: 'SKYLINE',
-  description: 'Airy mist-blue sky canvas with sunlit cloud glows, frosted iridescent hero cards, and elevated pure-white operational sheets.',
-  swatchBg: '#DAEAF3',
-  swatchSurface: '#FFFFFF',
-  swatchAccent: '#111827',
-  swatchAccentSecondary: '#5B6B79',
+  name: 'Aero Porcelain',
+  badge: 'WARM MATTE',
+  description: 'Calm, low-fatigue Warm Porcelain canvas with Twilight Indigo structure and soothing Sunset Peach focus accents.',
+  swatchBg: '#F3EDE8',
+  swatchSurface: '#F8F4F0',
+  swatchAccent: '#E69F86',
+  swatchAccentSecondary: '#353B5B',
   css: `
     :root, html[data-theme="aero"], html[data-interface-style="aero"] {
       color-scheme: light !important;
 
-      --bg-primary: #DAEAF3;
-      --bg-secondary: #ECF4F8;
-      --bg-surface: #FFFFFF;
-      --surface-tonal: #F6F9FC;
-      --bg-surface-hover: #F1F5F9;
-      --bg-elevated: #FFFFFF;
-      --bg-modal: #FFFFFF;
-      --bg-nav: #FFFFFF;
-      --bg-input: #F6F9FC;
+      /* 60% Canvas: Warm Porcelain (#F3EDE8) */
+      --bg-primary: #F3EDE8;
+      --bg-secondary: #EBE4DD;
+      --bg-surface: #F8F4F0;
+      --surface-tonal: #EDE6DF;
+      --bg-surface-hover: #E8E0D7;
+      --bg-elevated: #F8F4F0;
+      --bg-modal: #F8F4F0;
+      --bg-nav: #F8F4F0;
+      --bg-input: #EDE6DF;
 
-      --glass-opacity: 0.85;
-      --glass-surface-bg: rgba(255, 255, 255, 0.85);
-      --glass-specular-opacity: 0.95;
-      --glass-inset-bg: #F6F9FC;
-      --glass-row-bg: #F6F9FC;
-      --glass-dock-bg: #FFFFFF;
-      --glass-dial-bg: rgba(255, 255, 255, 0.72);
-      --glass-glow-mult: 0.25;
+      --glass-opacity: 0.94;
+      --glass-surface-bg: rgba(248, 244, 240, 0.90);
+      --glass-specular-opacity: 0.90;
+      --glass-inset-bg: #EDE6DF;
+      --glass-row-bg: #EFE8E1;
+      --glass-dock-bg: #F8F4F0;
+      --glass-dial-bg: rgba(248, 244, 240, 0.92);
+      --glass-glow-mult: 0.15;
 
-      /* Matte black high-contrast ink text */
-      --text-primary: #0f172a;
-      --text-secondary: #0f172a;
-      --text-muted: #334155;
-      --text-on-accent: #FFFFFF;
+      /* 30% Ink & Structure: Twilight Indigo (#353B5B) */
+      --text-primary: #353B5B;
+      --text-secondary: rgba(53, 59, 91, 0.75);
+      --text-muted: rgba(53, 59, 91, 0.62);
+      --text-on-accent: #F3EDE8;
 
-      --accent-primary: var(--aero-palette-color, #0f172a);
-      --accent-secondary: var(--aero-palette-color, #0f172a);
-      --accent-tertiary: #334155;
-      --accent-soft: rgba(15, 23, 42, 0.06);
-      --accent-border: #CBD5E1;
-      --accent-hex: var(--aero-palette-color, #0f172a);
-      --accent-rgb: 15, 23, 42;
+      /* 10% Accent: Sunset Peach (#E69F86) */
+      --accent-primary: #E69F86;
+      --accent-secondary: #EEB9A4;
+      --accent-tertiary: #F3EDE8;
+      --accent-soft: rgba(230, 159, 134, 0.15);
+      --accent-border: rgba(230, 159, 134, 0.40);
+      --accent-hex: #E69F86;
+      --accent-rgb: 230, 159, 134;
 
-      --border-subtle: #E2E8F0;
-      --border-strong: #CBD5E1;
-      --border-specular: rgba(255, 255, 255, 0.95);
+      /* Hairline Borders: rgba(53, 59, 91, 0.08) */
+      --border-subtle: rgba(53, 59, 91, 0.08);
+      --border-strong: rgba(53, 59, 91, 0.16);
+      --border-specular: rgba(248, 244, 240, 0.95);
 
-      --status-success: #059669;
-      --status-warning: #D97706;
-      --status-danger: #DC2626;
+      --status-success: #353B5B;
+      --status-warning: #E69F86;
+      --status-danger: #D87255;
 
-      --app-backdrop-gradient: linear-gradient(180deg, #C7DCE8 0%, #DAEAF3 26%, #ECF4F8 55%, #F6F9FC 100%);
-      --surface-blur: blur(20px) saturate(180%);
-      --surface-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.06);
-      --surface-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.54) 100%);
+      --app-backdrop-gradient: linear-gradient(180deg, #F3EDE8 0%, #EDE6DF 40%, #F8F4F0 100%);
+      --surface-blur: blur(20px) saturate(130%);
+      --surface-shadow: 0 18px 40px -12px rgba(53, 59, 91, 0.09), 0 4px 12px -2px rgba(230, 159, 134, 0.12);
+      --surface-gradient: linear-gradient(135deg, rgba(248, 244, 240, 0.95) 0%, rgba(243, 237, 232, 0.90) 100%);
       --radius-card: 24px;
       --radius-pill: 9999px;
       --radius-btn: 14px;
 
-      /* Aero-specific structural tokens */
-      --aero-sky-gradient: linear-gradient(180deg, #C7DCE8 0%, #DAEAF3 26%, #ECF4F8 55%, #F6F9FC 100%);
-      --aero-sheet-bg: #FFFFFF;
-      --aero-sheet-radius: 30px 30px 0 0;
-      --aero-sheet-shadow: 0 -10px 30px rgba(15, 23, 42, 0.06);
-      --aero-ink-primary: var(--aero-palette-color, #0f172a);
-      --aero-ink-secondary: #0f172a;
-      --aero-card-bg: #F6F9FC;
-      --aero-card-border: 1px solid #E2E8F0;
-      --aero-hero-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.54) 100%);
-      --aero-hero-border: 1px solid rgba(255, 255, 255, 0.95);
-      --aero-aurora-glow: radial-gradient(circle at 90% 90%, rgba(251, 146, 60, 0.45) 0%, rgba(244, 114, 182, 0.35) 40%, rgba(167, 139, 250, 0.30) 75%, transparent 100%);
+      /* Aero structural tokens */
+      --aero-sky-gradient: linear-gradient(180deg, #F3EDE8 0%, #EDE6DF 40%, #F8F4F0 100%);
+      --aero-sheet-bg: #F8F4F0;
+      --aero-sheet-radius: 28px 28px 0 0;
+      --aero-sheet-shadow: 0 -12px 35px rgba(53, 59, 91, 0.08);
+      --aero-ink-primary: #353B5B;
+      --aero-ink-secondary: rgba(53, 59, 91, 0.75);
+      --aero-card-bg: #F8F4F0;
+      --aero-card-border: 1px solid rgba(53, 59, 91, 0.08);
+      --aero-hero-bg: linear-gradient(135deg, #E69F86 0%, #EEB9A4 52%, #F3EDE8 100%);
+      --aero-hero-border: 1px solid rgba(230, 159, 134, 0.40);
+      --aero-aurora-glow: radial-gradient(circle at 85% 85%, rgba(230, 159, 134, 0.18) 0%, rgba(243, 237, 232, 0.50) 50%, transparent 100%);
 
-      /* Backwards compatible tokens mapped to high-contrast ink */
-      --zero-bg-primary: #DAEAF3;
-      --zero-surface-1: #FFFFFF;
-      --zero-surface-2: #F6F9FC;
-      --zero-surface-elevated: #FFFFFF;
-      --zero-ink-primary: #0f172a;
-      --zero-ink-secondary: #0f172a;
-      --zero-ink-muted: #334155;
-      --zero-border: #E2E8F0;
-      --zero-dial-stroke: var(--aero-palette-color, #0f172a);
-      --zero-dial-track: rgba(15, 23, 42, 0.16);
-      --zero-accent: var(--aero-palette-color, #0f172a);
-      --zero-accent-glow: rgba(15, 23, 42, 0.08);
+      /* Backwards compatible tokens */
+      --zero-bg-primary: #F3EDE8;
+      --zero-surface-1: #F8F4F0;
+      --zero-surface-2: #EDE6DF;
+      --zero-surface-elevated: #F8F4F0;
+      --zero-ink-primary: #353B5B;
+      --zero-ink-secondary: rgba(53, 59, 91, 0.75);
+      --zero-ink-muted: rgba(53, 59, 91, 0.62);
+      --zero-border: rgba(53, 59, 91, 0.08);
+      --zero-dial-stroke: #E69F86;
+      --zero-dial-track: rgba(53, 59, 91, 0.12);
+      --zero-accent: #E69F86;
+      --zero-accent-glow: rgba(230, 159, 134, 0.18);
 
-      --liquid-accent-tint: var(--aero-palette-color, #0f172a);
-      --liquid-accent-vibrant: var(--aero-palette-color, #0f172a);
-      --liquid-accent-glow: rgba(15, 23, 42, 0.12);
-      --liquid-accent-soft-glow: rgba(15, 23, 42, 0.06);
+      --liquid-accent-tint: #E69F86;
+      --liquid-accent-vibrant: #E69F86;
+      --liquid-accent-glow: rgba(230, 159, 134, 0.20);
+      --liquid-accent-soft-glow: rgba(230, 159, 134, 0.10);
       --liquid-surface-blur: 20px;
     }
 
@@ -100,8 +103,8 @@ export const aeroEngine: ThemeEngineDefinition = {
     html[data-interface-style="aero"],
     html[data-interface-style="aero"] body,
     html[data-interface-style="aero"] #root {
-      background: linear-gradient(180deg, #C7DCE8 0%, #DAEAF3 26%, #ECF4F8 55%, #F6F9FC 100%) !important;
-      color: #0f172a !important;
+      background: #F3EDE8 !important;
+      color: #353B5B !important;
       font-family: 'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -109,20 +112,20 @@ export const aeroEngine: ThemeEngineDefinition = {
 
     html[data-interface-style="aero"] .zero-app-shell {
       background: transparent !important;
-      color: #0f172a !important;
+      color: #353B5B !important;
     }
 
     /* Aero Navigation Dock (Bottom bar) */
     html[data-interface-style="aero"] .liquid-dock {
-      background: #FFFFFF !important;
-      border: 1px solid #F1F5F9 !important;
-      box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.06), 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+      background: #F8F4F0 !important;
+      border: 1px solid rgba(53, 59, 91, 0.08) !important;
+      box-shadow: 0 18px 40px -12px rgba(53, 59, 91, 0.09), 0 4px 12px -2px rgba(230, 159, 134, 0.12) !important;
     }
 
     html[data-interface-style="aero"] .liquid-dock-item-active {
-      background: rgba(15, 23, 42, 0.06) !important;
-      border: 1px solid rgba(15, 23, 42, 0.12) !important;
-      box-shadow: none !important;
+      background: linear-gradient(145deg, #434A70 0%, #353B5B 100%) !important;
+      border: 1px solid #353B5B !important;
+      box-shadow: 0 4px 14px rgba(53, 59, 91, 0.25) !important;
     }
 
     /* Aero Cards in default glass positions */
@@ -131,133 +134,140 @@ export const aeroEngine: ThemeEngineDefinition = {
     html[data-interface-style="aero"] .liquid-glass,
     html[data-interface-style="aero"] .liquid-card,
     html[data-interface-style="aero"] [data-obsidian-card="true"] {
-      background-color: rgba(255, 255, 255, 0.88) !important;
-      backdrop-filter: blur(20px) !important;
-      -webkit-backdrop-filter: blur(20px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.95) !important;
-      box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.05) !important;
-      color: #0f172a !important;
+      background-color: #F8F4F0 !important;
+      border: 1px solid rgba(53, 59, 91, 0.08) !important;
+      box-shadow: 0 18px 40px -12px rgba(53, 59, 91, 0.09), 0 4px 12px -2px rgba(230, 159, 134, 0.12) !important;
+      color: #353B5B !important;
     }
 
     /* Aero Pill Toggles & Squircle Capsules */
-    html[data-interface-style="aero"] .liquid-pill-active {
-      background-color: var(--aero-palette-color, #0f172a) !important;
-      color: #FFFFFF !important;
-      border: 1px solid var(--aero-palette-color, #0f172a) !important;
-      border-radius: 18px !important;
-    }
-
-    html[data-interface-style="aero"] .liquid-pill-inactive {
-      background-color: #FFFFFF !important;
-      color: #0f172a !important;
-      border: 1px solid #E2E8F0 !important;
-      border-radius: 18px !important;
-      font-weight: 700 !important;
-    }
-
-    html[data-interface-style="aero"] .aero-capsule {
-      background: #FFFFFF;
-      border: 1px solid #E2E8F0;
-      border-radius: 18px;
-      color: #0f172a;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-    }
-
-    html[data-interface-style="aero"] .aero-pill-active {
-      background-color: var(--aero-palette-color, #0f172a) !important;
-      color: #FFFFFF !important;
-      border: 1px solid var(--aero-palette-color, #0f172a) !important;
-      border-radius: 18px !important;
-    }
-
-    html[data-interface-style="aero"] .aero-pill-inactive {
-      background-color: #FFFFFF !important;
-      color: #0f172a !important;
-      border: 1px solid #E2E8F0 !important;
-      border-radius: 18px !important;
-      font-weight: 700 !important;
-    }
-
-    /* Aero Insets, Rows, and Inputs High-Contrast Glass Rules */
-    html[data-interface-style="aero"] .obsidian-inset,
-    html[data-interface-style="aero"] .liquid-inset {
-      background-color: #FFFFFF !important;
-      border: 1px solid #E2E8F0 !important;
-      color: #0f172a !important;
-      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04) !important;
-    }
-
-    html[data-interface-style="aero"] .obsidian-inset-neutral,
-    html[data-interface-style="aero"] .liquid-row {
-      background-color: #FFFFFF !important;
-      border: 1px solid #E2E8F0 !important;
-      color: #0f172a !important;
-      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04) !important;
-    }
-
-    html[data-interface-style="aero"] .obsidian-input {
-      background-color: #FFFFFF !important;
-      border: 1px solid #CBD5E1 !important;
-      color: #0f172a !important;
-    }
-
-    html[data-interface-style="aero"] .obsidian-input::placeholder {
-      color: #94A3B8 !important;
-    }
-
+    html[data-interface-style="aero"] .liquid-pill-active,
+    html[data-interface-style="aero"] .aero-pill-active,
     html[data-interface-style="aero"] .obsidian-pill-active,
     html[data-interface-style="aero"] .theme-pill-active {
-      background-color: var(--aero-palette-color, #0f172a) !important;
-      color: #FFFFFF !important;
-      border: 1px solid var(--aero-palette-color, #0f172a) !important;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.16) !important;
+      background: linear-gradient(145deg, #434A70 0%, #353B5B 100%) !important;
+      color: #F3EDE8 !important;
+      border: 1px solid #353B5B !important;
+      border-radius: 9999px !important;
+      box-shadow: 0 4px 14px rgba(53, 59, 91, 0.20) !important;
     }
 
+    html[data-interface-style="aero"] .liquid-pill-inactive,
+    html[data-interface-style="aero"] .aero-pill-inactive,
     html[data-interface-style="aero"] .obsidian-pill-inactive,
     html[data-interface-style="aero"] .theme-pill {
-      background-color: #FFFFFF !important;
-      color: #334155 !important;
-      border: 1px solid #CBD5E1 !important;
+      background-color: #F8F4F0 !important;
+      color: #353B5B !important;
+      border: 1px solid rgba(53, 59, 91, 0.08) !important;
+      border-radius: 9999px !important;
       font-weight: 600 !important;
     }
 
-    /* Aero Global Contrast Boost for Text Inside Light Cards */
+    html[data-interface-style="aero"] .aero-capsule {
+      background: #F8F4F0;
+      border: 1px solid rgba(53, 59, 91, 0.08);
+      border-radius: 9999px;
+      color: #353B5B;
+      box-shadow: 0 2px 8px rgba(53, 59, 91, 0.04);
+    }
+
+    /* Aero Insets, Rows, and Inputs */
+    html[data-interface-style="aero"] .obsidian-inset,
+    html[data-interface-style="aero"] .liquid-inset,
+    html[data-interface-style="aero"] .obsidian-inset-neutral,
+    html[data-interface-style="aero"] .liquid-row {
+      background-color: #EDE6DF !important;
+      border: 1px solid rgba(53, 59, 91, 0.08) !important;
+      color: #353B5B !important;
+    }
+
+    html[data-interface-style="aero"] .obsidian-input {
+      background-color: #EDE6DF !important;
+      border: 1px solid rgba(53, 59, 91, 0.12) !important;
+      color: #353B5B !important;
+    }
+
+    html[data-interface-style="aero"] .obsidian-input::placeholder {
+      color: rgba(53, 59, 91, 0.45) !important;
+    }
+
+    /* Aero Contrast Mapping for Universal Text */
     html[data-interface-style="aero"] .text-zinc-400,
     html[data-interface-style="aero"] .text-neutral-400,
     html[data-interface-style="aero"] .text-zinc-500,
     html[data-interface-style="aero"] .text-neutral-500 {
-      color: #475569 !important;
+      color: rgba(53, 59, 91, 0.62) !important;
     }
 
     html[data-interface-style="aero"] .text-zinc-300,
     html[data-interface-style="aero"] .text-neutral-300 {
-      color: #334155 !important;
+      color: rgba(53, 59, 91, 0.75) !important;
+    }
+
+    html[data-interface-style="aero"] .text-zinc-200,
+    html[data-interface-style="aero"] .text-neutral-200,
+    html[data-interface-style="aero"] .text-white {
+      color: #353B5B !important;
+    }
+
+    /* Retain porcelain text on dark buttons */
+    html[data-interface-style="aero"] .obsidian-pill-active,
+    html[data-interface-style="aero"] .obsidian-pill-active *,
+    html[data-interface-style="aero"] .liquid-pill-active,
+    html[data-interface-style="aero"] .liquid-pill-active *,
+    html[data-interface-style="aero"] .aero-pill-active,
+    html[data-interface-style="aero"] .aero-pill-active *,
+    html[data-interface-style="aero"] .zn-dock-ticket-badge,
+    html[data-interface-style="aero"] [data-force-white="true"] {
+      color: #F3EDE8 !important;
     }
 
     /* Aero Dock Ticket Preview & Badge */
     html[data-interface-style="aero"] .zn-dock-ticket-svg {
-      filter: drop-shadow(0 4px 14px rgba(15, 23, 42, 0.08)) drop-shadow(0 1px 3px rgba(15, 23, 42, 0.05)) !important;
+      filter: drop-shadow(0 18px 40px -12px rgba(53, 59, 91, 0.12)) !important;
     }
 
     html[data-interface-style="aero"] .zn-dock-ticket-badge {
-      background: var(--aero-palette-color, #0f172a) !important;
-      color: #FFFFFF !important;
-      border: 2px solid #FFFFFF !important;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.20) !important;
+      background: #E69F86 !important;
+      color: #353B5B !important;
+      border: 2px solid #F8F4F0 !important;
+      box-shadow: 0 4px 12px rgba(230, 159, 134, 0.35) !important;
       font-weight: 800 !important;
       font-size: 11px !important;
     }
 
     html[data-interface-style="aero"] .liquid-track {
-      background-color: #E2E8F0 !important;
+      background-color: rgba(53, 59, 91, 0.08) !important;
     }
 
     html[data-interface-style="aero"] .liquid-metric {
-      color: #0f172a !important;
+      color: #353B5B !important;
       text-shadow: none !important;
     }
 
-    /* Smooth Micro-Interactions & Hardware Acceleration */
+    /* Aero Sheet, Cards & Hero */
+    html[data-interface-style="aero"] .aero-sheet {
+      background: #F8F4F0 !important;
+      color: #353B5B !important;
+      border-radius: 28px 28px 0 0 !important;
+      box-shadow: 0 -12px 35px rgba(53, 59, 91, 0.08) !important;
+    }
+
+    html[data-interface-style="aero"] .aero-card {
+      background: #F8F4F0 !important;
+      border: 1px solid rgba(53, 59, 91, 0.08) !important;
+      color: #353B5B !important;
+      box-shadow: 0 18px 40px -12px rgba(53, 59, 91, 0.09) !important;
+    }
+
+    html[data-interface-style="aero"] .aero-hero-card {
+      background: #F8F4F0 !important;
+      border: 1px solid rgba(230, 159, 134, 0.40) !important;
+      color: #353B5B !important;
+      box-shadow: 0 18px 40px -12px rgba(53, 59, 91, 0.09), 0 4px 12px -2px rgba(230, 159, 134, 0.12) !important;
+    }
+
+    /* Smooth Micro-Interactions */
     .liquid-spring {
       transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease !important;
     }

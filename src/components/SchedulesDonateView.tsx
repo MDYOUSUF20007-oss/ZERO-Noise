@@ -26,7 +26,7 @@ import type {
   CloudAutoBackupStatus,
   CloudReminderInterval,
 } from '../types';
-import { useInterfaceStyle, type AccentColorId } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/InterfaceStyleContext';
 import { evaluatePermissionPriority } from '../utils/permissionPriority';
 import { RestrictedSettingsGuideCard } from './RestrictedSettingsGuideCard';
 import { ProfileAvatar } from './ProfileAvatar';
@@ -82,6 +82,7 @@ import {
   Target,
   Zap,
   Flame,
+  Battery,
 } from 'lucide-react';
 
 interface SchedulesDonateViewProps {
@@ -188,8 +189,8 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   onThemeConfigChange: _onThemeConfigChange,
   interfaceStyle: _interfaceStyleProp,
   onInterfaceStyleChange: _onInterfaceStyleChange,
-  materialYouSeed: materialYouSeedProp,
-  onMaterialYouSeedChange,
+  materialYouSeed: _materialYouSeedProp,
+  onMaterialYouSeedChange: _onMaterialYouSeedChange,
   materialYouAmoled: _materialYouAmoledProp,
   onMaterialYouAmoledChange: _onMaterialYouAmoledChange,
   sectionOverride = null,
@@ -233,8 +234,6 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
     isFluentGlass,
     isMaterialYou,
     isAero,
-    aeroPalette,
-    setAeroPalette,
     aeroAccentColor,
     materialYouSeed: _ctxMaterialYouSeed,
     setMaterialYouSeed: _ctxSetMaterialYouSeed,
@@ -250,11 +249,8 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
     setGlassEngine,
     targetFps,
     setTargetFps,
-    accent,
-    setAccent,
   } = useInterfaceStyle();
   const isModernFont = isBespoke || isFluentGlass || isMaterialYou;
-  const activeAccent = accent || (materialYouSeedProp === 'cyan' ? 'cyan' : 'purple');
 
   const [cloudNotice, setCloudNotice] = useState<{ ok: boolean; message: string } | null>(null);
   const supporterBadgeUnlocked = Boolean(isZeroSupporter ?? (hasClaimedFirstDonationParachute || isDeveloper));
@@ -327,6 +323,71 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   const [newBurnTheBoats, setNewBurnTheBoats] = useState<boolean>(false);
   const [burnBoatsWarning, setBurnBoatsWarning] = useState<string | null>(null);
   const [scheduleNotice, setScheduleNotice] = useState<{ id: string; message: string } | null>(null);
+
+  // Quick Settings Tile Configuration
+  const [qsDuration, setQsDuration] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('zero_qs_duration_seconds');
+      if (saved) return Number(saved);
+    }
+    return 25 * 60;
+  });
+  const [qsTag, setQsTag] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('zero_qs_tag');
+      if (saved) return saved;
+    }
+    return 'Deep Work';
+  });
+
+  const handleUpdateQsConfig = (duration: number, tag: string) => {
+    setQsDuration(duration);
+    setQsTag(tag);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('zero_qs_duration_seconds', String(duration));
+      localStorage.setItem('zero_qs_tag', tag);
+      window.ZeroNative?.syncQuickSettingsConfig?.(duration, tag, 'work', 'Work');
+    }
+  };
+
+  // OEM Battery Killer & Background Exemption State
+  const [isBatteryIgnored, setIsBatteryIgnored] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && window.ZeroNative?.isIgnoringBatteryOptimizations) {
+      return Boolean(window.ZeroNative.isIgnoringBatteryOptimizations());
+    }
+    return true;
+  });
+  const [deviceMfg, setDeviceMfg] = useState<string>(() => {
+    if (typeof window !== 'undefined' && window.ZeroNative?.getDeviceManufacturer) {
+      return window.ZeroNative.getDeviceManufacturer() || 'generic';
+    }
+    return 'generic';
+  });
+
+  const checkBatteryState = () => {
+    if (typeof window !== 'undefined') {
+      if (window.ZeroNative?.isIgnoringBatteryOptimizations) {
+        setIsBatteryIgnored(Boolean(window.ZeroNative.isIgnoringBatteryOptimizations()));
+      }
+      if (window.ZeroNative?.getDeviceManufacturer) {
+        setDeviceMfg(window.ZeroNative.getDeviceManufacturer() || 'generic');
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkBatteryState();
+    if (typeof window !== 'undefined' && window.ZeroNative?.getQuickSettingsConfigJson) {
+      try {
+        const raw = window.ZeroNative.getQuickSettingsConfigJson();
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.durationSeconds) setQsDuration(Number(parsed.durationSeconds));
+          if (parsed.tag) setQsTag(String(parsed.tag));
+        }
+      } catch {}
+    }
+  }, []);
 
   const handleOpenExternal = (e: React.MouseEvent, url: string) => {
     handleOpenExternalUrl(e, url);
@@ -437,8 +498,8 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
               isAero
                 ? `rounded-full transition-all ${
                     effectiveSection === 'schedules'
-                      ? 'bg-[#111827] text-white font-bold shadow-sm'
-                      : 'text-[#5B6B79] hover:text-[#111827] font-medium'
+                      ? 'bg-[#353B5B] text-[#F3EDE8] font-bold shadow-sm'
+                      : 'text-[#353B5B]/70 hover:text-[#353B5B] font-medium'
                   }`
                 : isFluentGlass
                 ? `rounded-full font-medium liquid-spring ${
@@ -467,8 +528,8 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
               isAero
                 ? `rounded-full transition-all ${
                     effectiveSection === 'themes'
-                      ? 'bg-[#111827] text-white font-bold shadow-sm'
-                      : 'text-[#5B6B79] hover:text-[#111827] font-medium'
+                      ? 'bg-[#353B5B] text-[#F3EDE8] font-bold shadow-sm'
+                      : 'text-[#353B5B]/70 hover:text-[#353B5B] font-medium'
                   }`
                 : isFluentGlass
                 ? `rounded-full font-medium liquid-spring ${
@@ -497,8 +558,8 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
               isAero
                 ? `rounded-full transition-all ${
                     effectiveSection === 'settings'
-                      ? 'bg-[#111827] text-white font-bold shadow-sm'
-                      : 'text-[#5B6B79] hover:text-[#111827] font-medium'
+                      ? 'bg-[#353B5B] text-[#F3EDE8] font-bold shadow-sm'
+                      : 'text-[#353B5B]/70 hover:text-[#353B5B] font-medium'
                   }`
                 : isFluentGlass
                 ? `rounded-full font-medium liquid-spring ${
@@ -527,8 +588,8 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
               isAero
                 ? `rounded-full transition-all ${
                     effectiveSection === 'os_security'
-                      ? 'bg-[#111827] text-white font-bold shadow-sm'
-                      : 'text-[#5B6B79] hover:text-[#111827] font-medium'
+                      ? 'bg-[#353B5B] text-[#F3EDE8] font-bold shadow-sm'
+                      : 'text-[#353B5B]/70 hover:text-[#353B5B] font-medium'
                   }`
                 : isFluentGlass
                 ? `rounded-full font-medium liquid-spring ${
@@ -558,8 +619,8 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                 isAero
                   ? `rounded-full transition-all ${
                       effectiveSection === 'support'
-                        ? 'bg-[#111827] text-white font-bold shadow-sm'
-                        : 'text-[#5B6B79] hover:text-[#111827] font-medium'
+                        ? 'bg-[#353B5B] text-[#F3EDE8] font-bold shadow-sm'
+                        : 'text-[#353B5B]/70 hover:text-[#353B5B] font-medium'
                     }`
                   : isFluentGlass
                   ? `rounded-full font-medium liquid-spring ${
@@ -603,16 +664,16 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                     Interface Style
                   </h2>
                   <p className="text-[11px] theme-text-muted truncate">
-                    {theme === 'aetherial' ? 'Aetherial Focus Design System' : 'Fluent Glass Design System'}
+                    {theme === 'dusk' ? 'Twilight Dusk • Night Comfort' : 'Aero Porcelain • Day Comfort'}
                   </p>
                 </div>
               </div>
               <span className="text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full theme-pill-active border shrink-0">
-                Active &amp; Optimized
+                Active &amp; Calibrated
               </span>
             </div>
 
-            {/* Interface Style Choice Grid (Fluent Glass vs Aetherial Focus) */}
+            {/* Interface Style Choice Grid (Aero Porcelain vs Twilight Dusk) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {availableThemes.map((engineDef) => {
                 const isSelected = theme === engineDef.id;
@@ -628,7 +689,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                     }}
                     className={`w-full p-3.5 text-left rounded-2xl border transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
                       isSelected
-                        ? 'border-[var(--accent-primary,#38bdf8)] bg-[var(--accent-soft,rgba(56,189,248,0.12))] shadow-[0_0_16px_var(--liquid-accent-soft-glow)]'
+                        ? 'border-[var(--accent-primary,#E69F86)] bg-[var(--accent-soft,rgba(230,159,134,0.12))] shadow-[0_0_16px_var(--liquid-accent-soft-glow)]'
                         : 'theme-border theme-bg-secondary/40 hover:theme-bg-secondary/70'
                     }`}
                   >
@@ -636,13 +697,13 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                       <div className="font-semibold text-xs theme-text-primary flex items-center gap-2">
                         <span>{engineDef.name}</span>
                         <span className={`text-[9px] uppercase px-1.5 py-0.5 rounded-full font-mono border ${
-                          isSelected ? 'border-[var(--accent-primary,#38bdf8)] text-[var(--accent-primary,#38bdf8)]' : 'theme-border theme-text-muted'
+                          isSelected ? 'border-[var(--accent-primary,#E69F86)] text-[var(--accent-primary,#E69F86)]' : 'theme-border theme-text-muted'
                         }`}>
                           {engineDef.badge}
                         </span>
                       </div>
                       {isSelected && (
-                        <span className="w-2 h-2 rounded-full bg-[var(--accent-primary,#38bdf8)] shadow-[0_0_8px_var(--accent-primary,#38bdf8)] animate-pulse shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-[var(--accent-primary,#E69F86)] shadow-[0_0_8px_var(--accent-primary,#E69F86)] animate-pulse shrink-0" />
                       )}
                     </div>
 
@@ -654,45 +715,40 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                       {engineDef.id === 'aero' ? (
                         <>
                           <div
-                            className="w-8 h-3.5 rounded-full border border-black/10 shrink-0"
-                            style={{
-                              background: 'linear-gradient(90deg, #C7DCE8 0%, #DAEAF3 35%, #FDE68A 70%, #F472B6 100%)',
-                            }}
-                            title="Aero Sky-to-Pastel Gradient"
+                            className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 bg-[#F3EDE8]"
+                            title="Warm Porcelain Canvas"
                           />
                           <div
-                            className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 bg-[#FFFFFF]"
-                            title="Pure White Sheet"
+                            className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 bg-[#F8F4F0]"
+                            title="Porcelain Surface"
                           />
                           <div
-                            className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 bg-[#111827]"
-                            title="Ink Black"
+                            className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 bg-[#353B5B]"
+                            title="Twilight Indigo Ink"
+                          />
+                          <div
+                            className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 bg-[#E69F86]"
+                            title="Sunset Peach Accent"
                           />
                         </>
                       ) : (
                         <>
                           <div
-                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0"
-                            style={{ backgroundColor: engineDef.swatchBg }}
-                            title="Background"
+                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0 bg-[#24283F]"
+                            title="Deep Twilight Canvas"
                           />
                           <div
-                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0"
-                            style={{ backgroundColor: engineDef.swatchSurface }}
-                            title="Surface"
+                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0 bg-[#2C314C]"
+                            title="Twilight Surface"
                           />
                           <div
-                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0"
-                            style={{ backgroundColor: engineDef.swatchAccent }}
-                            title="Primary Accent"
+                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0 bg-[#F3EDE8]"
+                            title="Warm Porcelain Ink"
                           />
-                          {engineDef.swatchAccentSecondary && (
-                            <div
-                              className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0"
-                              style={{ backgroundColor: engineDef.swatchAccentSecondary }}
-                              title="Secondary Accent"
-                            />
-                          )}
+                          <div
+                            className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0 bg-[#E69F86]"
+                            title="Sunset Peach Accent"
+                          />
                         </>
                       )}
                       <span className="text-[9px] theme-text-muted ml-auto font-mono">
@@ -703,111 +759,6 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                 );
               })}
             </div>
-
-            {/* Choosable Accent Colors — hidden in Aero UI (palette replaces it) */}
-            {!isAero && (
-            <div className="pt-3 border-t theme-border space-y-2.5">
-              <label className="text-[11px] font-semibold theme-text-primary block">
-                Accent Color
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {[
-                  { id: 'amber' as const, name: 'Golden Amber', color: '#FCD34D', bg: '#78350F' },
-                  { id: 'emerald' as const, name: 'Radiant Emerald', color: '#6EE7B7', bg: '#064E3B' },
-                  { id: 'cyan' as const, name: 'Cyber Cyan', color: '#67D4FF', bg: '#004E5F' },
-                  { id: 'purple' as const, name: 'Deep Purple', color: '#D0BCFF', bg: '#4F378B' },
-                  { id: 'crimson' as const, name: 'Crimson Rose', color: '#FDA4AF', bg: '#881337' },
-                ].map((seed) => {
-                  const isSelected =
-                    !activeModId &&
-                    (activeAccent === seed.id ||
-                      (seed.id === 'purple' && !['amber', 'emerald', 'cyan', 'crimson'].includes(activeAccent)));
-                  return (
-                    <button
-                      key={seed.id}
-                      type="button"
-                      onClick={() => {
-                        haptics.tick(900);
-                        const next = seed.id as AccentColorId;
-                        setAccent(next);
-                        onMaterialYouSeedChange?.(next as any);
-                        removeActiveModStyles();
-                        setActiveModId(null);
-                      }}
-                      className={`p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
-                        isSelected
-                          ? 'theme-pill-active'
-                          : 'theme-pill hover:opacity-90'
-                      }`}
-                    >
-                      <div
-                        className="w-5 h-5 rounded-full shrink-0 flex items-center justify-center border border-white/20"
-                        style={{ backgroundColor: seed.color }}
-                      >
-                        {isSelected && (
-                          <div
-                            className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: seed.bg }}
-                          />
-                        )}
-                      </div>
-                      <span className="text-xs font-medium truncate">{seed.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            )}
-
-            {/* Aero UI Palette Selector — only shown when Aero UI is active */}
-            {isAero && (
-            <div className="pt-3 border-t space-y-2.5" style={{ borderColor: '#E2E8F0' }}>
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-black text-[#0f172a] block uppercase tracking-wider">Aero Palette</label>
-                <span className="text-[10px] font-black text-[#0f172a] px-2.5 py-0.5 rounded-xl bg-white border border-[#CBD5E1] shadow-xs uppercase font-mono">
-                  {aeroPalette}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                {[
-                  { id: 'ink' as const, name: 'Ink', preview: '#0f172a' },
-                  { id: 'azure' as const, name: 'Azure', preview: '#0284C7' },
-                  { id: 'emerald' as const, name: 'Emerald', preview: '#059669' },
-                  { id: 'amber' as const, name: 'Amber', preview: '#D97706' },
-                ].map((palette) => {
-                  const isSelected = aeroPalette === palette.id;
-                  return (
-                    <button
-                      key={palette.id}
-                      type="button"
-                      onClick={() => {
-                        haptics.tick(900);
-                        setAeroPalette(palette.id);
-                      }}
-                      style={
-                        isSelected
-                          ? { backgroundColor: palette.preview, borderColor: palette.preview }
-                          : undefined
-                      }
-                      className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all cursor-pointer shadow-xs ${
-                        isSelected
-                          ? 'text-white font-black shadow-md'
-                          : 'bg-white border-[#CBD5E1] hover:border-[#94A3B8]'
-                      }`}
-                    >
-                      <div
-                        className="w-4 h-4 rounded-full shrink-0 border border-white/40"
-                        style={{ backgroundColor: palette.preview }}
-                      />
-                      <span className={`text-xs font-black truncate ${isSelected ? 'text-white' : 'text-[#0f172a]'}`}>
-                        {palette.name}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            )}
 
             {/* Glass controls — hidden in Aero UI (no glass engine needed) */}
             {!isAero && (
@@ -2280,6 +2231,140 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
             }
           />
 
+          {/* CARD #3: ANDROID QUICK SETTINGS TILE // 1-TAP ENGAGE */}
+          <ObsidianCard
+            ambientGlow={!isBespoke}
+            className={isModernFont ? 'font-sans' : 'font-mono'}
+            headerClassName="p-5 space-y-4"
+            footerClassName="px-5 py-3 text-[11px] text-zinc-400 leading-relaxed"
+            headerContent={
+              <>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 text-white font-semibold text-sm">
+                    <div
+                      className={
+                        isFluentGlass
+                          ? 'liquid-squircle text-cyan-200'
+                          : `w-7 h-7 obsidian-icon-box flex items-center justify-center shrink-0 ${
+                              isBespoke ? 'rounded-md text-blue-500' : 'rounded-xl'
+                            }`
+                      }
+                    >
+                      <Zap
+                        size={15}
+                        strokeWidth={1.75}
+                        style={isModernFont ? undefined : { color: 'var(--accent-hex, #FFFFFF)' }}
+                      />
+                    </div>
+                    <span>QUICK SETTINGS TILE // 1-TAP ENGAGE</span>
+                  </div>
+                  <span
+                    className={`text-[10px] uppercase px-2 py-0.5 obsidian-inset text-white font-semibold ${
+                      isBespoke ? 'rounded-sm' : 'rounded-full font-bold'
+                    }`}
+                  >
+                    OS Shade
+                  </span>
+                </div>
+
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  Ignite your focus lock instantly directly from your Android notification drawer with one tap, without touching or scrolling the dial.
+                </p>
+
+                {/* Live Preview Box */}
+                <div className={`p-3.5 obsidian-inset-neutral flex items-center justify-between gap-3 ${isBespoke ? 'rounded-md' : 'rounded-xl'}`}>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
+                      <Zap size={16} className="text-white" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-white tracking-wide flex items-center gap-1.5">
+                        <span>ZERO: Engage</span>
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/10 text-zinc-300 font-mono">Tile Preview</span>
+                      </div>
+                      <div className="text-[11px] text-zinc-400 truncate">
+                        {Math.floor(qsDuration / 60)}m • #{qsTag}
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono font-semibold px-2 py-1 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 shrink-0">
+                    Tile Armed
+                  </span>
+                </div>
+
+                {/* Duration Picker */}
+                <div className="space-y-1.5">
+                  <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold block">
+                    Default Tile Duration:
+                  </label>
+                  <div className="grid grid-cols-5 gap-1.5">
+                    {[
+                      { label: '15m', secs: 15 * 60 },
+                      { label: '25m', secs: 25 * 60 },
+                      { label: '45m', secs: 45 * 60 },
+                      { label: '1h', secs: 60 * 60 },
+                      { label: '2h', secs: 120 * 60 },
+                    ].map((pill) => (
+                      <button
+                        key={pill.label}
+                        type="button"
+                        onClick={() => {
+                          haptics.tick(600);
+                          handleUpdateQsConfig(pill.secs, qsTag);
+                        }}
+                        className={`py-1.5 text-xs font-semibold text-center transition-all ${
+                          isBespoke ? 'rounded-sm' : 'rounded-lg'
+                        } ${
+                          qsDuration === pill.secs
+                            ? 'obsidian-pill-active font-black shadow-sm'
+                            : 'obsidian-inset-neutral text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        {pill.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tag Picker */}
+                <div className="space-y-1.5">
+                  <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold block">
+                    Default Session Tag:
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Deep Work', 'Study', 'Coding', 'Exams', 'Detox'].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => {
+                          haptics.tick(600);
+                          handleUpdateQsConfig(qsDuration, tag);
+                        }}
+                        className={`px-2.5 py-1 text-xs font-semibold transition-all ${
+                          isBespoke ? 'rounded-sm' : 'rounded-lg'
+                        } ${
+                          qsTag === tag
+                            ? 'obsidian-pill-active font-black'
+                            : 'obsidian-inset-neutral text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        #{tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            }
+            footerContent={
+              <div className="space-y-1">
+                <span className="font-semibold text-white">How to add to Quick Settings:</span>
+                <p>
+                  Swipe down twice from top of screen → Tap the pencil (Edit) icon → Find <strong className="text-white">ZERO: Engage</strong> in Available Tiles → Drag it into your active Quick Settings drawer.
+                </p>
+              </div>
+            }
+          />
+
           {/* CARD #4: ABORTED SESSION PENALTY EXPLANATION */}
           <ObsidianCard
             accentOverride={{ hex: '#EF4444', rgb: '239, 68, 68' }}
@@ -2920,13 +3005,145 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                 </span>
                 <button
                   type="button"
-                  onClick={onRefreshPermissions}
+                  onClick={() => {
+                    onRefreshPermissions();
+                    checkBatteryState();
+                  }}
                   className={`font-semibold uppercase tracking-wider hover:brightness-125 ${
                     isBespoke ? 'text-blue-400' : ''
                   }`}
                   style={isBespoke ? undefined : { color: 'var(--accent-hex, #FFFFFF)' }}
                 >
                   Re-check Now
+                </button>
+              </>
+            }
+          />
+
+          {/* CARD: OEM BATTERY KILLER IMMUNITY & BACKGROUND PROTECTION */}
+          <ObsidianCard
+            ambientGlow={!isBespoke}
+            className={isModernFont ? 'font-sans' : 'font-mono'}
+            headerClassName="p-5 space-y-4"
+            footerClassName="px-5 py-3 text-[11px] text-zinc-400 leading-relaxed flex items-center justify-between gap-2 flex-wrap"
+            headerContent={
+              <>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 text-white font-semibold text-sm">
+                    <div
+                      className={
+                        isFluentGlass
+                          ? 'liquid-squircle text-emerald-200'
+                          : `w-7 h-7 obsidian-icon-box flex items-center justify-center shrink-0 ${
+                              isBespoke ? 'rounded-md text-emerald-500' : 'rounded-xl'
+                            }`
+                      }
+                    >
+                      <Battery
+                        size={15}
+                        strokeWidth={1.75}
+                        style={isModernFont ? undefined : { color: 'var(--accent-hex, #FFFFFF)' }}
+                      />
+                    </div>
+                    <span>OEM BATTERY KILLER IMMUNITY</span>
+                  </div>
+                  <span
+                    className={`text-[10px] uppercase px-2 py-0.5 border font-mono ${
+                      isBespoke ? 'rounded-sm' : 'rounded-full font-bold'
+                    } ${
+                      isBatteryIgnored
+                        ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40'
+                        : 'bg-amber-500/15 text-amber-300 border-amber-500/40 font-black'
+                    }`}
+                  >
+                    {isBatteryIgnored ? 'UNRESTRICTED' : 'BATTERY OPTIMIZED'}
+                  </span>
+                </div>
+
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  Aggressive Android OEM task killers (Samsung OneUI, Xiaomi HyperOS/MIUI, ColorOS, OriginOS) kill background processes when the screen turns dark. Exemption ensures your monotonic lock watchdog never freezes.
+                </p>
+
+                {/* Device Info & Status Box */}
+                <div className={`p-3.5 obsidian-inset-neutral space-y-2.5 ${isBespoke ? 'rounded-md' : 'rounded-xl'}`}>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400">Detected Device:</span>
+                    <span className="text-white font-bold uppercase tracking-wider font-mono">
+                      {deviceMfg}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400">Background Protection:</span>
+                    <span className={`font-semibold flex items-center gap-1 ${isBatteryIgnored ? 'text-emerald-400' : 'text-amber-400'}`}>
+                      {isBatteryIgnored ? (
+                        <>
+                          <CheckCircle2 size={13} />
+                          <span>Immune to OS kills</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShieldAlert size={13} />
+                          <span>May be killed in sleep</span>
+                        </>
+                      )}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  {!isBatteryIgnored ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        haptics.tick(600);
+                        window.ZeroNative?.requestIgnoreBatteryOptimizations?.();
+                        setTimeout(checkBatteryState, 1500);
+                      }}
+                      className={`w-full py-2.5 px-3 text-[11px] uppercase tracking-wider obsidian-pill-active font-black ${
+                        isBespoke ? 'rounded-md' : 'rounded-xl'
+                      }`}
+                    >
+                      Exempt from Battery Saver
+                    </button>
+                  ) : (
+                    <div className={`py-2 px-3 text-[11px] obsidian-inset-neutral text-emerald-300 font-semibold flex items-center justify-center gap-1.5 ${
+                      isBespoke ? 'rounded-md' : 'rounded-xl'
+                    }`}>
+                      <CheckCircle2 size={13} />
+                      <span>Battery Optimization Exempt</span>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptics.tick(600);
+                      window.ZeroNative?.openOemAutostartSettings?.();
+                    }}
+                    className={`w-full py-2 px-3 text-[11px] uppercase tracking-wider obsidian-inset-neutral text-zinc-200 hover:text-white font-bold flex items-center justify-center gap-1.5 ${
+                      isBespoke ? 'rounded-md' : 'rounded-xl'
+                    }`}
+                  >
+                    <span>OEM Autostart / Battery Settings</span>
+                    <ExternalLink size={11} />
+                  </button>
+                </div>
+              </>
+            }
+            footerContent={
+              <>
+                <span>Recommended: Set ZERO battery to &ldquo;Unrestricted&rdquo; in Android App Info.</span>
+                <button
+                  type="button"
+                  onClick={checkBatteryState}
+                  className={`font-semibold uppercase tracking-wider hover:brightness-125 ${
+                    isBespoke ? 'text-blue-400' : ''
+                  }`}
+                  style={isBespoke ? undefined : { color: 'var(--accent-hex, #FFFFFF)' }}
+                >
+                  Verify Status
                 </button>
               </>
             }

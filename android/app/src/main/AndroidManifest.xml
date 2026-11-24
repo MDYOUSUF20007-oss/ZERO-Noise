@@ -128,6 +128,19 @@
                 android:value="digital_detox_focus_lock_watchdog" />
         </service>
 
+        <!-- Android Quick Settings Tile: 1-Tap Focus Engage & Active Timer -->
+        <service
+            android:name=".service.ZeroTileService"
+            android:icon="@drawable/ic_qs_zero"
+            android:label="@string/quick_settings_tile_label"
+            android:description="@string/quick_settings_tile_description"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
         <!-- Anti-Tamper Boot Completed Receiver -->
         <receiver
             android:name=".receiver.BootReceiver"

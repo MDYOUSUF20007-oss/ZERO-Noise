@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Outer focus target ring / Zero symbol -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2Z" />
+    <!-- Center lightning bolt for Engage / Instant Ignition -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M13,6.5L7.5,13.5H11.5L10.5,17.5L16.5,10.5H12.5L13,6.5Z" />
+</vector>

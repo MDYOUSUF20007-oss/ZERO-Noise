@@ -482,10 +482,10 @@ export function useZeroStore() {
       if (saved) {
         return normalizeInterfaceStyle(saved);
       }
-      localStorage.setItem(UI_STORAGE_KEYS.INTERFACE_STYLE, 'fluent_glass');
-      return 'fluent_glass';
+      localStorage.setItem(UI_STORAGE_KEYS.INTERFACE_STYLE, 'aero');
+      return 'aero';
     } catch {
-      return 'fluent_glass';
+      return 'aero';
     }
   });
   const interfaceStyleRef = useRef<InterfaceStyle>(interfaceStyle);
@@ -2494,8 +2494,8 @@ export function useZeroStore() {
     setActiveBagIdState(DEFAULT_BAGS[0].id);
     setThemeState('amoled');
     setThemeConfigState(DEFAULT_THEME_CONFIG);
-    setInterfaceStyleState('fluent_glass');
-    localStorage.setItem(UI_STORAGE_KEYS.INTERFACE_STYLE, 'fluent_glass');
+    setInterfaceStyleState('aero');
+    localStorage.setItem(UI_STORAGE_KEYS.INTERFACE_STYLE, 'aero');
     setWidgetsConfigState(DEFAULT_WIDGETS_CONFIG);
     setTipSkipRemaining(0);
     tipSkipRemainingRef.current = 0;

@@ -42,15 +42,15 @@
   height: 20px;
   padding: 0 6px;
   border-radius: 999px;
-  background: #070b11;
-  border: 1px solid var(--accent-hex, rgba(125, 211, 252, 0.55));
-  color: var(--accent-hex, #7dd3fc);
+  background: var(--accent-hex, #E69F86);
+  border: 1.5px solid var(--bg-surface, #F8F4F0);
+  color: var(--text-on-accent, #353B5B);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 18px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   pointer-events: none;
 }
 

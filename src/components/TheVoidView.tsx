@@ -104,118 +104,31 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
   onDeployParachute,
   onExtendLock,
 }) => {
-  const { fluentOrbIntensity, gpuThermalSafeguard, isAero, aeroAccentColor, accent } = useInterfaceStyle();
+  const { fluentOrbIntensity, gpuThermalSafeguard, isAero, isDusk, aeroAccentColor, accent } = useInterfaceStyle();
   const themeRuntime = useMemo(
     () => computeThemeRuntime(themeConfig ?? DEFAULT_THEME_CONFIG),
     [themeConfig]
   );
   const activeAccent = useMemo(() => {
-    if (isAero) return aeroAccentColor || '#0f172a';
-
-    // 1. Direct accent prop from InterfaceStyleContext
-    if (accent === 'amber') return '#F59E0B';
-    if (accent === 'emerald') return '#10B981';
-    if (accent === 'crimson') return '#F43F5E';
-    if (accent === 'cyan') return '#00F0FF';
-    if (accent === 'purple') return '#A855F7';
-
-    // 2. Profile accent
-    const profileColor = profile?.accentColor as string | undefined;
-    if (profileColor === 'amber') return '#F59E0B';
-    if (profileColor === 'emerald') return '#10B981';
-    if (profileColor === 'cyan') return '#00F0FF';
-    if (profileColor === 'crimson') return '#F43F5E';
-    if (profileColor === 'purple') return '#A855F7';
-    if (profileColor === 'white') return '#FFFFFF';
-    if (profileColor?.startsWith('#')) return profileColor;
-
-    // 3. User explicit selections in localStorage
-    if (typeof window !== 'undefined') {
-      try {
-        const savedAccent = window.localStorage.getItem('zero_theme_accent_seed_v5');
-        if (savedAccent === 'amber') return '#F59E0B';
-        if (savedAccent === 'emerald') return '#10B981';
-        if (savedAccent === 'crimson') return '#F43F5E';
-        if (savedAccent === 'cyan') return '#00F0FF';
-        if (savedAccent === 'purple') return '#A855F7';
-
-        const savedSeed = window.localStorage.getItem('zero_material_you_seed');
-        if (savedSeed === 'amber') return '#F59E0B';
-        if (savedSeed === 'emerald') return '#10B981';
-        if (savedSeed === 'crimson') return '#F43F5E';
-        if (savedSeed === 'cyan') return '#00F0FF';
-        if (savedSeed === 'purple') return '#A855F7';
-
-        const savedStyle = window.localStorage.getItem('zero_theme_style');
-        if (savedStyle === 'amber') return '#F59E0B';
-        if (savedStyle === 'emerald') return '#10B981';
-      } catch {}
-    }
-
-    // 4. HTML root attributes set by theme engine
     if (typeof document !== 'undefined') {
-      const dataAccent = document.documentElement.getAttribute('data-accent');
-      if (dataAccent === 'amber') return '#F59E0B';
-      if (dataAccent === 'emerald') return '#10B981';
-      if (dataAccent === 'crimson') return '#F43F5E';
-      if (dataAccent === 'cyan') return '#00F0FF';
-      if (dataAccent === 'purple') return '#A855F7';
-
-      const docAccent =
-        document.documentElement.style.getPropertyValue('--accent-primary')?.trim() ||
-        document.documentElement.style.getPropertyValue('--zero-accent')?.trim();
+      const docAccent = document.documentElement.style.getPropertyValue('--accent-primary')?.trim();
       if (docAccent && docAccent.startsWith('#')) return docAccent;
     }
-
-    // 5. Configured theme presets
-    if (themeConfig?.amoledGradient === 'ember' || themeConfig?.amoledGradient === 'solar_gold') {
-      return '#F59E0B';
-    }
-    if (themeConfig?.amoledGradient === 'aurora' || themeConfig?.amoledGradient === 'jade_matrix') {
-      return '#10B981';
-    }
-    if (themeConfig?.amoledGradient === 'crimson' || themeConfig?.amoledGradient === 'vermilion_heat') {
-      return '#F43F5E';
-    }
-    if (themeConfig?.amoledGradient === 'cobalt' || themeConfig?.amoledGradient === 'arctic_teal') {
-      return '#00F0FF';
-    }
-    if (themeConfig?.amoledGradient === 'cosmic' || themeConfig?.amoledGradient === 'indigo_abyss') {
-      return '#A855F7';
-    }
-
-    const runtimeAccent = themeRuntime.cssVars['--zero-accent'] || themeRuntime.cssVars['--accent-primary'];
-    if (runtimeAccent && runtimeAccent !== '#FFFFFF' && runtimeAccent !== '#34D399') {
-      return runtimeAccent;
-    }
-    return '#F59E0B';
-  }, [isAero, aeroAccentColor, accent, profile?.accentColor, themeRuntime, themeConfig]);
+    return '#E69F86';
+  }, [isAero, isDusk, aeroAccentColor, accent]);
 
   const voidBackgroundImage = useMemo(() => {
-    if (themeRuntime.family === 'kindle' || themeRuntime.family === 'matte') {
-      return themeRuntime.cssVars['--zero-bg-image'];
+    if (isAero) {
+      return 'linear-gradient(180deg, #F3EDE8 0%, #EDE6DF 40%, #F8F4F0 100%)';
+    }
+    if (isDusk) {
+      return 'linear-gradient(180deg, #24283F 0%, #1E2135 40%, #2C314C 100%)';
     }
     if (themeConfig?.amoledGradient === 'pure') {
       return 'none';
     }
-    const norm = activeAccent.toUpperCase();
-    if (norm === '#F59E0B' || norm === '#D97706') {
-      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(245, 158, 11, 0.22) 0%, rgba(113, 63, 18, 0.28) 42%, #000000 80%)';
-    }
-    if (norm === '#10B981' || norm === '#059669' || norm === '#34D399') {
-      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(16, 185, 129, 0.22) 0%, rgba(6, 78, 59, 0.28) 42%, #000000 80%)';
-    }
-    if (norm === '#F43F5E' || norm === '#E11D48' || norm === '#FB7185') {
-      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(251, 113, 133, 0.22) 0%, rgba(136, 19, 55, 0.28) 42%, #000000 80%)';
-    }
-    if (norm === '#00F0FF' || norm === '#38BDF8' || norm === '#22D3EE') {
-      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(0, 240, 255, 0.20) 0%, rgba(12, 74, 110, 0.28) 42%, #000000 80%)';
-    }
-    if (norm === '#A855F7' || norm === '#9333EA' || norm === '#C084FC') {
-      return 'radial-gradient(ellipse 95% 48% at 50% 0%, rgba(168, 85, 247, 0.22) 0%, rgba(76, 29, 149, 0.28) 44%, #000000 80%)';
-    }
-    return `radial-gradient(ellipse 95% 48% at 50% 0%, ${hexToRgba(activeAccent, 0.22)} 0%, ${hexToRgba(activeAccent, 0.08)} 45%, #000000 80%)`;
-  }, [themeRuntime, themeConfig?.amoledGradient, activeAccent]);
+    return `radial-gradient(ellipse 95% 48% at 50% 0%, ${hexToRgba(activeAccent, 0.18)} 0%, ${hexToRgba(activeAccent, 0.05)} 45%, #24283F 80%)`;
+  }, [isAero, isDusk, themeConfig?.amoledGradient, activeAccent]);
   const isLightMode = themeRuntime.mode === 'light';
   const [clockText, setClockText] = useState<string>(() => format12HourClock(new Date()));
   const [batteryPct, setBatteryPct] = useState<number>(() => {
@@ -342,8 +255,9 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
     }
   }, []);
 
-  // AOD Burn-in Protection Pixel Drift (+/- 2-4px periodically)
+  // AOD & Void AMOLED Burn-in Protection Pixel Drift (+/- 2-4px periodically)
   const [aodDrift, setAodDrift] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [voidPixelShift, setVoidPixelShift] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!isAodMode) return;
@@ -355,6 +269,37 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
     }, 60000);
     return () => clearInterval(driftTimer);
   }, [isAodMode]);
+
+  // Periodic subtle pixel shift for main Void display to guard against AMOLED/OLED burn-in
+  useEffect(() => {
+    const shiftTimer = setInterval(() => {
+      setVoidPixelShift({
+        x: Math.floor(Math.random() * 7) - 3,
+        y: Math.floor(Math.random() * 7) - 3,
+      });
+    }, 90000);
+    return () => clearInterval(shiftTimer);
+  }, []);
+
+  // Sync initial Do Not Disturb (DND) state from native Android OS policy
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.ZeroNative?.isDoNotDisturbActive) {
+      try {
+        setIsDndEnabled(Boolean(window.ZeroNative.isDoNotDisturbActive()));
+      } catch {}
+    }
+  }, []);
+
+  // On session exit / component unmount, cleanly restore normal notification policy
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && window.ZeroNative?.setDoNotDisturb) {
+        try {
+          window.ZeroNative.setDoNotDisturb(false);
+        } catch {}
+      }
+    };
+  }, []);
 
   const handleParkThought = (e: React.FormEvent) => {
     e.preventDefault();
@@ -763,7 +708,9 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       data-void-terminal="true"
       className={`fixed inset-0 z-50 flex flex-col justify-between overflow-x-hidden overflow-y-auto select-none px-4 py-3 sm:px-6 transition-colors duration-300 ${
         isAero
-          ? 'aero-canvas text-[#111827]'
+          ? 'aero-canvas text-[#353B5B]'
+          : isDusk
+          ? 'text-[#F3EDE8]'
           : isLightMode
           ? 'text-stone-900'
           : 'text-white'
@@ -771,14 +718,25 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       style={
         isAero
           ? {
+              backgroundColor: '#F3EDE8',
+              backgroundImage: voidBackgroundImage,
+              color: '#353B5B',
+              paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
+              paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
+            }
+          : isDusk
+          ? {
+              backgroundColor: '#24283F',
+              backgroundImage: voidBackgroundImage,
+              color: '#F3EDE8',
               paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
               paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
             }
           : ({
-              backgroundColor: themeRuntime.cssVars['--zero-bg-primary'] || '#000000',
+              backgroundColor: themeRuntime.cssVars['--zero-bg-primary'] || '#24283F',
               backgroundImage: voidBackgroundImage,
               backgroundSize: themeRuntime.cssVars['--zero-bg-size'],
-              color: themeRuntime.cssVars['--zero-ink-primary'] || (isLightMode ? '#1C1917' : '#FFFFFF'),
+              color: themeRuntime.cssVars['--zero-ink-primary'] || '#F3EDE8',
               paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
               paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
               ...themeRuntime.cssVars,
@@ -811,9 +769,11 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             haptics.tick(700);
             setIsAodMode(false);
           }}
-          className="fixed inset-0 z-[255] bg-black flex flex-col items-center justify-center p-6 text-center select-none cursor-pointer"
+          className={`fixed inset-0 z-[255] flex flex-col items-center justify-center p-6 text-center select-none cursor-pointer ${
+            isAero ? 'bg-[#F3EDE8]' : 'bg-black'
+          }`}
         >
-          {/* Subtle Ambient Depth Halo (Burn-in Safe 0.16 opacity) */}
+          {/* Subtle Ambient Depth Halo */}
           <div
             aria-hidden="true"
             className="w-56 h-56 rounded-full pointer-events-none blur-3xl absolute -z-10 transition-all duration-1000"
@@ -839,21 +799,23 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               <span>AOD GLANCEABLE // {workTagDisplay}</span>
             </span>
 
-            {/* High-Contrast 5x7 Dot-Matrix Pixel Countdown: Pure White Body & Radiant Theme Rim */}
+            {/* High-Contrast 5x7 Dot-Matrix Pixel Countdown: Warm Porcelain Body & Radiant Sunset Peach Theme Rim */}
             <svg
               role="img"
               aria-label={`AOD Remaining lock time ${timerPixelLayout.normalizedText}`}
               viewBox={`0 0 ${timerPixelLayout.totalCols} ${timerPixelLayout.totalRows}`}
               className="h-16 sm:h-20 w-auto max-w-full overflow-visible transition-all duration-300"
               style={{
-                filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.92)) drop-shadow(0 2px 14px ${activeAccent}77)`,
+                filter: isAero
+                  ? `drop-shadow(0 0 2px rgba(53,59,91,0.25)) drop-shadow(0 2px 14px ${activeAccent}66)`
+                  : `drop-shadow(0 0 1.5px rgba(243,237,232,0.92)) drop-shadow(0 2px 14px ${activeAccent}77)`,
               }}
               shapeRendering="crispEdges"
             >
               <defs>
                 <linearGradient id={`${gradId}-aod`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#FFFFFF" stopOpacity={1} />
-                  <stop offset="65%" stopColor="#FFFFFF" stopOpacity={0.98} />
+                  <stop offset="0%" stopColor={isAero ? '#353B5B' : '#F3EDE8'} stopOpacity={1} />
+                  <stop offset="65%" stopColor={isAero ? '#353B5B' : '#F3EDE8'} stopOpacity={0.98} />
                   <stop offset="100%" stopColor={activeAccent} stopOpacity={1} />
                 </linearGradient>
               </defs>
@@ -870,18 +832,18 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             </svg>
 
             {/* Dim system clock, battery indicator & finish target */}
-            <div className="mt-4 flex flex-col items-center gap-1.5 font-mono text-zinc-400">
+            <div className={`mt-4 flex flex-col items-center gap-1.5 font-mono ${isAero ? 'text-[#353B5B]/70' : 'text-zinc-400'}`}>
               <div className="flex items-center gap-3 text-xs tabular-nums font-medium">
-                <span className="text-zinc-300">{clockText}</span>
+                <span className={isAero ? 'text-[#353B5B]' : 'text-zinc-300'}>{clockText}</span>
                 <span style={{ color: activeAccent }}>•</span>
-                <span className="text-zinc-300">{batteryPct}%</span>
+                <span className={isAero ? 'text-[#353B5B]' : 'text-zinc-300'}>{batteryPct}%</span>
               </div>
-              <div className="text-[10px] tracking-wider uppercase text-zinc-500">
+              <div className={`text-[10px] tracking-wider uppercase ${isAero ? 'text-[#353B5B]/60' : 'text-zinc-500'}`}>
                 Target Finish {targetEndTimeFormatted}
               </div>
             </div>
 
-            <p className="mt-8 text-[9px] font-mono tracking-widest text-zinc-500 uppercase animate-pulse">
+            <p className={`mt-8 text-[9px] font-mono tracking-widest uppercase animate-pulse ${isAero ? 'text-[#353B5B]/60' : 'text-zinc-500'}`}>
               TAP ANYWHERE TO RETURN TO THE VOID
             </p>
           </div>
@@ -915,7 +877,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       {/* TOP STATUS BAR: Live Clock, Status, Battery, Controls */}
       <div className="relative z-10 w-full max-w-md mx-auto flex items-center justify-between text-xs font-sans tabular-nums pt-1 pb-2 shrink-0">
         <div className="flex items-center gap-2">
-          <span className={`font-semibold tracking-wide ${isAero ? 'text-[#111827] font-bold' : isLightMode ? 'text-stone-800' : 'text-zinc-200'}`}>
+          <span className={`font-semibold tracking-wide ${isAero ? 'text-[#353B5B] font-bold' : isLightMode ? 'text-stone-800' : 'text-zinc-200'}`}>
             {clockText}
           </span>
           <div
@@ -923,9 +885,9 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             style={
               isAero
                 ? {
-                    backgroundColor: '#111827',
-                    color: '#FFFFFF',
-                    border: '1px solid #111827',
+                    backgroundColor: '#353B5B',
+                    color: '#F3EDE8',
+                    border: '1px solid #353B5B',
                   }
                 : {
                     backgroundColor: isLightMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)',
@@ -934,7 +896,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   }
             }
           >
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: isAero ? '#FFFFFF' : activeAccent }} />
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: isAero ? '#F3EDE8' : activeAccent }} />
             <span>VOID ARMED</span>
           </div>
         </div>
@@ -1279,8 +1241,13 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             </div>
           </div>
 
-          {/* UNIQUE 5x7 DOT-MATRIX PIXELATED TIME DISPLAY */}
-          <div className="relative z-10 py-1 my-1">
+          {/* UNIQUE 5x7 DOT-MATRIX PIXELATED TIME DISPLAY (AMOLED Burn-In Shift Protected) */}
+          <div
+            className="relative z-10 py-1 my-1 transition-transform duration-1000 ease-in-out"
+            style={{
+              transform: `translate3d(${voidPixelShift.x}px, ${voidPixelShift.y}px, 0)`,
+            }}
+          >
             {/* System Clock (5x7 Dot-Matrix Pixel Layout) */}
             <div className="flex flex-col items-center justify-center pt-0.5 pb-2">
               <span className={`text-[9.5px] font-mono tracking-widest uppercase mb-1 ${isAero ? 'text-[#5B6B79] font-bold' : isLightMode ? 'text-stone-500' : 'text-zinc-400'}`}>
@@ -1299,9 +1266,9 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                       offset="0%"
                       stopColor={
                         isAero
-                          ? '#111827'
+                          ? '#353B5B'
                           : isLightMode
-                          ? (themeRuntime.cssVars['--zero-ink-primary'] || '#1C1917')
+                          ? (themeRuntime.cssVars['--zero-ink-primary'] || '#353B5B')
                           : '#FFFFFF'
                       }
                     />
@@ -1309,9 +1276,9 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                       offset="100%"
                       stopColor={
                         isAero
-                          ? '#374151'
+                          ? 'rgba(53, 59, 91, 0.75)'
                           : isLightMode
-                          ? (themeRuntime.cssVars['--zero-ink-secondary'] || '#37332F')
+                          ? (themeRuntime.cssVars['--zero-ink-secondary'] || '#353B5B')
                           : 'rgba(255,255,255,0.72)'
                       }
                     />
@@ -1371,9 +1338,9 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                       offset="0%"
                       stopColor={
                         isAero
-                          ? '#111827'
+                          ? '#353B5B'
                           : isLightMode
-                          ? (themeRuntime.cssVars['--zero-ink-primary'] || '#1C1917')
+                          ? (themeRuntime.cssVars['--zero-ink-primary'] || '#353B5B')
                           : '#FFFFFF'
                       }
                       stopOpacity={1}
@@ -1382,9 +1349,9 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                       offset="65%"
                       stopColor={
                         isAero
-                          ? '#1E293B'
+                          ? '#353B5B'
                           : isLightMode
-                          ? (themeRuntime.cssVars['--zero-ink-primary'] || '#1C1917')
+                          ? (themeRuntime.cssVars['--zero-ink-primary'] || '#353B5B')
                           : '#FFFFFF'
                       }
                       stopOpacity={1}
@@ -1538,13 +1505,13 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
           </div>
         </div>
 
-        {/* Status Anti-Tamper & Phone Silence Shield Indicator */}
+        {/* Status Anti-Tamper, Phone Silence Shield & OLED Protection Indicator */}
         <div className="flex items-center justify-between px-1 text-[11px] font-sans text-zinc-400">
-          <div className="flex items-center gap-1.5">
-            <CheckCircle2 size={12} style={{ color: isAero ? '#111827' : activeAccent }} />
-            <span className="truncate">Silent Mode • Calls &amp; WhatsApp Live</span>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <CheckCircle2 size={12} style={{ color: isAero ? '#111827' : activeAccent }} className="shrink-0" />
+            <span className="truncate">Calls Live • OLED Protected</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {activeLock.burnTheBoats ? (
               <span className="text-amber-400 font-semibold flex items-center gap-1 text-[10px] uppercase">
                 <Flame size={11} />
@@ -1555,12 +1522,24 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 type="button"
                 onClick={() => {
                   haptics.thud();
-                  setIsDndEnabled(!isDndEnabled);
+                  if (typeof window !== 'undefined' && window.ZeroNative?.hasNotificationPolicyAccess) {
+                    if (!window.ZeroNative.hasNotificationPolicyAccess()) {
+                      window.ZeroNative.requestNotificationPolicyAccess?.();
+                      return;
+                    }
+                    const next = !isDndEnabled;
+                    const success = window.ZeroNative.setDoNotDisturb?.(next);
+                    if (success !== false) {
+                      setIsDndEnabled(next);
+                    }
+                  } else {
+                    setIsDndEnabled(!isDndEnabled);
+                  }
                 }}
                 title={
                   isDndEnabled
-                    ? 'Strict DND Active (Emergency calls may be silenced)'
-                    : 'Turn on Optional Strict DND (Warning: silences calls)'
+                    ? 'Strict DND Active (Notification shade & rings silenced)'
+                    : 'Turn on Optional Strict DND via Android OS'
                 }
                 className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border cursor-pointer transition-colors ${
                   isDndEnabled
@@ -1684,14 +1663,14 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                         <span
                           className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
                           style={{
-                            backgroundColor: isAero ? '#111827' : 'var(--accent-primary, #38bdf8)',
-                            color: '#ffffff',
+                            backgroundColor: isAero ? '#353B5B' : 'var(--accent-primary, #38bdf8)',
+                            color: '#F3EDE8',
                           }}
                         >
                           <GraduationCap size={10} />
                         </span>
                       </div>
-                      <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isAero ? 'text-[#111827] font-semibold' : 'text-cyan-200'}`}>
+                      <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isAero ? 'text-[#353B5B] font-semibold' : 'text-cyan-200'}`}>
                         {studyApp.appName}
                       </span>
                     </button>
@@ -1718,7 +1697,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   >
                     {brand.initial}
                   </div>
-                  <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isAero ? 'text-[#374151]' : 'text-zinc-300'}`}>
+                  <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isAero ? 'text-[#443E38]' : 'text-zinc-300'}`}>
                     {app.appName}
                   </span>
                 </button>
@@ -1742,7 +1721,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-sky-600 text-white border border-sky-400/30 shadow-md">
                   <MessageSquare size={18} strokeWidth={2} />
                 </div>
-                <span className={`text-[10px] font-sans font-medium ${isAero ? 'text-[#374151]' : 'text-zinc-300'}`}>SMS</span>
+                <span className={`text-[10px] font-sans font-medium ${isAero ? 'text-[#443E38]' : 'text-zinc-300'}`}>SMS</span>
               </button>
             )}
 
@@ -1779,11 +1758,11 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 haptics.thud();
                 setShowEmergencyModal(true);
               }}
-              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-xs font-sans font-semibold transition-all cursor-pointer active:scale-95 bg-[#F6F9FC] border border-[#E2E8F0] text-[#111827] hover:bg-[#EDF2F7] ${
+              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-xs font-sans font-semibold transition-all cursor-pointer active:scale-95 bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#EDE6DF] shadow-sm ${
                 effectiveTicketCount > 0 ? 'flex-1' : 'w-full max-w-xs'
               }`}
             >
-              <Phone size={14} className="text-red-500" />
+              <Phone size={14} className="text-[#D87255]" />
               <span>Emergency Call</span>
             </button>
 
@@ -1825,11 +1804,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               haptics.thud();
               setShowEmergencyModal(true);
             }}
-            className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl liquid-pill text-xs font-sans font-medium text-zinc-300 hover:text-white transition-all cursor-pointer active:scale-95 ${
+            className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-xs font-sans font-semibold transition-all cursor-pointer active:scale-95 ${
+              isDusk
+                ? 'bg-[#2C314C] border border-[rgba(243,237,232,0.10)] text-[#F3EDE8] hover:bg-[#333957]'
+                : 'liquid-pill text-zinc-300 hover:text-white'
+            } ${
               effectiveTicketCount > 0 || activeLock.burnTheBoats ? 'flex-1' : 'w-full max-w-xs'
             }`}
           >
-            <Phone size={14} className="text-red-400" />
+            <Phone size={14} className="text-[#D87255]" />
             <span>Emergency Call</span>
           </button>
 
@@ -1872,26 +1855,36 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-fadeIn"
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xl animate-fadeIn ${
+            isAero ? 'bg-[rgba(243,237,232,0.88)]' : 'bg-black/85'
+          }`}
         >
-          <div className="relative w-full max-w-sm rounded-[24px] modal-glass p-5 shadow-2xl border border-white/10 space-y-4 font-sans select-none">
+          <div
+            className={`relative w-full max-w-sm rounded-[24px] p-5 shadow-2xl space-y-4 font-sans select-none border ${
+              isAero
+                ? 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B]'
+                : 'bg-[#2C314C] border-[rgba(243,237,232,0.10)] text-[#F3EDE8]'
+            }`}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Phone size={16} className="text-red-400" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                <Phone size={16} className="text-[#D87255]" />
+                <h3 className={`text-sm font-bold uppercase tracking-wider ${isAero ? 'text-[#353B5B]' : 'text-[#F3EDE8]'}`}>
                   Emergency Protocol
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowEmergencyModal(false)}
-                className="w-7 h-7 rounded-full liquid-pill-inactive flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer"
+                className={`w-7 h-7 rounded-full flex items-center justify-center cursor-pointer transition-colors ${
+                  isAero ? 'bg-[#EDE6DF] text-[#353B5B] hover:bg-[#E5DDD5]' : 'bg-[#202438] text-[#F3EDE8] hover:bg-[#282E47]'
+                }`}
               >
                 <X size={14} />
               </button>
             </div>
 
-            <p className="text-xs text-zinc-300 leading-relaxed">
+            <p className={`text-xs leading-relaxed ${isAero ? 'text-[rgba(53,59,91,0.75)]' : 'text-[rgba(243,237,232,0.75)]'}`}>
               If you are facing an urgent safety situation, you can immediately initiate a call to
               emergency services or your emergency ICE contacts.
             </p>
@@ -1900,21 +1893,21 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleEmergencyCall('911')}
-                className="py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                className="py-2.5 px-3 rounded-xl bg-[#D87255] hover:bg-[#C85A3F] text-[#F3EDE8] font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
               >
                 Call 911
               </button>
               <button
                 type="button"
                 onClick={() => handleEmergencyCall('112')}
-                className="py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                className="py-2.5 px-3 rounded-xl bg-[#D87255] hover:bg-[#C85A3F] text-[#F3EDE8] font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
               >
                 Call 112 (EU/Global)
               </button>
             </div>
 
             <div className="pt-1">
-              <div className="text-[11px] font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">
+              <div className={`text-[11px] font-semibold mb-1.5 uppercase tracking-wider ${isAero ? 'text-[rgba(53,59,91,0.60)]' : 'text-[rgba(243,237,232,0.60)]'}`}>
                 Or Dial Specific ICE Number:
               </div>
               <div className="flex gap-2">
@@ -1923,13 +1916,17 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   placeholder="Enter phone number..."
                   value={emergencyNumber}
                   onChange={(e) => setEmergencyNumber(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-xl liquid-inset text-xs text-white placeholder-zinc-500 outline-none focus:ring-1 focus:ring-red-400"
+                  className={`flex-1 px-3 py-2 rounded-xl text-xs outline-none focus:ring-1 focus:ring-[#D87255] ${
+                    isAero
+                      ? 'bg-[#EDE6DF] border border-[rgba(53,59,91,0.12)] text-[#353B5B] placeholder-[rgba(53,59,91,0.45)]'
+                      : 'bg-[#202438] border border-[rgba(243,237,232,0.12)] text-[#F3EDE8] placeholder-[rgba(243,237,232,0.45)]'
+                  }`}
                 />
                 <button
                   type="button"
                   disabled={!emergencyNumber.trim()}
                   onClick={() => handleEmergencyCall(emergencyNumber)}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-40 text-white text-xs font-bold uppercase transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#D87255] hover:bg-[#C85A3F] disabled:opacity-40 text-[#F3EDE8] text-xs font-bold uppercase transition-colors cursor-pointer"
                 >
                   Dial
                 </button>
@@ -1939,7 +1936,11 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             <button
               type="button"
               onClick={() => setShowEmergencyModal(false)}
-              className="w-full py-2.5 liquid-pill text-zinc-300 font-medium text-xs rounded-xl hover:text-white cursor-pointer"
+              className={`w-full py-2.5 font-medium text-xs rounded-xl cursor-pointer transition-colors ${
+                isAero
+                  ? 'bg-[#EDE6DF] text-[#353B5B] hover:bg-[#E5DDD5]'
+                  : 'bg-[#202438] text-[#F3EDE8] hover:bg-[#282E47]'
+              }`}
             >
               Dismiss
             </button>

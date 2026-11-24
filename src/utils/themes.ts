@@ -14,11 +14,13 @@ import type {
 
 export function normalizeInterfaceStyle(value: unknown): InterfaceStyle {
   if (value === 'aero' || value === 'aero_ui' || value === 'aeroui') return 'aero';
+  if (value === 'dusk' || value === 'twilight' || value === 'night') return 'dusk';
+  if (value === 'fluent' || value === 'fluent_glass' || value === 'fluent-glass' || value === 'liquid_glass' || value === 'aetherial') return 'fluent_glass';
   if (value === 'bespoke' || value === 'minimalist' || value === 'minimal') return 'bespoke';
-  if (value === 'fluent' || value === 'fluent_glass' || value === 'fluent-glass' || value === 'liquid_glass') return 'fluent_glass';
   if (value === 'onyx' || value === 'classic-v2' || value === 'classic_v2' || value === 'v2') return 'classic-v2';
   if (value === 'fintech' || value === 'trantor' || value === 'trantor_sage' || value === 'trantor-sage' || value === 'sage' || value === 'sage-obsidian') return 'trantor';
   if (value === 'material-you' || value === 'material_you') return 'material-you';
+  if (value === 'classic') return 'classic';
   return 'classic';
 }
 

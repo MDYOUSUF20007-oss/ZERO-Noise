@@ -43,55 +43,55 @@ export const ZeroProfilePreviewCard: React.FC<ZeroProfilePreviewCardProps> = ({
 
   if (isAero) {
     return (
-      <div className="my-3 rounded-[22px] bg-white border border-[#CBD5E1] shadow-xs overflow-hidden text-left">
+      <div className="my-3 rounded-[22px] bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] shadow-xs overflow-hidden text-left">
         <div className="p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3.5">
             {/* Left: Soft Cloud Emblem Capsule */}
             <div
-              className="flex-shrink-0 w-14 h-14 rounded-2xl bg-[#F8FAFC] border border-[#CBD5E1] flex items-center justify-center shadow-2xs"
+              className="flex-shrink-0 w-14 h-14 rounded-2xl bg-[#EDE6DF] border border-[rgba(53,59,91,0.08)] flex items-center justify-center shadow-2xs"
             >
-              <ZeroEmblemIcon emblem={emblem} color={aeroAccentColor || '#0f172a'} size={28} />
+              <ZeroEmblemIcon emblem={emblem} color={aeroAccentColor || '#E69F86'} size={28} />
             </div>
 
             {/* Center: Callsign + Rank Pill + Handle & Mission */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center flex-wrap gap-1.5">
-                <span className="font-sans text-[#0f172a] font-black text-base tracking-wide uppercase truncate">
+                <span className="font-sans text-[#353B5B] font-black text-base tracking-wide uppercase truncate">
                   {callsign.trim() || 'ANONYMOUS'}
                 </span>
                 <span
-                  style={{ backgroundColor: aeroAccentColor || '#0f172a' }}
-                  className="px-2.5 py-0.5 rounded-full text-white font-sans text-[10px] font-bold uppercase tracking-wide shadow-2xs"
+                  style={{ backgroundColor: aeroAccentColor || '#E69F86' }}
+                  className="px-2.5 py-0.5 rounded-full text-[#353B5B] font-sans text-[10px] font-bold uppercase tracking-wide shadow-2xs"
                 >
                   {rankTitle}
                 </span>
                 {isZeroSupporter && <ZeroSupporterGoldenBadge compact />}
               </div>
 
-              <p className="mt-1 text-xs font-sans text-[#475569] truncate">
+              <p className="mt-1 text-xs font-sans text-[#353B5B]/80 truncate">
                 <span className="font-medium">{formattedHandle}</span>
-                <span className="mx-1.5 text-slate-300">•</span>
-                <span className="font-bold text-[#0f172a]">{formattedMission}</span>
+                <span className="mx-1.5 text-stone-300">•</span>
+                <span className="font-bold text-[#353B5B]">{formattedMission}</span>
               </p>
             </div>
 
             {/* Right: Dynamic Target Box */}
-            <div className="flex-shrink-0 px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#CBD5E1] text-center shadow-2xs">
+            <div className="flex-shrink-0 px-3.5 py-2 rounded-xl bg-[#EDE6DF] border border-[rgba(53,59,91,0.08)] text-center shadow-2xs">
               <div
-                style={{ color: aeroAccentColor || '#0f172a' }}
+                style={{ color: aeroAccentColor || '#E69F86' }}
                 className="text-sm font-black font-sans tabular-nums leading-none"
               >
                 {dailyGoalHours}h/day
               </div>
-              <div className="mt-1 text-[9px] font-sans font-bold tracking-wider uppercase text-[#64748B]">
+              <div className="mt-1 text-[9px] font-sans font-bold tracking-wider uppercase text-[#353B5B]/70">
                 TARGET
               </div>
             </div>
           </div>
         </div>
 
-        <div className="px-4 py-2.5 bg-[#F8FAFC] border-t border-[#E2E8F0]">
-          <p className="text-xs font-sans italic text-[#334155] leading-relaxed break-words">
+        <div className="px-4 py-2.5 bg-[#F6F1E8] border-t border-[#E8E0D2]">
+          <p className="text-xs font-sans italic text-[#443E38] leading-relaxed break-words">
             &ldquo;{pledge.trim() || 'Put your phone facedown. Reclaim your hours.'}&rdquo;
           </p>
         </div>

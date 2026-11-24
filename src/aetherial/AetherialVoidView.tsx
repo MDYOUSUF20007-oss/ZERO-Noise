@@ -66,65 +66,12 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
 }) => {
   const { accent, isAero, aeroAccentColor } = useInterfaceStyle();
   const activeAccent = useMemo(() => {
-    if (isAero) return aeroAccentColor || '#0f172a';
-
-    // 1. Direct accent prop from InterfaceStyleContext
-    if (accent === 'amber') return '#F59E0B';
-    if (accent === 'emerald') return '#10B981';
-    if (accent === 'crimson') return '#F43F5E';
-    if (accent === 'cyan') return '#00F0FF';
-    if (accent === 'purple') return '#A855F7';
-
-    // 2. Profile accent
-    const profileColor = profile?.accentColor as string | undefined;
-    if (profileColor === 'amber') return '#F59E0B';
-    if (profileColor === 'emerald') return '#10B981';
-    if (profileColor === 'cyan') return '#00F0FF';
-    if (profileColor === 'crimson') return '#F43F5E';
-    if (profileColor === 'purple') return '#A855F7';
-    if (profileColor === 'white') return '#FFFFFF';
-    if (profileColor?.startsWith('#')) return profileColor;
-
-    // 3. User explicit selections in localStorage
-    if (typeof window !== 'undefined') {
-      try {
-        const savedAccent = window.localStorage.getItem('zero_theme_accent_seed_v5');
-        if (savedAccent === 'amber') return '#F59E0B';
-        if (savedAccent === 'emerald') return '#10B981';
-        if (savedAccent === 'crimson') return '#F43F5E';
-        if (savedAccent === 'cyan') return '#00F0FF';
-        if (savedAccent === 'purple') return '#A855F7';
-
-        const savedSeed = window.localStorage.getItem('zero_material_you_seed');
-        if (savedSeed === 'amber') return '#F59E0B';
-        if (savedSeed === 'emerald') return '#10B981';
-        if (savedSeed === 'crimson') return '#F43F5E';
-        if (savedSeed === 'cyan') return '#00F0FF';
-        if (savedSeed === 'purple') return '#A855F7';
-
-        const savedStyle = window.localStorage.getItem('zero_theme_style');
-        if (savedStyle === 'amber') return '#F59E0B';
-        if (savedStyle === 'emerald') return '#10B981';
-      } catch {}
-    }
-
-    // 4. HTML root attributes set by theme engine
     if (typeof document !== 'undefined') {
-      const dataAccent = document.documentElement.getAttribute('data-accent');
-      if (dataAccent === 'amber') return '#F59E0B';
-      if (dataAccent === 'emerald') return '#10B981';
-      if (dataAccent === 'crimson') return '#F43F5E';
-      if (dataAccent === 'cyan') return '#00F0FF';
-      if (dataAccent === 'purple') return '#A855F7';
-
-      const docAccent =
-        document.documentElement.style.getPropertyValue('--accent-primary')?.trim() ||
-        document.documentElement.style.getPropertyValue('--zero-accent')?.trim();
+      const docAccent = document.documentElement.style.getPropertyValue('--accent-primary')?.trim();
       if (docAccent && docAccent.startsWith('#')) return docAccent;
     }
-
-    return '#F59E0B';
-  }, [isAero, aeroAccentColor, accent, profile?.accentColor]);
+    return '#E69F86';
+  }, [isAero, aeroAccentColor, accent]);
 
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);

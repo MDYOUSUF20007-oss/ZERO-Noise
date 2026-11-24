@@ -137,7 +137,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                   <div
                     className={
                       isAero
-                        ? 'w-10 h-10 rounded-2xl bg-[#0f172a] text-white flex items-center justify-center shrink-0 shadow-sm'
+                        ? 'w-10 h-10 rounded-2xl bg-[#353B5B] text-[#F3EDE8] flex items-center justify-center shrink-0 shadow-sm'
                         : isFluentGlass
                         ? 'liquid-squircle text-cyan-200'
                         : `w-9 h-9 obsidian-icon-box flex items-center justify-center shrink-0 ${
@@ -155,7 +155,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                     <h2
                       className={`text-sm uppercase tracking-wider ${
                         isAero
-                          ? 'font-bold text-[#0f172a]'
+                          ? 'font-bold text-[#353B5B]'
                           : isModernFont
                           ? 'font-semibold text-white'
                           : 'font-black text-white'
@@ -163,7 +163,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                     >
                       Occasion Bags &amp; Rules
                     </h2>
-                    <p className={`text-[11px] ${isAero ? 'text-[#475569] font-medium' : 'text-zinc-400'}`}>
+                    <p className={`text-[11px] ${isAero ? 'text-[#443E38] font-medium' : 'text-zinc-400'}`}>
                       Phone Calls always ON • Unlimited apps &amp; custom Bags
                     </p>
                   </div>
@@ -172,7 +172,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                   onClick={onClose}
                   className={
                     isAero
-                      ? 'p-2 rounded-xl bg-white border border-[#CBD5E1] text-[#0f172a] hover:bg-[#F1F5F9] shadow-xs transition-all'
+                      ? 'p-2 rounded-xl bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#EDE6DF] shadow-xs transition-all'
                       : isFluentGlass
                       ? 'p-1.5 rounded-xl liquid-pill text-zinc-400 hover:text-white'
                       : isBespoke
@@ -226,10 +226,10 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                             isAero
                               ? `p-3 rounded-2xl text-left transition-all ${
                                   isActive
-                                    ? 'bg-[#0f172a] text-white border border-[#0f172a] shadow-sm font-bold'
+                                    ? 'bg-[#353B5B] text-[#F3EDE8] border border-[#353B5B] shadow-sm font-bold'
                                     : bagEditingDisabled
-                                    ? 'bg-white/60 border border-[#E2E8F0] text-slate-400 opacity-60 cursor-not-allowed'
-                                    : 'bg-white border border-[#CBD5E1] text-[#0f172a] hover:border-[#94A3B8] shadow-xs hover:bg-[#F8FAFC]'
+                                    ? 'bg-[#F8F4F0]/60 border border-[rgba(53,59,91,0.08)] text-stone-400 opacity-60 cursor-not-allowed'
+                                    : 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:border-[rgba(53,59,91,0.20)] shadow-xs hover:bg-[#EDE6DF]'
                                 }`
                               : isFluentGlass
                               ? `p-3 rounded-2xl text-left liquid-spring ${
@@ -257,7 +257,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                           }
                         >
                           <div className={`flex items-center justify-between text-[10px] font-mono tabular-nums ${
-                            isAero ? (isActive ? 'text-slate-300 font-semibold' : 'text-[#64748b] font-semibold') : 'opacity-85'
+                            isAero ? (isActive ? 'text-stone-300 font-semibold' : 'text-[#78716C] font-semibold') : 'opacity-85'
                           }`}>
                             <span>BAG #{idx + 1}</span>
                             <span>
@@ -268,7 +268,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                           <div
                             className={`text-xs truncate mt-0.5 ${
                               isAero
-                                ? (isActive ? 'text-white font-bold' : 'text-[#0f172a] font-bold')
+                                ? (isActive ? 'text-white font-bold' : 'text-[#353B5B] font-bold')
                                 : (isBespoke ? 'font-semibold' : 'font-bold')
                             }`}
                           >
@@ -286,7 +286,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                           onSubmit={handleCreateBag}
                           className={
                             isAero
-                              ? 'p-3 rounded-2xl bg-white border border-[#CBD5E1] shadow-xs space-y-2.5'
+                              ? 'p-3 rounded-2xl bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] shadow-xs space-y-2.5'
                               : isBespoke
                               ? 'p-3 rounded-md bg-neutral-950 border border-neutral-800 space-y-2.5'
                               : 'p-3 rounded-2xl obsidian-inset space-y-2.5'
@@ -301,7 +301,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                               placeholder="Bag Name (Out, Sports...)"
                               className={`w-full px-3 py-2 text-xs outline-none ${
                                 isAero
-                                  ? 'bg-white border border-[#CBD5E1] text-[#0f172a] rounded-xl font-sans'
+                                  ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#353B5B] rounded-xl font-sans'
                                   : isBespoke
                                   ? 'obsidian-input rounded-md font-sans text-white'
                                   : 'obsidian-input rounded-xl font-mono text-white'
@@ -315,7 +315,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                               placeholder="Occasion note (Optional)"
                               className={`w-full px-3 py-2 text-xs outline-none ${
                                 isAero
-                                  ? 'bg-white border border-[#CBD5E1] text-[#0f172a] rounded-xl font-sans'
+                                  ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#353B5B] rounded-xl font-sans'
                                   : isBespoke
                                   ? 'obsidian-input rounded-md font-sans text-zinc-200'
                                   : 'obsidian-input rounded-xl font-mono text-zinc-200'
@@ -332,7 +332,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                               }}
                               className={
                                 isAero
-                                  ? 'px-3 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-[11px] font-bold uppercase text-[#475569] hover:bg-[#F1F5F9] transition-all'
+                                  ? 'px-3 py-1.5 rounded-xl bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[11px] font-bold uppercase text-[#443E38] hover:bg-[#EDE6DF] transition-all'
                                   : isBespoke
                                   ? 'px-3 py-1.5 rounded-md bg-black border border-neutral-800 hover:border-neutral-600 text-[11px] font-medium uppercase text-neutral-300 transition-colors duration-75'
                                   : 'px-3 py-1.5 rounded-xl obsidian-inset-neutral hover:border-white/25 text-[10px] font-bold uppercase text-zinc-300 hover:text-white transition-all'
@@ -345,7 +345,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                               disabled={!newBagName.trim()}
                               className={
                                 isAero
-                                  ? 'px-3.5 py-1.5 rounded-xl bg-[#0f172a] text-white text-[11px] font-bold uppercase tracking-wide disabled:opacity-40 shadow-xs'
+                                  ? 'px-3.5 py-1.5 rounded-xl bg-[#353B5B] text-[#F3EDE8] text-[11px] font-bold uppercase tracking-wide disabled:opacity-40 shadow-xs'
                                   : isBespoke
                                   ? 'px-3.5 py-1.5 rounded-md bg-blue-600 border border-blue-500 hover:bg-blue-500 text-white text-[11px] font-semibold uppercase tracking-wide disabled:opacity-40 transition-colors duration-75'
                                   : 'px-3.5 py-1.5 rounded-xl obsidian-pill-active text-[10px] font-black uppercase tracking-wider disabled:opacity-40 transition-all'
@@ -361,7 +361,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                           onClick={() => setShowNewBagForm(true)}
                           className={
                             isAero
-                              ? 'w-full py-2.5 px-3 rounded-2xl bg-white border-2 border-dashed border-[#CBD5E1] hover:border-[#0f172a] text-xs font-bold uppercase tracking-wider text-[#0f172a] flex items-center justify-center gap-1.5 transition-all shadow-xs hover:bg-[#F8FAFC]'
+                              ? 'w-full py-2.5 px-3 rounded-2xl bg-[#F8F4F0] border-2 border-dashed border-[rgba(53,59,91,0.08)] hover:border-[#353B5B] text-xs font-bold uppercase tracking-wider text-[#353B5B] flex items-center justify-center gap-1.5 transition-all shadow-xs hover:bg-[#EDE6DF]'
                               : isBespoke
                               ? 'w-full py-2 px-3 rounded-md bg-neutral-950 border border-neutral-800 hover:border-neutral-600 text-xs font-medium uppercase tracking-wider text-neutral-200 hover:text-white flex items-center justify-center gap-1.5 transition-colors duration-75'
                               : 'w-full py-2 px-3 rounded-2xl obsidian-inset-neutral hover:border-white/25 text-[11px] font-bold uppercase tracking-wider text-zinc-200 hover:text-white flex items-center justify-center gap-1.5 transition-all'
@@ -369,7 +369,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                         >
                           <Plus
                             size={13}
-                            className={isAero ? 'text-[#0f172a]' : isBespoke ? 'text-blue-400' : undefined}
+                            className={isAero ? 'text-[#353B5B]' : isBespoke ? 'text-blue-400' : undefined}
                             style={isAero || isBespoke ? undefined : { color: 'var(--accent-hex, #FFFFFF)' }}
                           />
                           <span>New Custom Bag</span>
@@ -401,7 +401,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                         placeholder="Bag Name (e.g. Work, Out, Sports)"
                         className={`w-full px-3 py-2 text-xs outline-none ${
                           isAero
-                            ? 'bg-white border border-[#CBD5E1] text-[#0f172a] rounded-xl font-bold'
+                            ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#353B5B] rounded-xl font-bold'
                             : isBespoke
                             ? 'obsidian-input rounded-md text-white'
                             : 'obsidian-input rounded-xl py-1.5 text-white'
@@ -420,7 +420,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                         placeholder="Occasion note"
                         className={`w-full px-3 py-2 text-xs outline-none ${
                           isAero
-                            ? 'bg-white border border-[#CBD5E1] text-[#475569] rounded-xl'
+                            ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#443E38] rounded-xl'
                             : isBespoke
                             ? 'obsidian-input rounded-md text-neutral-200'
                             : 'obsidian-input rounded-xl py-1.5 text-[11px] text-zinc-200'
@@ -431,7 +431,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                         onClick={() => setEditingName(false)}
                         className={
                           isAero
-                            ? 'px-3.5 py-1.5 rounded-xl bg-[#0f172a] text-white text-xs font-bold shadow-xs'
+                            ? 'px-3.5 py-1.5 rounded-xl bg-[#353B5B] text-[#F3EDE8] text-xs font-bold shadow-xs'
                             : isBespoke
                             ? 'px-3 py-1.5 rounded-md bg-blue-600 border border-blue-500 text-white text-xs font-semibold transition-colors duration-75'
                             : 'px-3 py-1 rounded-lg obsidian-pill-active text-[11px] font-black'
@@ -446,7 +446,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                         <div
                           className={`text-xs truncate ${
                             isAero
-                              ? 'text-[#0f172a] font-bold'
+                              ? 'text-[#353B5B] font-bold'
                               : isBespoke
                               ? 'text-white font-semibold'
                               : 'text-white font-black'
@@ -454,7 +454,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                         >
                           {selectedBag.name}
                         </div>
-                        <div className={`text-[11px] truncate ${isAero ? 'text-[#475569]' : 'text-neutral-400'}`}>
+                        <div className={`text-[11px] truncate ${isAero ? 'text-[#443E38]' : 'text-neutral-400'}`}>
                           {selectedBag.occasionLabel}
                         </div>
                       </div>
@@ -481,7 +481,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                           onClick={() => setEditingName(true)}
                           className={
                             isAero
-                              ? 'px-2.5 py-1.5 rounded-xl bg-[#F1F5F9] border border-[#CBD5E1] text-[#0f172a] hover:bg-[#E2E8F0] text-[11px] font-bold flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed shadow-xs'
+                              ? 'px-2.5 py-1.5 rounded-xl bg-[#EDE6DF] border border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#E8E0D7] text-[11px] font-bold flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed shadow-xs'
                               : isBespoke
                               ? 'px-2.5 py-1.5 rounded-sm bg-black border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white text-[11px] flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-75'
                               : 'px-2.5 py-1.5 rounded-xl obsidian-inset-neutral text-zinc-300 hover:text-white text-[11px] flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed'
@@ -576,7 +576,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                       <div className="flex items-center gap-2">
                         <MessageSquare
                           size={15}
-                          className={isAero && selectedBag.allowSms ? 'text-sky-700' : isBespoke && selectedBag.allowSms ? 'text-blue-400' : undefined}
+                          className={isAero && selectedBag.allowSms ? 'text-[#E69F86]' : isBespoke && selectedBag.allowSms ? 'text-blue-400' : undefined}
                           style={
                             !isAero && !isBespoke && selectedBag.allowSms
                               ? { color: 'var(--accent-hex, #FFFFFF)' }
@@ -584,8 +584,8 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                           }
                         />
                         <div>
-                          <div className={`text-xs font-semibold ${isAero && selectedBag.allowSms ? 'text-sky-950 font-bold' : ''}`}>Normal Texts</div>
-                          <div className={`text-[10px] ${isAero ? (selectedBag.allowSms ? 'text-sky-700 font-medium' : 'text-[#64748b]') : 'opacity-80'}`}>
+                          <div className={`text-xs font-semibold ${isAero && selectedBag.allowSms ? 'text-[#353B5B] font-bold' : ''}`}>Normal Texts</div>
+                          <div className={`text-[10px] ${isAero ? (selectedBag.allowSms ? 'text-[#E69F86] font-medium' : 'text-[#353B5B]/70') : 'opacity-80'}`}>
                             {selectedBag.allowSms ? 'Allowed' : 'Blocked'}
                           </div>
                         </div>
@@ -593,7 +593,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                       {selectedBag.allowSms && (
                         <Check
                           size={14}
-                          className={isAero ? 'text-sky-700' : isBespoke ? 'text-blue-400' : undefined}
+                          className={isAero ? 'text-[#E69F86]' : isBespoke ? 'text-blue-400' : undefined}
                           style={isAero || isBespoke ? undefined : { color: 'var(--accent-hex, #FFFFFF)' }}
                         />
                       )}
@@ -610,7 +610,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                     </span>
                     <span
                       className="font-mono truncate"
-                      style={{ color: isAero ? '#0f172a' : isBespoke ? '#60A5FA' : 'var(--accent-hex, #FFFFFF)' }}
+                      style={{ color: isAero ? '#353B5B' : isBespoke ? '#60A5FA' : 'var(--accent-hex, #FFFFFF)' }}
                     >
                       Tap to configure
                     </span>
@@ -620,7 +620,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                     <div
                       className={
                         isAero
-                          ? 'p-4 rounded-2xl bg-white border border-[#E2E8F0] text-xs text-[#64748b] text-center leading-relaxed shadow-xs'
+                          ? 'p-4 rounded-2xl bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-xs text-[#353B5B]/70 text-center leading-relaxed shadow-xs'
                           : isBespoke
                           ? 'p-3.5 rounded-md bg-neutral-950 border border-neutral-800 text-xs text-neutral-400 text-center leading-relaxed'
                           : 'p-3.5 rounded-2xl obsidian-inset-neutral text-xs text-zinc-400 text-center leading-relaxed'
@@ -656,7 +656,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                               className="flex-1 min-w-0 text-left"
                             >
                               <div className="flex items-center gap-2">
-                                <span className={`text-xs truncate ${isAero ? 'text-[#0f172a] font-bold' : 'text-white font-semibold'}`}>
+                                <span className={`text-xs truncate ${isAero ? 'text-[#353B5B] font-bold' : 'text-white font-semibold'}`}>
                                   {app.appName}
                                 </span>
                                 {effRule.mode === 'hard_block' ? (
@@ -710,7 +710,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                                   </span>
                                 )}
                               </div>
-                              <div className={`text-[10px] font-mono truncate mt-0.5 ${isAero ? 'text-[#64748b]' : 'text-zinc-400'}`}>
+                              <div className={`text-[10px] font-mono truncate mt-0.5 ${isAero ? 'text-[#353B5B]/70' : 'text-zinc-400'}`}>
                                 {formatRuleSummary(effRule)}
                               </div>
                             </button>
@@ -721,7 +721,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                                 onClick={() => openAppRulePanel(app)}
                                 className={
                                   isAero
-                                    ? 'p-2 rounded-xl bg-[#F1F5F9] border border-[#CBD5E1] text-[#0f172a] hover:bg-[#E2E8F0] shadow-xs transition-all'
+                                    ? 'p-2 rounded-xl bg-[#EDE6DF] border border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#E8E0D7] shadow-xs transition-all'
                                     : isBespoke
                                     ? 'p-1.5 rounded-sm bg-black border border-neutral-800 hover:border-neutral-600 text-neutral-300 hover:text-white transition-colors duration-75'
                                     : 'p-1.5 rounded-xl obsidian-inset-neutral hover:border-white/25 transition-all'
@@ -730,7 +730,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                               >
                                 <SlidersHorizontal
                                   size={13}
-                                  className={isAero ? 'text-[#0f172a]' : isBespoke ? 'text-blue-400' : undefined}
+                                  className={isAero ? 'text-[#353B5B]' : isBespoke ? 'text-blue-400' : undefined}
                                   style={
                                     isAero || isBespoke ? undefined : { color: 'var(--accent-hex, #FFFFFF)' }
                                   }
@@ -765,20 +765,20 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                     <div
                       className={`flex-1 flex items-center gap-2 px-3 py-2.5 ${
                         isAero
-                          ? 'bg-white border border-[#CBD5E1] rounded-2xl shadow-xs'
+                          ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] rounded-2xl shadow-xs'
                           : isBespoke
                           ? 'obsidian-input rounded-md'
                           : 'obsidian-input rounded-xl'
                       }`}
                     >
-                      <Search size={14} className={isAero ? 'text-[#64748b]' : 'text-neutral-400'} />
+                      <Search size={14} className={isAero ? 'text-[#78716C]' : 'text-neutral-400'} />
                       <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search installed apps to configure..."
                         className={`w-full bg-transparent text-xs outline-none ${
-                          isAero ? 'text-[#0f172a] font-medium placeholder:text-[#94A3B8]' : 'text-white'
+                          isAero ? 'text-[#353B5B] font-medium placeholder:text-[#A8A29E]' : 'text-white'
                         }`}
                       />
                     </div>
@@ -787,7 +787,7 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                       onClick={onRefreshInstalledApps}
                       className={
                         isAero
-                          ? 'p-2.5 bg-white border border-[#CBD5E1] rounded-2xl text-[#0f172a] hover:bg-[#F1F5F9] shadow-xs transition-all'
+                          ? 'p-2.5 bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] rounded-2xl text-[#353B5B] hover:bg-[#EDE6DF] shadow-xs transition-all'
                           : isBespoke
                           ? 'p-2 bg-neutral-950 border border-neutral-800 hover:border-neutral-700 rounded-md text-neutral-400 hover:text-white transition-colors duration-75'
                           : 'p-2 obsidian-inset-neutral hover:border-white/25 rounded-xl text-zinc-400 hover:text-white'
@@ -814,8 +814,8 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                             isAero
                               ? `w-full flex items-center justify-between gap-3 px-3.5 py-3 rounded-2xl border transition-all ${
                                   isPacked
-                                    ? 'bg-slate-50 border-[#0f172a]/40 shadow-xs'
-                                    : 'bg-white border-[#E2E8F0] hover:border-[#CBD5E1] shadow-xs'
+                                    ? 'bg-[#EDE6DF] border-[rgba(53,59,91,0.20)] shadow-xs'
+                                    : 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] hover:border-[rgba(53,59,91,0.20)] shadow-xs'
                                 }`
                               : isBespoke
                               ? `w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-md border transition-colors duration-75 ${
@@ -833,10 +833,10 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                             onClick={() => openAppRulePanel(app)}
                             className="flex-1 min-w-0 text-left"
                           >
-                            <div className={`text-xs truncate ${isAero ? 'text-[#0f172a] font-bold' : 'text-white font-semibold'}`}>
+                            <div className={`text-xs truncate ${isAero ? 'text-[#353B5B] font-bold' : 'text-white font-semibold'}`}>
                               {app.appName}
                             </div>
-                            <div className={`text-[10px] font-mono truncate mt-0.5 ${isAero ? 'text-[#64748b]' : 'text-zinc-400'}`}>
+                            <div className={`text-[10px] font-mono truncate mt-0.5 ${isAero ? 'text-[#78716C]' : 'text-zinc-400'}`}>
                               {rule ? `${rule.mode.toUpperCase()} · ${app.packageName}` : app.packageName}
                             </div>
                           </button>
@@ -848,8 +848,8 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                               isAero
                                 ? `px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase shrink-0 transition-all shadow-xs ${
                                     isPacked
-                                      ? 'bg-[#0f172a] border-[#0f172a] text-white'
-                                      : 'bg-[#F1F5F9] border-[#CBD5E1] text-[#0f172a] hover:bg-[#E2E8F0]'
+                                      ? 'bg-[#353B5B] border-[#353B5B] text-[#F3EDE8]'
+                                      : 'bg-[#EDE6DF] border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#E8E0D7]'
                                   }`
                                 : isBespoke
                                 ? `px-2.5 py-1 rounded-sm border text-[10px] font-semibold uppercase shrink-0 transition-colors duration-75 ${
@@ -875,8 +875,8 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                               isAero
                                 ? `p-2 rounded-xl border disabled:opacity-40 shrink-0 transition-all shadow-xs ${
                                     isPacked
-                                      ? 'bg-[#0f172a] border-[#0f172a] text-white'
-                                      : 'bg-white border-[#CBD5E1] text-[#0f172a] hover:bg-[#F1F5F9]'
+                                      ? 'bg-[#353B5B] border-[#353B5B] text-[#F3EDE8]'
+                                      : 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#EDE6DF]'
                                   }`
                                 : isBespoke
                                 ? `p-1.5 rounded-sm border disabled:opacity-40 shrink-0 transition-colors duration-75 ${
@@ -920,8 +920,8 @@ export const BagDrawerModal: React.FC<BagDrawerModalProps> = ({
                 isAero
                   ? `w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-[0.99] ${
                       bagEditingDisabled
-                        ? 'bg-[#F1F5F9] border border-[#CBD5E1] text-[#64748b]'
-                        : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+                        ? 'bg-[#EDE6DF] border border-[rgba(53,59,91,0.08)] text-[#78716C]'
+                        : 'bg-[#353B5B] text-[#F3EDE8] hover:bg-[#434A70]'
                     }`
                   : isBespoke
                   ? `w-full py-3 rounded-md border font-semibold text-xs uppercase tracking-wider transition-colors duration-75 ${

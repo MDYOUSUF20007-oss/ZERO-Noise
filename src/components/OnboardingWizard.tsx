@@ -244,75 +244,102 @@ export function OnboardingWizard({
     onComplete(profile, recommendedSchedules, recommendedBags);
   };
 
+  const isAero =
+    _interfaceStyle === 'aero' ||
+    (typeof document !== 'undefined' &&
+      (document.documentElement.getAttribute('data-theme') === 'aero' ||
+        document.documentElement.getAttribute('data-interface-style') === 'aero'));
+
+  const themeTokens = {
+    canvasBg: isAero
+      ? 'linear-gradient(180deg, #F3EDE8 0%, #EDE6DF 40%, #F8F4F0 100%)'
+      : 'linear-gradient(180deg, #24283F 0%, #1E2135 40%, #2C314C 100%)',
+    textColor: isAero ? '#353B5B' : '#F3EDE8',
+    textMuted: isAero ? 'rgba(53, 59, 91, 0.75)' : 'rgba(243, 237, 232, 0.75)',
+    textSubtle: isAero ? 'rgba(53, 59, 91, 0.55)' : 'rgba(243, 237, 232, 0.55)',
+    cardBg: isAero ? '#F8F4F0' : '#2C314C',
+    cardBorder: isAero ? '1px solid rgba(53, 59, 91, 0.08)' : '1px solid rgba(243, 237, 232, 0.10)',
+    cardShadow: isAero
+      ? '0 18px 40px -12px rgba(53, 59, 91, 0.09), 0 4px 12px -2px rgba(230, 159, 134, 0.12)'
+      : '0 18px 40px -12px rgba(15, 18, 30, 0.45)',
+    insetBg: isAero ? '#EDE6DF' : '#202438',
+    insetBorder: isAero ? '1px solid rgba(53, 59, 91, 0.08)' : '1px solid rgba(243, 237, 232, 0.10)',
+    activeBg: 'rgba(230, 159, 134, 0.18)',
+    activeBorder: '1px solid rgba(230, 159, 134, 0.45)',
+    accent: '#E69F86',
+    pillBg: isAero ? '#353B5B' : '#E69F86',
+    pillText: isAero ? '#F3EDE8' : '#24283F',
+  };
+
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto text-white flex flex-col justify-between p-4 sm:p-6 selection:bg-white selection:text-black"
+      className="fixed inset-0 z-50 overflow-y-auto flex flex-col justify-between p-4 sm:p-6"
       style={{
-        background:
-          'radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.22) 0%, transparent 46%), radial-gradient(circle at 84% 82%, rgba(129, 140, 248, 0.20) 0%, transparent 48%), rgba(5, 9, 17, 0.96)',
+        background: themeTokens.canvasBg,
+        color: themeTokens.textColor,
         paddingTop: 'max(1rem, var(--zero-safe-top, 0px))',
         paddingBottom: 'max(1rem, var(--zero-safe-bottom, 0px))',
       }}
     >
-      {/* Liquid Glass Top Progress Pill */}
+      {/* Top Progress Pill */}
       <div className="max-w-lg mx-auto w-full pt-1">
         <div
-          className="liquid-card rounded-2xl px-4 py-3"
+          className="rounded-2xl px-4 py-3"
           style={{
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(16,26,44,0.48) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.16)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.22), 0 12px 32px rgba(0,0,0,0.35)',
+            background: themeTokens.cardBg,
+            border: themeTokens.cardBorder,
+            boxShadow: themeTokens.cardShadow,
           }}
         >
           <div className="flex items-center justify-between text-xs font-mono mb-2">
-            <span className="flex items-center gap-1.5 font-bold tracking-wider text-white">
-              <Sparkles size={14} style={{ color: 'var(--accent-primary, #38bdf8)' }} />
+            <span className="flex items-center gap-1.5 font-bold tracking-wider" style={{ color: themeTokens.textColor }}>
+              <Sparkles size={14} style={{ color: themeTokens.accent }} />
               ZERO CALIBRATION
             </span>
-            <span className="text-sky-200/80">
+            <span style={{ color: themeTokens.textMuted }}>
               STEP {step} OF {totalSteps}
             </span>
           </div>
           <div
             className="w-full h-1.5 rounded-full overflow-hidden"
-            style={{ backgroundColor: 'rgba(255, 255, 255, 0.10)' }}
+            style={{ backgroundColor: isAero ? 'rgba(53, 59, 91, 0.08)' : 'rgba(243, 237, 232, 0.10)' }}
           >
             <div
               className="h-full rounded-full transition-all duration-300"
               style={{
                 width: `${(step / totalSteps) * 100}%`,
-                background:
-                  'linear-gradient(90deg, var(--accent-primary, #38bdf8), var(--accent-secondary, #818cf8))',
-                boxShadow: '0 0 14px rgba(56, 189, 248, 0.65)',
+                background: themeTokens.accent,
+                boxShadow: `0 0 14px rgba(230, 159, 134, 0.65)`,
               }}
             />
           </div>
         </div>
       </div>
 
-      {/* Main Liquid Glass Question Surface */}
+      {/* Main Question Surface */}
       <div className="max-w-lg mx-auto w-full my-auto py-5">
         <div
-          className="liquid-card rounded-3xl p-5 sm:p-6"
+          className="rounded-3xl p-5 sm:p-6"
           style={{
-            background:
-              'linear-gradient(155deg, rgba(255,255,255,0.11) 0%, rgba(15,24,42,0.78) 42%, rgba(10,16,30,0.88) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.18)',
-            boxShadow:
-              'inset 0 1px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(255,255,255,0.06), 0 20px 44px -12px rgba(0,0,0,0.65)',
+            background: themeTokens.cardBg,
+            border: themeTokens.cardBorder,
+            boxShadow: themeTokens.cardShadow,
           }}
         >
           {/* STEP 1: PRIMARY GOAL */}
           {step === 1 && (
             <div className="space-y-4 animate-fadeIn">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full liquid-pill-active text-[11px] font-mono mb-2.5">
+                <div
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono mb-2.5 font-semibold"
+                  style={{ background: themeTokens.pillBg, color: themeTokens.pillText }}
+                >
                   <Target size={13} /> Question 1 of 5
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight text-white">
+                <h2 className="text-2xl font-bold tracking-tight" style={{ color: themeTokens.textColor }}>
                   What is your primary goal?
                 </h2>
-                <p className="text-sm text-sky-100/75 mt-1 leading-relaxed">
+                <p className="text-sm mt-1 leading-relaxed" style={{ color: themeTokens.textMuted }}>
                   Zero tunes your recommended blocking profiles and friction triggers to your exact intention.
                 </p>
               </div>
@@ -328,30 +355,22 @@ export function OnboardingWizard({
                         haptics.tick(900);
                         setPrimaryGoal(g.title);
                       }}
-                      className={`w-full p-3.5 rounded-2xl text-left flex items-start justify-between gap-3 liquid-spring cursor-pointer ${
-                        selected ? 'liquid-inset' : 'liquid-row'
-                      }`}
+                      className="w-full p-3.5 rounded-2xl text-left flex items-start justify-between gap-3 liquid-spring cursor-pointer"
                       style={{
-                        border: selected
-                          ? '1px solid var(--accent-border, rgba(56, 189, 248, 0.6))'
-                          : '1px solid rgba(255, 255, 255, 0.12)',
-                        background: selected
-                          ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(129, 140, 248, 0.12))'
-                          : 'rgba(255, 255, 255, 0.04)',
-                        boxShadow: selected
-                          ? 'inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 24px -6px rgba(56, 189, 248, 0.28)'
-                          : 'inset 0 1px 0 rgba(255,255,255,0.10)',
+                        border: selected ? themeTokens.activeBorder : themeTokens.insetBorder,
+                        background: selected ? themeTokens.activeBg : themeTokens.insetBg,
+                        color: themeTokens.textColor,
                       }}
                     >
                       <div>
-                        <div className="font-semibold text-sm text-white">{g.title}</div>
-                        <div className="text-xs text-sky-100/65 mt-0.5 leading-snug">{g.desc}</div>
+                        <div className="font-semibold text-sm" style={{ color: themeTokens.textColor }}>{g.title}</div>
+                        <div className="text-xs mt-0.5 leading-snug" style={{ color: themeTokens.textMuted }}>{g.desc}</div>
                       </div>
                       {selected && (
                         <CheckCircle2
                           size={18}
                           className="shrink-0 mt-0.5"
-                          style={{ color: 'var(--accent-primary, #38bdf8)' }}
+                          style={{ color: themeTokens.accent }}
                         />
                       )}
                     </button>
@@ -870,24 +889,25 @@ export function OnboardingWizard({
         </div>
       </div>
 
-      {/* Liquid Glass Bottom Navigation Dock */}
+      {/* Bottom Navigation Dock */}
       <div className="max-w-lg mx-auto w-full pb-1">
         <div
-          className="liquid-card rounded-2xl p-2.5 flex items-center justify-between gap-3"
+          className="rounded-2xl p-2.5 flex items-center justify-between gap-3"
           style={{
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(12,20,36,0.62) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.16)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 12px 32px rgba(0,0,0,0.45)',
+            background: themeTokens.cardBg,
+            border: themeTokens.cardBorder,
+            boxShadow: themeTokens.cardShadow,
           }}
         >
           {step > 1 ? (
             <button
               type="button"
               onClick={handleBack}
-              className="py-2.5 px-4 rounded-xl liquid-pill text-xs font-semibold text-sky-100/85 hover:text-white flex items-center gap-1.5 liquid-spring cursor-pointer"
+              className="py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center gap-1.5 liquid-spring cursor-pointer"
               style={{
-                border: '1px solid rgba(255, 255, 255, 0.14)',
-                background: 'rgba(255, 255, 255, 0.05)',
+                border: themeTokens.insetBorder,
+                background: themeTokens.insetBg,
+                color: themeTokens.textColor,
               }}
             >
               <ArrowLeft size={15} /> Back
@@ -901,10 +921,11 @@ export function OnboardingWizard({
             onClick={handleNext}
             className="py-2.5 px-6 rounded-xl text-xs font-bold flex items-center gap-2 liquid-spring cursor-pointer"
             style={{
-              background:
-                'linear-gradient(135deg, var(--accent-primary, #38bdf8), var(--accent-secondary, #818cf8))',
-              color: '#061224',
-              boxShadow: '0 8px 24px -4px rgba(56, 189, 248, 0.45), inset 0 1px 0 rgba(255,255,255,0.45)',
+              background: isAero
+                ? 'linear-gradient(145deg, #434A70 0%, #353B5B 100%)'
+                : 'linear-gradient(145deg, #E69F86 0%, #D87255 100%)',
+              color: isAero ? '#F3EDE8' : '#24283F',
+              boxShadow: isAero ? '0 4px 14px rgba(53, 59, 91, 0.25)' : '0 4px 14px rgba(230, 159, 134, 0.35)',
             }}
           >
             <span>{step === totalSteps ? 'Complete Calibration' : 'Continue'}</span>
