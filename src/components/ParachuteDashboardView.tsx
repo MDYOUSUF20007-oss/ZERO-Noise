@@ -233,8 +233,7 @@ function getHeatmapCellStyle(
         };
       case 4:
         return {
-          background:
-            'linear-gradient(95deg, #ffffff 0%, var(--liquid-accent-tint) 42%, var(--liquid-accent-vibrant) 100%)',
+          background: 'var(--accent-primary, #E69F86)',
           borderTop: '1px solid #FFFFFF',
           borderLeft: '1px solid rgba(255, 255, 255, 0.95)',
           borderRight: '1px solid rgba(255, 255, 255, 0.75)',
@@ -2433,8 +2432,8 @@ export const ParachuteDashboardView: React.FC<ParachuteDashboardViewProps> = ({
           }
           footerContent={
             <>
-              <span className="italic text-neutral-300 break-words">
-                &ldquo;{profile.motto}&rdquo;
+              <span className="text-neutral-400">
+                Daily Focus Target
               </span>
               <div className="flex items-center gap-2 shrink-0">
                 {profileRank.nextTitle && (

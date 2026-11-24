@@ -42,17 +42,7 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
           isAero ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] shadow-[0_-4px_20px_rgba(53,59,91,0.05),0_10px_30px_rgba(53,59,91,0.08)]' : ''
         }`}
       >
-        {/* Top specular refraction highlight */}
-        {!isAero && (
-          <div
-            aria-hidden="true"
-            className="absolute top-0 left-8 right-8 h-px pointer-events-none"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.65) 50%, transparent 100%)',
-            }}
-          />
-        )}
+
 
         <div className="grid grid-cols-5 relative">
           {/* Smooth 60FPS spring sliding glass pill indicator */}
@@ -69,15 +59,14 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
               style={
                 isAero
                   ? {
-                      background: 'rgba(232, 104, 38, 0.12)',
-                      border: '1px solid rgba(232, 104, 38, 0.28)',
-                      boxShadow: 'none',
+                      backgroundColor: '#353B5B',
+                      border: '1px solid #353B5B',
+                      boxShadow: '0 4px 14px rgba(53, 59, 91, 0.25)',
                     }
                   : {
-                      background: 'var(--accent-soft, rgba(168, 85, 247, 0.20))',
-                      border: '1px solid var(--accent-border, rgba(168, 85, 247, 0.55))',
-                      boxShadow:
-                        'inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 16px var(--liquid-accent-soft-glow)',
+                      backgroundColor: '#E69F86',
+                      border: '1px solid #E69F86',
+                      boxShadow: '0 4px 14px rgba(230, 159, 134, 0.30)',
                     }
               }
             />

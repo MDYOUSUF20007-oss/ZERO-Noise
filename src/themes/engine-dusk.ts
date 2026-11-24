@@ -57,16 +57,16 @@ export const duskEngine: ThemeEngineDefinition = {
       --status-warning: #E69F86;
       --status-danger: #E06D53;
 
-      --app-backdrop-gradient: linear-gradient(180deg, #24283F 0%, #1E2135 40%, #2C314C 100%);
+      --app-backdrop-gradient: #24283F;
       --surface-blur: blur(20px) saturate(130%);
       --surface-shadow: 0 18px 40px -12px rgba(15, 18, 30, 0.45), 0 4px 12px -2px rgba(230, 159, 134, 0.10);
-      --surface-gradient: linear-gradient(135deg, rgba(44, 49, 76, 0.95) 0%, rgba(36, 40, 63, 0.90) 100%);
+      --surface-gradient: #2C314C;
       --radius-card: 24px;
       --radius-pill: 9999px;
       --radius-btn: 14px;
 
       /* Aero structural tokens for Dusk */
-      --aero-sky-gradient: linear-gradient(180deg, #24283F 0%, #1E2135 40%, #2C314C 100%);
+      --aero-sky-gradient: #24283F;
       --aero-sheet-bg: #2C314C;
       --aero-sheet-radius: 28px 28px 0 0;
       --aero-sheet-shadow: 0 -12px 35px rgba(15, 18, 30, 0.50);
@@ -74,9 +74,9 @@ export const duskEngine: ThemeEngineDefinition = {
       --aero-ink-secondary: rgba(243, 237, 232, 0.78);
       --aero-card-bg: #2C314C;
       --aero-card-border: 1px solid rgba(243, 237, 232, 0.10);
-      --aero-hero-bg: linear-gradient(135deg, #353B5B 0%, #2C314C 52%, #24283F 100%);
+      --aero-hero-bg: #2C314C;
       --aero-hero-border: 1px solid rgba(230, 159, 134, 0.40);
-      --aero-aurora-glow: radial-gradient(circle at 85% 85%, rgba(230, 159, 134, 0.15) 0%, rgba(36, 40, 63, 0.50) 50%, transparent 100%);
+      --aero-aurora-glow: none;
 
       /* Backwards compatible tokens */
       --zero-bg-primary: #24283F;
@@ -129,7 +129,7 @@ export const duskEngine: ThemeEngineDefinition = {
 
     html[data-theme="dusk"] .liquid-dock-item-active,
     html[data-interface-style="dusk"] .liquid-dock-item-active {
-      background: linear-gradient(145deg, #E69F86 0%, #D87255 100%) !important;
+      background: #E69F86 !important;
       border: 1px solid #E69F86 !important;
       color: #24283F !important;
       box-shadow: 0 4px 14px rgba(230, 159, 134, 0.30) !important;
@@ -166,7 +166,7 @@ export const duskEngine: ThemeEngineDefinition = {
     html[data-interface-style="dusk"] .aero-pill-active,
     html[data-interface-style="dusk"] .obsidian-pill-active,
     html[data-interface-style="dusk"] .theme-pill-active {
-      background: linear-gradient(145deg, #E69F86 0%, #D87255 100%) !important;
+      background: #E69F86 !important;
       color: #24283F !important;
       border: 1px solid #E69F86 !important;
       border-radius: 9999px !important;

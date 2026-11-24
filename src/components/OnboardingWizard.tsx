@@ -251,9 +251,7 @@ export function OnboardingWizard({
         document.documentElement.getAttribute('data-interface-style') === 'aero'));
 
   const themeTokens = {
-    canvasBg: isAero
-      ? 'linear-gradient(180deg, #F3EDE8 0%, #EDE6DF 40%, #F8F4F0 100%)'
-      : 'linear-gradient(180deg, #24283F 0%, #1E2135 40%, #2C314C 100%)',
+    canvasBg: isAero ? '#F3EDE8' : '#24283F',
     textColor: isAero ? '#353B5B' : '#F3EDE8',
     textMuted: isAero ? 'rgba(53, 59, 91, 0.75)' : 'rgba(243, 237, 232, 0.75)',
     textSubtle: isAero ? 'rgba(53, 59, 91, 0.55)' : 'rgba(243, 237, 232, 0.55)',
@@ -595,14 +593,14 @@ export function OnboardingWizard({
                       }`}
                       style={{
                         border: active
-                          ? '1px solid var(--accent-border, rgba(56, 189, 248, 0.6))'
-                          : '1px solid rgba(255, 255, 255, 0.12)',
+                          ? (isAero ? '1px solid #353B5B' : '1px solid #E69F86')
+                          : (isAero ? '1px solid rgba(53, 59, 91, 0.08)' : '1px solid rgba(255, 255, 255, 0.12)'),
                         background: active
-                          ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(129, 140, 248, 0.12))'
-                          : 'rgba(255, 255, 255, 0.04)',
+                          ? (isAero ? '#EDE6DF' : '#202438')
+                          : (isAero ? '#F8F4F0' : 'rgba(255, 255, 255, 0.04)'),
                         boxShadow: active
-                          ? 'inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 24px -6px rgba(56, 189, 248, 0.28)'
-                          : 'inset 0 1px 0 rgba(255,255,255,0.10)',
+                          ? (isAero ? '0 4px 14px rgba(53, 59, 91, 0.15)' : '0 4px 14px rgba(230, 159, 134, 0.20)')
+                          : 'none',
                       }}
                     >
                       <div className="flex items-center justify-between font-semibold text-sm text-white">
@@ -788,9 +786,8 @@ export function OnboardingWizard({
               <div
                 className="p-4 rounded-2xl space-y-2"
                 style={{
-                  background:
-                    'linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(15, 23, 42, 0.45))',
-                  border: '1px solid rgba(52, 211, 153, 0.28)',
+                  background: isAero ? '#EDE6DF' : '#202438',
+                  border: isAero ? '1px solid rgba(53, 59, 91, 0.12)' : '1px solid rgba(243, 237, 232, 0.14)',
                 }}
               >
                 <div className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
@@ -860,14 +857,14 @@ export function OnboardingWizard({
                       }`}
                       style={{
                         border: active
-                          ? '1px solid var(--accent-border, rgba(56, 189, 248, 0.6))'
-                          : '1px solid rgba(255, 255, 255, 0.12)',
+                          ? (isAero ? '1px solid #353B5B' : '1px solid #E69F86')
+                          : (isAero ? '1px solid rgba(53, 59, 91, 0.08)' : '1px solid rgba(255, 255, 255, 0.12)'),
                         background: active
-                          ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(129, 140, 248, 0.12))'
-                          : 'rgba(255, 255, 255, 0.04)',
+                          ? (isAero ? '#EDE6DF' : '#202438')
+                          : (isAero ? '#F8F4F0' : 'rgba(255, 255, 255, 0.04)'),
                         boxShadow: active
-                          ? 'inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 24px -6px rgba(56, 189, 248, 0.28)'
-                          : 'inset 0 1px 0 rgba(255,255,255,0.10)',
+                          ? (isAero ? '0 4px 14px rgba(53, 59, 91, 0.15)' : '0 4px 14px rgba(230, 159, 134, 0.20)')
+                          : 'none',
                       }}
                     >
                       <div className="flex items-center justify-between font-semibold text-sm text-white">
@@ -921,9 +918,7 @@ export function OnboardingWizard({
             onClick={handleNext}
             className="py-2.5 px-6 rounded-xl text-xs font-bold flex items-center gap-2 liquid-spring cursor-pointer"
             style={{
-              background: isAero
-                ? 'linear-gradient(145deg, #434A70 0%, #353B5B 100%)'
-                : 'linear-gradient(145deg, #E69F86 0%, #D87255 100%)',
+              background: isAero ? '#353B5B' : '#E69F86',
               color: isAero ? '#F3EDE8' : '#24283F',
               boxShadow: isAero ? '0 4px 14px rgba(53, 59, 91, 0.25)' : '0 4px 14px rgba(230, 159, 134, 0.35)',
             }}

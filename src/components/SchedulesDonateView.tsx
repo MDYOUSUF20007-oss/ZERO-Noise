@@ -38,14 +38,6 @@ import { ZeroTubeSettingsCard } from './ZeroTubeSettingsCard';
 import { CompulsoryStudyAppsCard } from './CompulsoryStudyAppsCard';
 import { ActionRemindersSettingsCard } from './ActionRemindersSettingsCard';
 import { ZeroTubeModal } from './ZeroTubeModal';
-import {
-  getAllThemeMods,
-  applyThemeModStyles,
-  removeActiveModStyles,
-  getActiveThemeModId,
-  saveUserCustomMod,
-  validateThemeModJson,
-} from '../utils/themeMods';
 import { isOvernightSchedule, getScheduleDurationMinutes } from '../utils/routineEngine';
 import { haptics } from '../utils/haptics';
 import {
@@ -237,16 +229,6 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
     aeroAccentColor,
     materialYouSeed: _ctxMaterialYouSeed,
     setMaterialYouSeed: _ctxSetMaterialYouSeed,
-    fluentOrbIntensity,
-    setFluentOrbIntensity,
-    fluentGlassStrength,
-    setFluentGlassStrength,
-    gpuThermalSafeguard,
-    setGpuThermalSafeguard,
-    ambientDriftEnabled,
-    setAmbientDriftEnabled,
-    glassEngine,
-    setGlassEngine,
     targetFps,
     setTargetFps,
   } = useInterfaceStyle();
@@ -262,11 +244,6 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   const [showCreditsModal, setShowCreditsModal] = useState(false);
   const [showZeroTubeModal, setShowZeroTubeModal] = useState(false);
   const [selectedZeroTubeVideoId, setSelectedZeroTubeVideoId] = useState<string | undefined>(undefined);
-  const [themeModsList, setThemeModsList] = useState(() => getAllThemeMods());
-  const [activeModId, setActiveModId] = useState<string | null>(() => getActiveThemeModId());
-  const [showImportModModal, setShowImportModModal] = useState(false);
-  const [importModJson, setImportModJson] = useState('');
-  const [importModError, setImportModError] = useState<string | null>(null);
 
   useEffect(() => {
     if (sectionOverride?.section) {
@@ -684,8 +661,6 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                     onClick={() => {
                       haptics.tick(900);
                       setTheme(engineDef.id);
-                      removeActiveModStyles();
-                      setActiveModId(null);
                     }}
                     className={`w-full p-3.5 text-left rounded-2xl border transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
                       isSelected
@@ -759,373 +734,6 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                 );
               })}
             </div>
-
-            {/* Glass controls — hidden in Aero UI (no glass engine needed) */}
-            {!isAero && (
-            <>
-            {/* Ambient Glow Intensity Slider */}
-            <div className="pt-3 border-t theme-border space-y-2.5">
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold theme-text-primary block">
-                  Ambient Glow Intensity
-                </label>
-                <span className="text-[10px] font-mono tabular-nums text-zinc-400">
-                  {Math.round(fluentOrbIntensity * 100)}%
-                  <span className="text-zinc-500 ml-1.5">
-                    {fluentOrbIntensity === 0
-                      ? '• Stealth AMOLED'
-                      : fluentOrbIntensity < 0.3
-                      ? '• Subtle'
-                      : fluentOrbIntensity < 0.6
-                      ? '• Balanced'
-                      : '• Radiant'}
-                  </span>
-                </span>
-              </div>
-
-              {/* Slider Track */}
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="5"
-                  value={Math.round(fluentOrbIntensity * 100)}
-                  onChange={(e) => {
-                    const val = Number(e.target.value) / 100;
-                    setFluentOrbIntensity(val);
-                    haptics.tick(600 + val * 600);
-                  }}
-                  className="w-full accent-cyan-400 cursor-pointer h-1.5 rounded-lg bg-zinc-800"
-                  aria-label="Ambient Glow Intensity"
-                />
-              </div>
-
-              {/* 3 Quick Presets */}
-              <div className="grid grid-cols-3 gap-2 pt-0.5">
-                {[
-                  { label: 'Stealth (0%)', value: 0 },
-                  { label: 'Subtle (35%)', value: 0.35 },
-                  { label: 'Radiant (75%)', value: 0.75 },
-                ].map((preset) => {
-                  const isActive = Math.abs(fluentOrbIntensity - preset.value) < 0.05;
-                  return (
-                    <button
-                      key={preset.label}
-                      type="button"
-                      onClick={() => {
-                        haptics.tick(850);
-                        setFluentOrbIntensity(preset.value);
-                      }}
-                      className={`py-1.5 px-2 text-[10px] font-medium rounded-lg border transition-all text-center ${
-                        isActive
-                          ? 'theme-pill-active font-semibold'
-                          : 'theme-pill text-zinc-400 hover:text-white'
-                      }`}
-                    >
-                      {preset.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Glass Strength & Transparency Slider */}
-            <div className="pt-3 border-t theme-border space-y-2.5">
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold theme-text-primary block">
-                  Glass Strength &amp; Transparency
-                </label>
-                <span className="text-[10px] font-mono tabular-nums text-zinc-400">
-                  {Math.round(fluentGlassStrength * 100)}%
-                  <span className="text-zinc-500 ml-1.5">
-                    {fluentGlassStrength <= 0.15
-                      ? '• Ultra-Clear'
-                      : fluentGlassStrength < 0.35
-                      ? '• High Transparency'
-                      : fluentGlassStrength < 0.65
-                      ? '• Balanced Glass'
-                      : fluentGlassStrength < 0.85
-                      ? '• Frosted Acrylic'
-                      : '• Deep Frost'}
-                  </span>
-                </span>
-              </div>
-
-              {/* Live Optical Glass Preview Box */}
-              <div className="relative w-full rounded-2xl p-3.5 overflow-hidden border theme-border bg-black/60 select-none">
-                {/* Drifting Ambient Orb Background */}
-                <div
-                  aria-hidden="true"
-                  className="absolute -top-4 -right-4 w-32 h-32 rounded-full pointer-events-none blur-xl transition-all duration-300"
-                  style={{
-                    background:
-                      'radial-gradient(circle, var(--accent-primary) 0%, var(--accent-soft) 50%, transparent 80%)',
-                    opacity: Math.max(0.45, fluentOrbIntensity * 0.95),
-                  }}
-                />
-                <div
-                  aria-hidden="true"
-                  className="absolute -bottom-6 -left-6 w-28 h-28 rounded-full pointer-events-none blur-xl transition-all duration-300"
-                  style={{
-                    background:
-                      'radial-gradient(circle, var(--accent-secondary, var(--accent-primary)) 0%, transparent 75%)',
-                    opacity: Math.max(0.3, fluentOrbIntensity * 0.7),
-                  }}
-                />
-
-                {/* Sample Glass Card floating above orbs */}
-                <div className="relative z-10 liquid-glass p-3 rounded-xl border border-white/20 transition-all duration-150">
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-5 h-5 rounded-md liquid-inset flex items-center justify-center shrink-0">
-                        <Sparkles size={11} className="theme-text-accent" />
-                      </div>
-                      <span className="text-xs font-semibold theme-text-primary truncate">
-                        Live Glass Optics
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full liquid-pill-active shrink-0">
-                      {Math.round(fluentGlassStrength * 100)}%
-                    </span>
-                  </div>
-                  <p className="text-[11px] theme-text-secondary leading-relaxed">
-                    Card surface opacity, backdrop frost &amp; specular highlight rim reacting live.
-                  </p>
-                  <div className="mt-2 pt-1.5 border-t border-white/[0.08] flex items-center justify-between text-[10px] theme-text-muted">
-                    <span className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      Contrast Guard
-                    </span>
-                    <span className="font-mono">
-                      {fluentGlassStrength <= 0.15
-                        ? 'Ultra-Clear'
-                        : fluentGlassStrength < 0.35
-                        ? 'Transparent'
-                        : fluentGlassStrength < 0.65
-                        ? 'Balanced'
-                        : 'Frosted'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Slider Track */}
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min="5"
-                  max="100"
-                  step="5"
-                  value={Math.round(fluentGlassStrength * 100)}
-                  onChange={(e) => {
-                    const val = Number(e.target.value) / 100;
-                    setFluentGlassStrength(val);
-                    haptics.tick(600 + val * 600);
-                  }}
-                  className="w-full accent-cyan-400 cursor-pointer h-1.5 rounded-lg bg-zinc-800"
-                  aria-label="Glass Strength &amp; Transparency"
-                />
-              </div>
-
-              {/* 3 Quick Presets */}
-              <div className="grid grid-cols-3 gap-2 pt-0.5">
-                {[
-                  { label: 'Clear (20%)', value: 0.20 },
-                  { label: 'Balanced (50%)', value: 0.50 },
-                  { label: 'Frosted (80%)', value: 0.80 },
-                ].map((preset) => {
-                  const isActive = Math.abs(fluentGlassStrength - preset.value) < 0.05;
-                  return (
-                    <button
-                      key={preset.label}
-                      type="button"
-                      onClick={() => {
-                        haptics.tick(850);
-                        setFluentGlassStrength(preset.value);
-                      }}
-                      className={`py-1.5 px-2 text-[10px] font-medium rounded-lg border transition-all text-center ${
-                        isActive
-                          ? 'theme-pill-active font-semibold'
-                          : 'theme-pill text-zinc-400 hover:text-white'
-                      }`}
-                    >
-                      {preset.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Optional Ambient Drift Animation Toggle (OFF by default for cool GPU) */}
-            <div className="pt-3 border-t theme-border space-y-2">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-xl theme-bg-secondary flex items-center justify-center shrink-0 border theme-border">
-                    <Sparkles
-                      size={15}
-                      strokeWidth={1.75}
-                      className={ambientDriftEnabled ? 'text-cyan-400' : 'theme-text-muted'}
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <label className="text-xs font-semibold theme-text-primary block truncate">
-                      Ambient Drift Animation (Optional)
-                    </label>
-                    <p className="text-[11px] theme-text-muted leading-tight">
-                      Off by default for a cool phone. Enable for slow floating background orbs.
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={ambientDriftEnabled}
-                  onClick={() => {
-                    haptics.tick(ambientDriftEnabled ? 600 : 900);
-                    setAmbientDriftEnabled(!ambientDriftEnabled);
-                  }}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    ambientDriftEnabled ? 'bg-cyan-500' : 'bg-zinc-800'
-                  }`}
-                  aria-label="Toggle Optional Ambient Drift Animation"
-                >
-                  <span
-                    aria-hidden="true"
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                      ambientDriftEnabled ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-              <div className="flex items-center justify-between text-[10px] theme-text-muted pt-0.5">
-                <span>
-                  {ambientDriftEnabled ? 'Drifting Orbs Active' : 'Static Ambient Glow (Zero Idle GPU Heat)'}
-                </span>
-                <span className="font-mono">{ambientDriftEnabled ? 'Animated' : 'Static • Ice-Cold'}</span>
-              </div>
-            </div>
-
-            {/* GPU Battery & Thermal Safeguard Toggle */}
-            <div className="pt-3 border-t theme-border space-y-2.5">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-xl theme-bg-secondary flex items-center justify-center shrink-0 border theme-border">
-                    <Zap
-                      size={15}
-                      strokeWidth={1.75}
-                      className={gpuThermalSafeguard ? 'text-amber-400' : 'theme-text-muted'}
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <label className="text-xs font-semibold theme-text-primary block truncate">
-                      GPU Battery &amp; Thermal Safeguard
-                    </label>
-                    <p className="text-[11px] theme-text-muted leading-tight">
-                      Disables heavy blur shaders &amp; pauses mesh drift for cool, low-battery 60FPS
-                    </p>
-                  </div>
-                </div>
-
-                {/* Switch Toggle */}
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={gpuThermalSafeguard}
-                  onClick={() => {
-                    haptics.tick(gpuThermalSafeguard ? 600 : 900);
-                    setGpuThermalSafeguard(!gpuThermalSafeguard);
-                  }}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    gpuThermalSafeguard ? 'bg-amber-500' : 'bg-zinc-800'
-                  }`}
-                  aria-label="Toggle GPU Battery & Thermal Safeguard"
-                >
-                  <span
-                    aria-hidden="true"
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                      gpuThermalSafeguard ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between text-[10px] theme-text-muted pt-0.5">
-                <span className="flex items-center gap-1.5">
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      gpuThermalSafeguard ? 'bg-amber-400 animate-pulse' : 'bg-cyan-400'
-                    }`}
-                  />
-                  {gpuThermalSafeguard ? 'Active • Eco Shaderless (Cold GPU)' : 'Standard • High Acrylic Glass'}
-                </span>
-                <span className="font-mono">{gpuThermalSafeguard ? '0ms Overhead' : 'Hardware Composited'}</span>
-              </div>
-            </div>
-
-            {/* Glass Surface Engine (Lush Frosted Acrylic Glass vs Eco Shaderless) */}
-            <div className="pt-3 border-t theme-border space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="min-w-0">
-                  <label className="text-xs font-semibold theme-text-primary block">
-                    Glass Surface Engine
-                  </label>
-                  <p className="text-[11px] theme-text-muted leading-tight">
-                    Switch between original high-fidelity acrylic blur or eco shaderless
-                  </p>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full liquid-pill-active uppercase shrink-0">
-                  {glassEngine === 'acrylic' ? 'Acrylic Blur' : 'Eco Matte'}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptics.tick(900);
-                    setGlassEngine('acrylic');
-                  }}
-                  className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
-                    glassEngine === 'acrylic'
-                      ? 'theme-pill-active font-semibold shadow-lg'
-                      : 'theme-pill text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-semibold theme-text-primary">Lush Acrylic Glass</span>
-                    {glassEngine === 'acrylic' && <Check size={13} className="text-cyan-400 shrink-0" />}
-                  </div>
-                  <p className="text-[10px] theme-text-muted leading-snug">
-                    Original frosted blur, specular rims &amp; deep acrylic translucency. Flagship visual fidelity.
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptics.tick(700);
-                    setGlassEngine('eco');
-                  }}
-                  className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
-                    glassEngine === 'eco'
-                      ? 'theme-pill-active font-semibold shadow-lg'
-                      : 'theme-pill text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-semibold theme-text-primary">Eco Optical Matte</span>
-                    {glassEngine === 'eco' && <Check size={13} className="text-cyan-400 shrink-0" />}
-                  </div>
-                  <p className="text-[10px] theme-text-muted leading-snug">
-                    0ms GPU shader passes, solid contrast backing. Ultra-cool phone &amp; maximum battery savings.
-                  </p>
-                </button>
-              </div>
-            </div>
-            </>
-            )}
 
             {/* Display Refresh Rate & Target FPS (24, 30, 60, 90, 120 FPS / Native) */}
             <div className="pt-3 border-t theme-border space-y-2.5">
@@ -1209,135 +817,6 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
               <span className="theme-text-primary font-semibold">Active &amp; Persistent</span>
             </div>
           </div>
-
-          {/* Theme Mods & Community Themes Card (Directly Underneath the 2 Colors) — Hidden in Aero UI */}
-          {!isAero && (
-          <ObsidianCard
-            ambientGlow={!isBespoke}
-            className={isModernFont ? 'font-sans' : 'font-mono'}
-            headerClassName={isModernFont ? 'p-5 space-y-4' : 'p-4 sm:p-5 space-y-3'}
-            footerClassName={isModernFont ? 'px-5 py-3 flex items-center justify-between text-[11px] text-zinc-400' : 'px-4 sm:px-5 py-2.5 flex items-center justify-between text-[10px] text-zinc-400'}
-            headerContent={
-              <>
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className={
-                        isFluentGlass
-                          ? 'liquid-squircle text-cyan-200'
-                          : `w-8 h-8 obsidian-icon-box flex items-center justify-center shrink-0 ${
-                              isBespoke ? 'rounded-md' : 'rounded-xl'
-                            }`
-                      }
-                    >
-                      <Sparkles size={15} />
-                    </div>
-                    <div>
-                      <h2 className="text-xs text-white font-semibold uppercase tracking-wider">
-                        Community Theme Mods
-                      </h2>
-                      <p className="text-[11px] text-zinc-400">
-                        Custom stylesheets &amp; verified palettes
-                      </p>
-                    </div>
-                  </div>
-                  {activeModId && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        removeActiveModStyles();
-                        setActiveModId(null);
-                      }}
-                      className="px-2 py-0.5 rounded text-[10px] font-mono bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition-colors"
-                    >
-                      Clear Mod
-                    </button>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  {themeModsList.map((mod) => {
-                    const isModActive = activeModId === mod.id;
-                    return (
-                      <button
-                        key={mod.id}
-                        type="button"
-                        onClick={() => {
-                          applyThemeModStyles(mod);
-                          setActiveModId(mod.id);
-                        }}
-                        className={`p-3 text-left rounded-xl border transition-all cursor-pointer ${
-                          isModActive
-                            ? 'theme-pill-active font-semibold shadow-lg'
-                            : isAero
-                            ? 'border-[#E2E8F0] bg-[#F6F9FC] hover:border-[#CBD5E1] hover:bg-[#EEF3F8]'
-                            : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]'
-                        }`}
-                        style={
-                          isModActive
-                            ? isAero
-                              ? {
-                                  borderColor: '#CBD5E1',
-                                  backgroundColor: '#F1F5F9',
-                                }
-                              : {
-                                  borderColor: 'var(--accent-border, var(--accent-primary))',
-                                  backgroundColor: 'var(--accent-soft)',
-                                  boxShadow: '0 0 16px var(--liquid-accent-soft-glow)',
-                                }
-                            : undefined
-                        }
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`font-semibold text-xs truncate ${isAero ? 'text-[#111827]' : 'text-white'}`}>{mod.name}</span>
-                          {isModActive && (
-                            <Check
-                              size={13}
-                              className="shrink-0 theme-text-accent"
-                              style={{ color: 'var(--accent-primary)' }}
-                            />
-                          )}
-                        </div>
-                        <p className={`text-[10px] line-clamp-2 leading-relaxed ${isAero ? 'text-[#4B5563]' : 'text-zinc-300'}`}>{mod.description}</p>
-                        <div className={`text-[9px] font-mono mt-2 truncate flex items-center justify-between ${isAero ? 'text-[#64748B]' : 'text-zinc-400'}`}>
-                          <span>by {mod.author}</span>
-                          {mod.accentColor && (
-                            <span
-                              className={`w-2.5 h-2.5 rounded-full shrink-0 ${isAero ? 'border border-[#CBD5E1]' : 'border border-white/20'}`}
-                              style={{ backgroundColor: mod.accentColor }}
-                              title={`Accent: ${mod.accentColor}`}
-                            />
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="pt-1 flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowImportModModal(true)}
-                    className={`flex-1 py-2 px-3 rounded-lg border flex items-center justify-center gap-1.5 transition-colors cursor-pointer text-xs font-semibold ${
-                      isAero
-                        ? 'border-[#E2E8F0] bg-white hover:bg-[#F6F9FC] text-[#111827]'
-                        : 'border-white/10 hover:border-white/20 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200'
-                    }`}
-                  >
-                    <Upload size={13} />
-                    <span>Import Mod JSON</span>
-                  </button>
-                </div>
-              </>
-            }
-            footerContent={
-              <>
-                <span>Safe CSS Variables Sandbox</span>
-                <span className="text-zinc-300 font-semibold">{themeModsList.length} Mods Available</span>
-              </>
-            }
-          />
-          )}
         </div>
       )}
 
@@ -1418,12 +897,12 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                         style={
                           isAero
                             ? sched.isEnabled
-                              ? { backgroundColor: aeroAccentColor || '#0f172a', borderColor: aeroAccentColor || '#0f172a' }
-                              : { backgroundColor: '#E2E8F0', borderColor: '#CBD5E1' }
+                              ? { backgroundColor: aeroAccentColor || '#353B5B', borderColor: aeroAccentColor || '#353B5B' }
+                              : { backgroundColor: '#EDE6DF', borderColor: 'rgba(53, 59, 91, 0.12)' }
                             : sched.isEnabled
                             ? isFluentGlass
                               ? {
-                                  background: 'linear-gradient(135deg, var(--liquid-accent-vibrant), var(--liquid-accent-tint))',
+                                  background: 'var(--accent-primary, #E69F86)',
                                   borderColor: 'rgba(255, 255, 255, 0.45)',
                                   boxShadow: '0 0 12px var(--liquid-accent-soft-glow)',
                                 }
@@ -2536,7 +2015,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
               footerContent={
                 profile ? (
                   <>
-                    <span className="italic text-zinc-300 break-words">&ldquo;{profile.motto}&rdquo;</span>
+                    <span className="text-zinc-400">Daily Focus Target</span>
                     <span className="shrink-0 font-mono tabular-nums">{profile.dailyGoalHours}h/day</span>
                   </>
                 ) : (
@@ -4241,79 +3720,6 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
         }}
         initialVideoId={selectedZeroTubeVideoId}
       />
-
-      {/* Import Theme Mod JSON Modal */}
-      {showImportModModal && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="max-w-md w-full modal-glass border theme-border rounded-2xl p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b theme-border">
-              <h3 className="text-sm font-bold theme-text-primary">Import Theme Mod JSON</h3>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowImportModModal(false);
-                  setImportModError(null);
-                  setImportModJson('');
-                }}
-                className="text-zinc-400 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-xs theme-text-muted">
-              Paste a custom ThemeModConfig JSON string with custom variables and colors.
-            </p>
-            <textarea
-              value={importModJson}
-              onChange={(e) => {
-                setImportModJson(e.target.value);
-                setImportModError(null);
-              }}
-              rows={6}
-              placeholder='{ "id": "my_theme", "name": "My Custom Theme", "family": "matte", ... }'
-              className="w-full p-2.5 rounded-xl bg-black/50 border theme-border text-xs font-mono text-white outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/40 resize-none"
-            />
-            {importModError && (
-              <div className="text-[11px] font-mono text-red-400 bg-red-500/10 p-2 rounded-lg border border-red-500/20">
-                {importModError}
-              </div>
-            )}
-            <div className="flex justify-end gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowImportModModal(false);
-                  setImportModError(null);
-                  setImportModJson('');
-                }}
-                className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const check = validateThemeModJson(importModJson);
-                  if (!check.ok) {
-                    setImportModError(check.error);
-                    return;
-                  }
-                  saveUserCustomMod(check.mod);
-                  setThemeModsList(getAllThemeMods());
-                  applyThemeModStyles(check.mod);
-                  setActiveModId(check.mod.id);
-                  setShowImportModModal(false);
-                  setImportModJson('');
-                  setImportModError(null);
-                }}
-                className="px-4 py-2 rounded-xl liquid-pill-active text-xs font-bold transition-all cursor-pointer shadow-md liquid-spring active:scale-[0.98]"
-              >
-                Import &amp; Apply
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

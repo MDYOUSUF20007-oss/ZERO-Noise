@@ -69,19 +69,6 @@ const MISSION_PRESETS = [
   'Sleep Hygiene',
 ];
 
-const MOTTO_PRESETS = [
-  'Put your phone facedown. Reclaim your hours.',
-  'Discipline beats willpower.',
-  'No scrolling before deep work.',
-  'Protect your attention like your life depends on it.',
-  'One locked hour today beats ten distracted tomorrow.',
-  'Leave the feed behind. Build something real.',
-  'Quiet the noise. Finish the mission.',
-  'Boredom is the doorway to deep focus.',
-  'My future is not inside a notification.',
-  'Lock in now. Rest proud tonight.',
-];
-
 export const ProfileModal: React.FC<ProfileModalProps> = ({
   isOpen,
   mode,
@@ -803,89 +790,6 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 <span>4h Balanced</span>
                 <span>8h Monk</span>
                 <span>12h Extreme</span>
-              </div>
-            </div>
-
-            {/* Focus Pledge / Motto */}
-            <div className="space-y-1.5">
-              <label
-                className={
-                  isAero
-                    ? 'text-[10px] font-sans font-bold uppercase tracking-wider text-[#475569] block'
-                    : isFluentGlass
-                    ? 'text-[10px] font-sans font-semibold uppercase tracking-wider text-zinc-400 block'
-                    : isBespoke
-                    ? 'text-[10px] font-mono font-semibold uppercase tracking-wider text-neutral-400 block'
-                    : 'text-[10px] font-bold uppercase tracking-wider text-zinc-400 block'
-                }
-              >
-                Personal Lock Pledge
-              </label>
-              <input
-                type="text"
-                value={motto}
-                onChange={(e) => setMotto(e.target.value)}
-                maxLength={72}
-                placeholder="Your focus rule..."
-                className={
-                  isAero
-                    ? 'w-full bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] focus:border-[#E69F86] rounded-xl px-3 py-2 text-xs font-sans text-[#353B5B] outline-none shadow-xs placeholder:text-stone-400 transition-colors'
-                    : isFluentGlass
-                    ? 'w-full obsidian-input rounded-xl px-3 py-2 text-xs font-sans text-white outline-none'
-                    : isBespoke
-                    ? 'w-full bg-neutral-950 border border-neutral-800 focus:border-blue-500 rounded-md px-3 py-2 text-xs text-white outline-none transition-colors duration-75'
-                    : 'w-full obsidian-input rounded-xl px-3 py-2 text-xs text-white outline-none'
-                }
-              />
-              <div className="flex gap-1.5 flex-wrap pt-0.5">
-                {MOTTO_PRESETS.map((preset) => {
-                  const selected = motto.trim() === preset;
-                  return (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => {
-                        haptics.tick(760);
-                        setMotto(preset);
-                      }}
-                      style={
-                        isAero && selected
-                          ? { backgroundColor: aeroAccentColor || '#E69F86', borderColor: aeroAccentColor || '#E69F86' }
-                          : !isModernFont && selected
-                          ? {
-                              borderColor: 'var(--accent-hex, #FFFFFF)',
-                              color: 'var(--accent-hex, #FFFFFF)',
-                            }
-                          : undefined
-                      }
-                      className={
-                        isAero
-                          ? `text-[10px] px-2.5 py-1 rounded-full border transition-all shadow-2xs ${
-                              selected
-                                ? 'text-white font-bold shadow-xs'
-                                : 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B]/80 hover:bg-[#EDE6DF] font-medium'
-                            }`
-                          : isFluentGlass
-                          ? `text-[10px] px-2.5 py-1 rounded-full liquid-spring ${
-                              selected ? 'liquid-inset text-cyan-200 font-semibold' : 'liquid-row text-zinc-400 hover:text-zinc-200'
-                            }`
-                          : isBespoke
-                          ? `text-[10px] px-2 py-1 rounded-sm border transition-colors duration-75 ${
-                              selected
-                                ? 'bg-neutral-950 border-blue-500 text-blue-400'
-                                : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-600'
-                            }`
-                          : `text-[9px] px-2 py-0.5 rounded border transition-colors ${
-                              selected
-                                ? 'obsidian-inset font-bold'
-                                : 'obsidian-inset-neutral text-zinc-400 hover:text-zinc-200'
-                            }`
-                      }
-                    >
-                      {preset}
-                    </button>
-                  );
-                })}
               </div>
             </div>
 

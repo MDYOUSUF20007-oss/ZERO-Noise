@@ -57,16 +57,16 @@ export const aeroEngine: ThemeEngineDefinition = {
       --status-warning: #E69F86;
       --status-danger: #D87255;
 
-      --app-backdrop-gradient: linear-gradient(180deg, #F3EDE8 0%, #EDE6DF 40%, #F8F4F0 100%);
+      --app-backdrop-gradient: #F3EDE8;
       --surface-blur: blur(20px) saturate(130%);
       --surface-shadow: 0 18px 40px -12px rgba(53, 59, 91, 0.09), 0 4px 12px -2px rgba(230, 159, 134, 0.12);
-      --surface-gradient: linear-gradient(135deg, rgba(248, 244, 240, 0.95) 0%, rgba(243, 237, 232, 0.90) 100%);
+      --surface-gradient: #F8F4F0;
       --radius-card: 24px;
       --radius-pill: 9999px;
       --radius-btn: 14px;
 
       /* Aero structural tokens */
-      --aero-sky-gradient: linear-gradient(180deg, #F3EDE8 0%, #EDE6DF 40%, #F8F4F0 100%);
+      --aero-sky-gradient: #F3EDE8;
       --aero-sheet-bg: #F8F4F0;
       --aero-sheet-radius: 28px 28px 0 0;
       --aero-sheet-shadow: 0 -12px 35px rgba(53, 59, 91, 0.08);
@@ -74,9 +74,9 @@ export const aeroEngine: ThemeEngineDefinition = {
       --aero-ink-secondary: rgba(53, 59, 91, 0.75);
       --aero-card-bg: #F8F4F0;
       --aero-card-border: 1px solid rgba(53, 59, 91, 0.08);
-      --aero-hero-bg: linear-gradient(135deg, #E69F86 0%, #EEB9A4 52%, #F3EDE8 100%);
+      --aero-hero-bg: #F8F4F0;
       --aero-hero-border: 1px solid rgba(230, 159, 134, 0.40);
-      --aero-aurora-glow: radial-gradient(circle at 85% 85%, rgba(230, 159, 134, 0.18) 0%, rgba(243, 237, 232, 0.50) 50%, transparent 100%);
+      --aero-aurora-glow: none;
 
       /* Backwards compatible tokens */
       --zero-bg-primary: #F3EDE8;
@@ -123,7 +123,7 @@ export const aeroEngine: ThemeEngineDefinition = {
     }
 
     html[data-interface-style="aero"] .liquid-dock-item-active {
-      background: linear-gradient(145deg, #434A70 0%, #353B5B 100%) !important;
+      background: #353B5B !important;
       border: 1px solid #353B5B !important;
       box-shadow: 0 4px 14px rgba(53, 59, 91, 0.25) !important;
     }
@@ -145,7 +145,7 @@ export const aeroEngine: ThemeEngineDefinition = {
     html[data-interface-style="aero"] .aero-pill-active,
     html[data-interface-style="aero"] .obsidian-pill-active,
     html[data-interface-style="aero"] .theme-pill-active {
-      background: linear-gradient(145deg, #434A70 0%, #353B5B 100%) !important;
+      background: #353B5B !important;
       color: #F3EDE8 !important;
       border: 1px solid #353B5B !important;
       border-radius: 9999px !important;

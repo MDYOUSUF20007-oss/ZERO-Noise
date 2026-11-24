@@ -915,8 +915,7 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                 <div
                   className="w-6 h-6 obsidian-icon-box flex items-center justify-center rounded-xl"
                   style={{
-                    background:
-                      'linear-gradient(135deg, #ffffff 0%, var(--liquid-accent-tint) 50%, var(--liquid-accent-vibrant) 100%)',
+                    backgroundColor: 'var(--accent-primary, #E69F86)',
                     border: '1px solid rgba(255, 255, 255, 0.95)',
                     boxShadow: '0 2px 10px var(--liquid-accent-glow)',
                     color: '#07040d',
@@ -1291,30 +1290,17 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
             }`}
             style={
               isAero
-                ? { touchAction: 'none', backgroundColor: aeroAccentColor || '#0f172a' }
+                ? { touchAction: 'none', backgroundColor: aeroAccentColor || '#353B5B' }
                 : {
                     touchAction: 'none',
                     backgroundColor: 'var(--accent-soft)',
-                    backgroundImage:
-                      'linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.02) 45%, transparent 100%)',
                     border: '1px solid var(--accent-border)',
                     boxShadow: isHolding
-                      ? 'inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 24px var(--liquid-accent-glow)'
-                      : 'inset 0 1px 0 rgba(255, 255, 255, calc(var(--glass-opacity, 0.50) * 0.30)), 0 8px 18px -4px var(--liquid-accent-soft-glow)',
+                      ? '0 0 24px var(--liquid-accent-glow)'
+                      : '0 8px 18px -4px var(--liquid-accent-soft-glow)',
                   }
             }
           >
-            {!isAero && (
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute top-0 left-4 right-4 h-[1.5px]"
-                style={{
-                  opacity: 'var(--glass-specular-opacity, 0.60)',
-                  background:
-                    'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.48) 50%, transparent 100%)',
-                }}
-              />
-            )}
             <div
               className="absolute left-0 top-0 bottom-0 pointer-events-none transition-all"
               style={{
@@ -1322,7 +1308,7 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                 opacity: isHolding ? 0.98 : 0,
                 background: isAero
                   ? 'rgba(255, 255, 255, 0.25)'
-                  : 'linear-gradient(90deg, #ffffff 0%, var(--liquid-accent-tint) 45%, var(--liquid-accent-vibrant) 100%)',
+                  : 'var(--accent-primary, #E69F86)',
               }}
             />
 

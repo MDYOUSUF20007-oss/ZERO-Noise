@@ -118,17 +118,8 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
   }, [isAero, isDusk, aeroAccentColor, accent]);
 
   const voidBackgroundImage = useMemo(() => {
-    if (isAero) {
-      return 'linear-gradient(180deg, #F3EDE8 0%, #EDE6DF 40%, #F8F4F0 100%)';
-    }
-    if (isDusk) {
-      return 'linear-gradient(180deg, #24283F 0%, #1E2135 40%, #2C314C 100%)';
-    }
-    if (themeConfig?.amoledGradient === 'pure') {
-      return 'none';
-    }
-    return `radial-gradient(ellipse 95% 48% at 50% 0%, ${hexToRgba(activeAccent, 0.18)} 0%, ${hexToRgba(activeAccent, 0.05)} 45%, #24283F 80%)`;
-  }, [isAero, isDusk, themeConfig?.amoledGradient, activeAccent]);
+    return 'none';
+  }, []);
   const isLightMode = themeRuntime.mode === 'light';
   const [clockText, setClockText] = useState<string>(() => format12HourClock(new Date()));
   const [batteryPct, setBatteryPct] = useState<number>(() => {
@@ -769,9 +760,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             haptics.tick(700);
             setIsAodMode(false);
           }}
-          className={`fixed inset-0 z-[255] flex flex-col items-center justify-center p-6 text-center select-none cursor-pointer ${
-            isAero ? 'bg-[#F3EDE8]' : 'bg-black'
-          }`}
+          className="fixed inset-0 z-[255] bg-black flex flex-col items-center justify-center p-6 text-center select-none cursor-pointer"
         >
           {/* Subtle Ambient Depth Halo */}
           <div
@@ -799,23 +788,21 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               <span>AOD GLANCEABLE // {workTagDisplay}</span>
             </span>
 
-            {/* High-Contrast 5x7 Dot-Matrix Pixel Countdown: Warm Porcelain Body & Radiant Sunset Peach Theme Rim */}
+            {/* High-Contrast 5x7 Dot-Matrix Pixel Countdown: Crisp Emissive Body & Theme Accent Rim */}
             <svg
               role="img"
               aria-label={`AOD Remaining lock time ${timerPixelLayout.normalizedText}`}
               viewBox={`0 0 ${timerPixelLayout.totalCols} ${timerPixelLayout.totalRows}`}
               className="h-16 sm:h-20 w-auto max-w-full overflow-visible transition-all duration-300"
               style={{
-                filter: isAero
-                  ? `drop-shadow(0 0 2px rgba(53,59,91,0.25)) drop-shadow(0 2px 14px ${activeAccent}66)`
-                  : `drop-shadow(0 0 1.5px rgba(243,237,232,0.92)) drop-shadow(0 2px 14px ${activeAccent}77)`,
+                filter: `drop-shadow(0 0 1.5px rgba(243,237,232,0.92)) drop-shadow(0 2px 14px ${activeAccent}77)`,
               }}
               shapeRendering="crispEdges"
             >
               <defs>
                 <linearGradient id={`${gradId}-aod`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={isAero ? '#353B5B' : '#F3EDE8'} stopOpacity={1} />
-                  <stop offset="65%" stopColor={isAero ? '#353B5B' : '#F3EDE8'} stopOpacity={0.98} />
+                  <stop offset="0%" stopColor="#FFFFFF" stopOpacity={1} />
+                  <stop offset="65%" stopColor="#F3EDE8" stopOpacity={0.98} />
                   <stop offset="100%" stopColor={activeAccent} stopOpacity={1} />
                 </linearGradient>
               </defs>
@@ -832,18 +819,18 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             </svg>
 
             {/* Dim system clock, battery indicator & finish target */}
-            <div className={`mt-4 flex flex-col items-center gap-1.5 font-mono ${isAero ? 'text-[#353B5B]/70' : 'text-zinc-400'}`}>
+            <div className="mt-4 flex flex-col items-center gap-1.5 font-mono text-zinc-400">
               <div className="flex items-center gap-3 text-xs tabular-nums font-medium">
-                <span className={isAero ? 'text-[#353B5B]' : 'text-zinc-300'}>{clockText}</span>
+                <span className="text-zinc-300">{clockText}</span>
                 <span style={{ color: activeAccent }}>•</span>
-                <span className={isAero ? 'text-[#353B5B]' : 'text-zinc-300'}>{batteryPct}%</span>
+                <span className="text-zinc-300">{batteryPct}%</span>
               </div>
-              <div className={`text-[10px] tracking-wider uppercase ${isAero ? 'text-[#353B5B]/60' : 'text-zinc-500'}`}>
+              <div className="text-[10px] tracking-wider uppercase text-zinc-500">
                 Target Finish {targetEndTimeFormatted}
               </div>
             </div>
 
-            <p className={`mt-8 text-[9px] font-mono tracking-widest uppercase animate-pulse ${isAero ? 'text-[#353B5B]/60' : 'text-zinc-500'}`}>
+            <p className="mt-8 text-[9px] font-mono tracking-widest uppercase animate-pulse text-zinc-500">
               TAP ANYWHERE TO RETURN TO THE VOID
             </p>
           </div>
@@ -851,7 +838,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       )}
 
       {/* Dynamic Sub-Surface Ambient Glow Orbs */}
-      {themeRuntime.family !== 'kindle' && !isAero && (
+      {themeRuntime.family !== 'kindle' && !isAero && !isDusk && (
         <>
           {/* Primary Celestial Anchor Glow (Upper Left) */}
           <div
@@ -1297,13 +1284,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               </svg>
             </div>
 
-            {/* Glowing Accent Divider */}
+            {/* Accent Divider */}
             <div
               className="w-24 h-[1px] mx-auto my-1"
               style={{
-                background: isAero
-                  ? 'linear-gradient(90deg, transparent 0%, rgba(17,24,39,0.2) 50%, transparent 100%)'
-                  : `linear-gradient(90deg, transparent 0%, ${activeAccent}66 50%, transparent 100%)`,
+                backgroundColor: isAero
+                  ? 'rgba(53, 59, 91, 0.15)'
+                  : isDusk
+                  ? 'rgba(243, 237, 232, 0.15)'
+                  : activeAccent,
               }}
             />
 
@@ -1444,12 +1433,12 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   isAero
                     ? {
                         width: `${progressPct}%`,
-                        background: '#111827',
+                        background: '#353B5B',
                       }
                     : {
                         width: `${progressPct}%`,
-                        background: `linear-gradient(90deg, ${activeAccent}, ${hexToRgba(activeAccent, 0.85)})`,
-                        boxShadow: `0 0 10px ${activeAccent}66`,
+                        background: activeAccent,
+                        boxShadow: 'none',
                       }
                 }
               />
