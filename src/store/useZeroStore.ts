@@ -506,14 +506,30 @@ export function useZeroStore() {
 
   const [materialYouSeed, setMaterialYouSeedState] = useState<MaterialYouSeed>(() => {
     const saved = localStorage.getItem(UI_STORAGE_KEYS.MATERIAL_YOU_SEED);
-    return saved === 'amber' || saved === 'cyan' || saved === 'emerald' || saved === 'crimson' ? saved : 'purple';
+    return saved === 'cyan' ||
+      saved === 'emerald' ||
+      saved === 'indigo' ||
+      saved === 'purple' ||
+      saved === 'amber' ||
+      saved === 'crimson' ||
+      saved === 'lime' ||
+      saved === 'silver'
+      ? (saved as MaterialYouSeed)
+      : 'cyan';
   });
 
   const setMaterialYouSeed = useCallback((nextSeed: MaterialYouSeed) => {
-    const validSeed =
-      nextSeed === 'amber' || nextSeed === 'cyan' || nextSeed === 'emerald' || nextSeed === 'crimson'
+    const validSeed: MaterialYouSeed =
+      nextSeed === 'cyan' ||
+      nextSeed === 'emerald' ||
+      nextSeed === 'indigo' ||
+      nextSeed === 'purple' ||
+      nextSeed === 'amber' ||
+      nextSeed === 'crimson' ||
+      nextSeed === 'lime' ||
+      nextSeed === 'silver'
         ? nextSeed
-        : 'purple';
+        : 'cyan';
     setMaterialYouSeedState(validSeed);
     localStorage.setItem(UI_STORAGE_KEYS.MATERIAL_YOU_SEED, validSeed);
   }, []);

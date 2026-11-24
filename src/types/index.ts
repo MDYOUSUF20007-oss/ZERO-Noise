@@ -372,7 +372,15 @@ export type InterfaceStyle =
   | 'material'
   | 'minimal';
 
-export type MaterialYouSeed = 'purple' | 'cyan' | 'emerald' | 'crimson' | 'amber';
+export type MaterialYouSeed =
+  | 'cyan'
+  | 'emerald'
+  | 'indigo'
+  | 'purple'
+  | 'amber'
+  | 'crimson'
+  | 'lime'
+  | 'silver';
 
 export type AmoledGradientId =
   | 'pure'

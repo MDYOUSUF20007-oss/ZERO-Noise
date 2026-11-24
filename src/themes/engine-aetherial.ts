@@ -185,6 +185,60 @@ export const aetherialEngine: ThemeEngineDefinition = {
       --liquid-accent-tint: #7bd0ff !important;
     }
 
+    /* Electric Indigo Accent */
+    [data-accent="indigo"],
+    html[data-accent="indigo"] {
+      --accent-primary: #6366f1 !important;
+      --accent-secondary: #818cf8 !important;
+      --accent-soft: rgba(99, 102, 241, 0.18) !important;
+      --accent-border: rgba(99, 102, 241, 0.55) !important;
+      --text-on-accent: #ffffff !important;
+      --zero-accent: #6366f1 !important;
+      --zero-dial-stroke: #6366f1 !important;
+      --accent-hex: #6366f1 !important;
+      --accent-rgb: 99, 102, 241 !important;
+      --liquid-accent-glow: rgba(99, 102, 241, 0.40) !important;
+      --liquid-accent-soft-glow: rgba(99, 102, 241, 0.18) !important;
+      --liquid-accent-vibrant: #6366f1 !important;
+      --liquid-accent-tint: #818cf8 !important;
+    }
+
+    /* Laser Volt Lime Accent */
+    [data-accent="lime"],
+    html[data-accent="lime"] {
+      --accent-primary: #84cc16 !important;
+      --accent-secondary: #a3e635 !important;
+      --accent-soft: rgba(132, 204, 22, 0.18) !important;
+      --accent-border: rgba(132, 204, 22, 0.55) !important;
+      --text-on-accent: #0f1c04 !important;
+      --zero-accent: #84cc16 !important;
+      --zero-dial-stroke: #84cc16 !important;
+      --accent-hex: #84cc16 !important;
+      --accent-rgb: 132, 204, 22 !important;
+      --liquid-accent-glow: rgba(132, 204, 22, 0.40) !important;
+      --liquid-accent-soft-glow: rgba(132, 204, 22, 0.18) !important;
+      --liquid-accent-vibrant: #84cc16 !important;
+      --liquid-accent-tint: #a3e635 !important;
+    }
+
+    /* Ice Platinum Silver Accent */
+    [data-accent="silver"],
+    html[data-accent="silver"] {
+      --accent-primary: #e2e8f0 !important;
+      --accent-secondary: #94a3b8 !important;
+      --accent-soft: rgba(226, 232, 240, 0.16) !important;
+      --accent-border: rgba(226, 232, 240, 0.45) !important;
+      --text-on-accent: #090a0f !important;
+      --zero-accent: #e2e8f0 !important;
+      --zero-dial-stroke: #e2e8f0 !important;
+      --accent-hex: #e2e8f0 !important;
+      --accent-rgb: 226, 232, 240 !important;
+      --liquid-accent-glow: rgba(226, 232, 240, 0.30) !important;
+      --liquid-accent-soft-glow: rgba(226, 232, 240, 0.14) !important;
+      --liquid-accent-vibrant: #f8fafc !important;
+      --liquid-accent-tint: #cbd5e1 !important;
+    }
+
     /* Clean Geometric Typography */
     body, .font-mono, .font-sans {
       font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;

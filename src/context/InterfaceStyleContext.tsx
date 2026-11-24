@@ -220,6 +220,9 @@ function mountIsolatedThemeEngine(
     root.style.setProperty('--liquid-accent-soft-glow', cfg.softGlow);
     root.style.setProperty('--zero-accent', cfg.hex);
     root.style.setProperty('--zero-dial-stroke', cfg.hex);
+    try {
+      window.ZeroNative?.setActiveThemeAccent?.(cfg.hex, cfg.rgb, '#000000');
+    } catch {}
 
     // Set real-time ambient glow parameters
     root.style.setProperty('--ambient-glow-opacity', glowIntensity.toString());
@@ -506,14 +509,6 @@ export function InterfaceStyleProvider({
       return 'fluent';
     }
   });
-
-  useEffect(() => {
-    if (isAmoledAccent(materialYouSeedProp)) {
-      if (materialYouSeedProp !== accent) {
-        setAccentState(materialYouSeedProp as AccentColorId);
-      }
-    }
-  }, [materialYouSeedProp, accent]);
 
   const setFluentOrbIntensity = useCallback((intensity: number) => {
     const clamped = Math.max(0, Math.min(1, Math.round(intensity * 100) / 100));
