@@ -3,15 +3,15 @@ Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host "   ZERO-NOISE PHONE INSTALLER / UPDATER   " -ForegroundColor Cyan
 Write-Host "=========================================" -ForegroundColor Cyan
 
-$apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.144.apk"
+$apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.147.apk"
 if (-not (Test-Path $apkPath)) {
-    $apkPath = "$PSScriptRoot\ZERO-v1.0.144.apk"
+    $apkPath = "$PSScriptRoot\ZERO-v1.0.147.apk"
 }
 
 if (-not (Test-Path $apkPath)) {
-    Write-Host "[!] Local v1.0.144 APK not found. Downloading from GitHub..." -ForegroundColor Yellow
-    $apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.144.apk"
-    Invoke-WebRequest -Uri "https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases/download/v1.0.144/ZERO-requires-adb-v1.0.144.apk" -OutFile $apkPath
+    Write-Host "[!] Local v1.0.147 APK not found. Downloading from GitHub..." -ForegroundColor Yellow
+    $apkPath = "$PSScriptRoot\ZERO-requires-adb-v1.0.147.apk"
+    Invoke-WebRequest -Uri "https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases/download/v1.0.147/ZERO-requires-adb-v1.0.147.apk" -OutFile $apkPath
 }
 
 Write-Host "[+] Target APK: $apkPath" -ForegroundColor Green
