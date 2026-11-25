@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { GithubContributor } from '../types';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { ObsidianCard } from './ObsidianCard';
 import { haptics } from '../utils/haptics';
 import { X, ExternalLink, Heart, Award, Code, Users } from 'lucide-react';
@@ -42,19 +42,29 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
     const fetchContributors = async () => {
       setLoading(true);
       try {
-        const res = await fetch('https://api.github.com/repos/MDYOUSUF20007-oss/ZERO/contributors', {
+        const res = await fetch('https://api.github.com/repos/MDYOUSUF20007-oss/ZERO-Noise/contributors', {
           headers: { Accept: 'application/vnd.github.v3+json' },
         });
         if (res.ok) {
-          const data = await res.json();
+          const data: unknown = await res.json();
           if (Array.isArray(data) && data.length > 0 && isMounted) {
-            const mapped: GithubContributor[] = data.map((item: any) => ({
-              login: item.login,
-              avatar_url: item.avatar_url,
-              html_url: item.html_url,
-              contributions: item.contributions || 1,
-              role: item.login === 'MDYOUSUF20007-oss' ? 'Creator & Lead Architect' : 'Open Source Contributor',
-            }));
+            const mapped: GithubContributor[] = data.map(
+              (item: {
+                login?: string;
+                avatar_url?: string;
+                html_url?: string;
+                contributions?: number;
+              }) => ({
+                login: item.login || 'contributor',
+                avatar_url: item.avatar_url || '',
+                html_url: item.html_url || 'https://github.com/MDYOUSUF20007-oss/ZERO-Noise',
+                contributions: item.contributions || 1,
+                role:
+                  item.login === 'MDYOUSUF20007-oss'
+                    ? 'Creator & Lead Architect'
+                    : 'Open Source Contributor',
+              })
+            );
             setContributors(mapped);
             localStorage.setItem(STORAGE_KEY_CONTRIBUTORS, JSON.stringify(mapped));
           }

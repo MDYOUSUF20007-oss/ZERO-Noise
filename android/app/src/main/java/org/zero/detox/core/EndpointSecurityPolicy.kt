@@ -19,13 +19,15 @@ object EndpointSecurityPolicy {
     const val OFFICIAL_KOFI_URL = "https://ko-fi.com/mdyousuf2620"
 
     const val OFFICIAL_GITHUB_HOST = "github.com"
-    const val OFFICIAL_GITHUB_REPO_PATH_PREFIX = "/MDYOUSUF20007-oss/ZERO"
-    const val OFFICIAL_GITHUB_REPO_URL = "https://github.com/MDYOUSUF20007-oss/ZERO"
-    const val OFFICIAL_GITHUB_RELEASES_URL = "https://github.com/MDYOUSUF20007-oss/ZERO/releases"
+    const val OFFICIAL_GITHUB_REPO_PATH_PREFIX = "/MDYOUSUF20007-oss/ZERO-Noise"
+    const val LEGACY_GITHUB_REPO_PATH_PREFIX = "/MDYOUSUF20007-oss/ZERO"
+    const val OFFICIAL_GITHUB_REPO_URL = "https://github.com/MDYOUSUF20007-oss/ZERO-Noise"
+    const val OFFICIAL_GITHUB_RELEASES_URL = "https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases"
 
     const val OFFICIAL_PAGES_HOST = "mdyousuf20007-oss.github.io"
-    const val OFFICIAL_PAGES_PATH_PREFIX = "/ZERO"
-    const val OFFICIAL_PAGES_URL = "https://mdyousuf20007-oss.github.io/ZERO"
+    const val OFFICIAL_PAGES_PATH_PREFIX = "/ZERO-Noise"
+    const val LEGACY_PAGES_PATH_PREFIX = "/ZERO"
+    const val OFFICIAL_PAGES_URL = "https://mdyousuf20007-oss.github.io/ZERO-Noise"
 
     const val OFFICIAL_SUPPORT_EMAIL = "mdyousuf982007@proton.me"
     const val OFFICIAL_UPI_ID = "md.y2007@ptaxis"
@@ -169,9 +171,13 @@ object EndpointSecurityPolicy {
                     OFFICIAL_KOFI_HOST -> path.equals(OFFICIAL_KOFI_PATH_PREFIX, ignoreCase = true) ||
                         path.startsWith("$OFFICIAL_KOFI_PATH_PREFIX/", ignoreCase = true)
                     OFFICIAL_GITHUB_HOST -> path.equals(OFFICIAL_GITHUB_REPO_PATH_PREFIX, ignoreCase = true) ||
-                        path.startsWith("$OFFICIAL_GITHUB_REPO_PATH_PREFIX/", ignoreCase = true)
+                        path.startsWith("$OFFICIAL_GITHUB_REPO_PATH_PREFIX/", ignoreCase = true) ||
+                        path.equals(LEGACY_GITHUB_REPO_PATH_PREFIX, ignoreCase = true) ||
+                        path.startsWith("$LEGACY_GITHUB_REPO_PATH_PREFIX/", ignoreCase = true)
                     OFFICIAL_PAGES_HOST -> path.equals(OFFICIAL_PAGES_PATH_PREFIX, ignoreCase = true) ||
-                        path.startsWith("$OFFICIAL_PAGES_PATH_PREFIX/", ignoreCase = true)
+                        path.startsWith("$OFFICIAL_PAGES_PATH_PREFIX/", ignoreCase = true) ||
+                        path.equals(LEGACY_PAGES_PATH_PREFIX, ignoreCase = true) ||
+                        path.startsWith("$LEGACY_PAGES_PATH_PREFIX/", ignoreCase = true)
                     else -> false
                 }
                 if (!allowed) null else ValidatedExternalTarget("https", uri.toASCIIString())
@@ -267,7 +273,16 @@ object EndpointSecurityPolicy {
             host == OFFICIAL_PAGES_HOST -> path.isEmpty() ||
                 path == "/" ||
                 path.equals(OFFICIAL_PAGES_PATH_PREFIX, ignoreCase = true) ||
-                path.startsWith("$OFFICIAL_PAGES_PATH_PREFIX/", ignoreCase = true)
+                path.startsWith("$OFFICIAL_PAGES_PATH_PREFIX/", ignoreCase = true) ||
+                path.equals(LEGACY_PAGES_PATH_PREFIX, ignoreCase = true) ||
+                path.startsWith("$LEGACY_PAGES_PATH_PREFIX/", ignoreCase = true)
+            // Official GitHub release & contributor API + avatar images (Credits & Auto-Updater)
+            host == "api.github.com" ->
+                path.startsWith("/repos$OFFICIAL_GITHUB_REPO_PATH_PREFIX/", ignoreCase = true) ||
+                path.equals("/repos$OFFICIAL_GITHUB_REPO_PATH_PREFIX", ignoreCase = true) ||
+                path.startsWith("/repos$LEGACY_GITHUB_REPO_PATH_PREFIX/", ignoreCase = true)
+            host == "avatars.githubusercontent.com" -> true
+            host == OFFICIAL_GITHUB_HOST -> path.equals("/MDYOUSUF20007-oss.png", ignoreCase = true)
             // ZeroTube native media playback (.googlevideo.com), thumbnails, and nocookie embed fallback
             host == "googlevideo.com" || host.endsWith(".googlevideo.com") -> true
             host == "youtube-nocookie.com" || host == "www.youtube-nocookie.com" -> true

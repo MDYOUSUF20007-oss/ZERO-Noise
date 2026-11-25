@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { Settings, ExternalLink } from 'lucide-react';
 import type { RestrictedSettingsStatus } from '../types';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 
 interface RestrictedSettingsGuideCardProps {
   restrictedStatus: RestrictedSettingsStatus;

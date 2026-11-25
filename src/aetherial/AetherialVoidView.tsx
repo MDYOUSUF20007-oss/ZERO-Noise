@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import type { ActiveLockSession, ParachuteMetrics, OccasionBag, ZeroProfile } from '../types';
 import { resolveAppBrandVisual } from '../utils/appBrandColors';
 import { voidAudio } from '../utils/voidAudio';
 import { getRandomVoidQuote, type VoidQuote } from '../utils/voidQuotes';
 import { haptics } from '../utils/haptics';
 import { hexToRgba } from '../utils/themes';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
 import { AmbientBackground } from '../components/AmbientBackground';
-import { ZeroTubeModal } from '../components/ZeroTubeModal';
 import { EscapeTicketDockButton, EscapeTicketModal } from '../components/EscapeTicketSystem';
+
+const ZeroTubeModal = lazy(() =>
+  import('../components/ZeroTubeModal').then((m) => ({ default: m.ZeroTubeModal }))
+);
 import {
   COMPULSORY_STUDY_APPS_EVENT,
   getCompulsoryStudyAppsConfig,
@@ -64,14 +66,13 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
   onDeployParachute,
   onExtendLock,
 }) => {
-  const { accent, isAero, aeroAccentColor } = useInterfaceStyle();
-  const activeAccent = useMemo(() => {
+  const activeAccent = (() => {
     if (typeof document !== 'undefined') {
       const docAccent = document.documentElement.style.getPropertyValue('--accent-primary')?.trim();
       if (docAccent && docAccent.startsWith('#')) return docAccent;
     }
     return '#E69F86';
-  }, [isAero, aeroAccentColor, accent]);
+  })();
 
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -95,14 +96,21 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
     return () => clearInterval(interval);
   }, [isAodMode]);
 
+  const [clockNowMs, setClockNowMs] = useState<number>(() => Date.now());
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setClockNowMs(Date.now()), 10_000);
+    return () => window.clearInterval(interval);
+  }, []);
+
   const clockText = useMemo(() => {
-    const d = new Date();
+    const d = new Date(clockNowMs);
     const rawH = d.getHours();
     const suf = rawH >= 12 ? 'PM' : 'AM';
     const h12 = rawH % 12 === 0 ? 12 : rawH % 12;
     const m = d.getMinutes().toString().padStart(2, '0');
     return `${h12}:${m} ${suf}`;
-  }, [activeLock.remainingSeconds]);
+  }, [clockNowMs]);
 
   const [batteryPct] = useState<number>(() => {
     if (typeof window !== 'undefined' && window.ZeroNative) {
@@ -123,7 +131,22 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
     window.addEventListener(COMPULSORY_STUDY_APPS_EVENT, syncStudy);
     return () => window.removeEventListener(COMPULSORY_STUDY_APPS_EVENT, syncStudy);
   }, []);
-  const [installedPaymentApps, setInstalledPaymentApps] = useState<PaymentAppOption[]>([]);
+  const [installedPaymentApps] = useState<PaymentAppOption[]>(() => {
+    if (typeof window !== 'undefined' && window.ZeroNative?.getInstalledPaymentAppsJson) {
+      try {
+        const raw = window.ZeroNative.getInstalledPaymentAppsJson();
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to parse installed payment apps', err);
+      }
+    }
+    return [];
+  });
   const [currentQuote, setCurrentQuote] = useState<VoidQuote>(() =>
     getRandomVoidQuote(profile?.motto)
   );
@@ -157,23 +180,25 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
 
   // Flexible Hourly Pomodoro Break Bank (10 minutes total per hour, usable in any increments)
   const currentHourBlock = Math.floor(activeLock.elapsedSeconds / 3600);
-  const [trackedHourBlock, setTrackedHourBlock] = useState<number>(currentHourBlock);
+  const lastHourBlockRef = useRef<number>(currentHourBlock);
   const [hourlyBreakBankSecondsLeft, setHourlyBreakBankSecondsLeft] = useState<number>(600);
   const [pomodoroIsBreak, setPomodoroIsBreak] = useState<boolean>(false);
   const [showPomodoroBreakModal, setShowPomodoroBreakModal] = useState<boolean>(false);
 
   // New hour rollover: replenishes the 10-minute break bank
   useEffect(() => {
-    if (currentHourBlock !== trackedHourBlock) {
-      setTrackedHourBlock(currentHourBlock);
+    if (currentHourBlock === lastHourBlockRef.current) return;
+    const timer = window.setTimeout(() => {
+      lastHourBlockRef.current = currentHourBlock;
       setHourlyBreakBankSecondsLeft(600);
       setPomodoroIsBreak(false);
       setShowPomodoroBreakModal(false);
       if (typeof window !== 'undefined' && window.ZeroNative?.endPomodoroBreak) {
         window.ZeroNative.endPomodoroBreak();
       }
-    }
-  }, [currentHourBlock, trackedHourBlock]);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [currentHourBlock]);
 
   // Start or resume break using remaining bank seconds
   const handleStartPomodoroBreak = (customDuration?: number) => {
@@ -250,22 +275,6 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
     };
   }, [pomodoroIsBreak]);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.ZeroNative?.getInstalledPaymentAppsJson) {
-      try {
-        const raw = window.ZeroNative.getInstalledPaymentAppsJson();
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setInstalledPaymentApps(parsed);
-          }
-        }
-      } catch (err) {
-        console.warn('Failed to parse installed payment apps', err);
-      }
-    }
-  }, []);
-
   // Completion chime
   useEffect(() => {
     if (activeLock.remainingSeconds <= 0 && !hasPlayedZenChimeRef.current) {
@@ -340,13 +349,13 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
   const elapsedMins = Math.floor(activeLock.elapsedSeconds / 60);
 
   const targetTimeStr = useMemo(() => {
-    const finish = new Date(Date.now() + activeLock.remainingSeconds * 1000);
+    const finish = new Date(clockNowMs + activeLock.remainingSeconds * 1000);
     const rawH = finish.getHours();
     const suf = rawH >= 12 ? 'PM' : 'AM';
     const h12 = rawH % 12 === 0 ? 12 : rawH % 12;
     const m = finish.getMinutes().toString().padStart(2, '0');
     return `${h12}:${m} ${suf}`;
-  }, [activeLock.remainingSeconds]);
+  }, [clockNowMs, activeLock.remainingSeconds]);
 
   const paymentOptions = useMemo(() => {
     if (installedPaymentApps.length > 0) return installedPaymentApps;
@@ -1143,30 +1152,34 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
       )}
 
       {/* ZEROTUBE DISTRACTION-FREE STUDY PLAYER MODAL */}
-      <ZeroTubeModal
-        isOpen={showZeroTube}
-        onClose={() => setShowZeroTube(false)}
-        onLaunchMorphApp={() => {
-          setShowZeroTube(false);
-          const pkg = 'app.morphe.android.youtube';
-          if (typeof window !== 'undefined' && (window.ZeroNative as any)?.launchYouTubeOrMorphApp) {
-            const launched = (window.ZeroNative as any).launchYouTubeOrMorphApp();
-            if (launched) {
+      <Suspense fallback={null}>
+        {showZeroTube && (
+          <ZeroTubeModal
+            isOpen={showZeroTube}
+            onClose={() => setShowZeroTube(false)}
+            onLaunchMorphApp={() => {
+              setShowZeroTube(false);
+              const pkg = 'app.morphe.android.youtube';
+              if (typeof window !== 'undefined' && (window.ZeroNative as any)?.launchYouTubeOrMorphApp) {
+                const launched = (window.ZeroNative as any).launchYouTubeOrMorphApp();
+                if (launched) {
+                  haptics.thud();
+                  return;
+                }
+              }
+              if (typeof window !== 'undefined' && (window.ZeroNative as any)?.launchBagApp) {
+                const launched = (window.ZeroNative as any).launchBagApp(pkg);
+                if (launched) {
+                  haptics.thud();
+                  return;
+                }
+              }
+              window.location.href = `intent:#Intent;package=${pkg};end`;
               haptics.thud();
-              return;
-            }
-          }
-          if (typeof window !== 'undefined' && (window.ZeroNative as any)?.launchBagApp) {
-            const launched = (window.ZeroNative as any).launchBagApp(pkg);
-            if (launched) {
-              haptics.thud();
-              return;
-            }
-          }
-          window.location.href = `intent:#Intent;package=${pkg};end`;
-          haptics.thud();
-        }}
-      />
+            }}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

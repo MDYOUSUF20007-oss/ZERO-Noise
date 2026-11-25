@@ -23,7 +23,7 @@ const ACCENT_COLOR_MAP: Record<string, string> = {
   lime: '#84CC16',    // Laser Volt
 };
 
-export function resolveTicketAccent(explicitAccent?: string, isAero?: boolean): string {
+function resolveTicketAccent(explicitAccent?: string, isAero?: boolean): string {
   if (explicitAccent && explicitAccent.trim().length > 0) return explicitAccent.trim();
   if (isAero) return '#E69F86';
   if (typeof document !== 'undefined') {
@@ -321,7 +321,12 @@ const RIP_THRESHOLD = 0.84;
  * with 120fps physics, clean Liquid Glass obsidian optics, 3D paper peel,
  * and synthesized "zip" paper tear acoustics.
  */
-export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
+export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <EscapeTicketModalInner {...props} />;
+};
+
+const EscapeTicketModalInner: React.FC<EscapeTicketModalProps> = ({
   isOpen,
   ticketCount,
   onClose,
@@ -387,28 +392,12 @@ export const EscapeTicketModal: React.FC<EscapeTicketModalProps> = ({
     escapeTimeoutsRef.current = [];
   }, []);
 
-  // Reset modal state cleanly when opened or closed
+  // Cancel scheduled timers/RAFs on unmount
   useEffect(() => {
-    if (isOpen) {
-      clearScheduledEscapeWork();
-      ripProgressRef.current = 0;
-      setRipProgress(0);
-      setIsDragging(false);
-      setPhase('idle');
-      setWaveFlatness(0);
-      lastNotchRef.current = 0;
-      particlesRef.current = [];
-      lastTimeRef.current = 0;
-      pendingMoveYRef.current = null;
-      if (rafMoveRef.current !== null) {
-        cancelAnimationFrame(rafMoveRef.current);
-        rafMoveRef.current = null;
-      }
-    }
     return () => {
       clearScheduledEscapeWork();
     };
-  }, [isOpen, clearScheduledEscapeWork]);
+  }, [clearScheduledEscapeWork]);
 
   // Pre-warm Web Audio context cleanly on first gesture so there is zero audio lag
   const ensureAudioCtx = useCallback((): AudioContext | null => {

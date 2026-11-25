@@ -18,7 +18,7 @@ import {
 } from '../utils/focusReceipt';
 import { AchievementBadgePill, ZeroSupporterGoldenBadge } from './AchievementBadgeChip';
 import { ObsidianCard } from './ObsidianCard';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { X, Share2, Download, Sparkles, Trophy } from 'lucide-react';
 
 interface ShareStatsModalProps {
@@ -654,8 +654,6 @@ export const ShareStatsModal: React.FC<ShareStatsModalProps> = ({
       periodStats,
       currentStreak,
       parachuteMetrics.currentBalance,
-      parachuteMetrics.totalReclaimedHours,
-      profile,
       badgeSummary,
       formattedHandle,
       rankTitle,

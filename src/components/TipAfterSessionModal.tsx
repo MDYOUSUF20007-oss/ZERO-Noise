@@ -1,5 +1,4 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { toDataURL as generateQrDataUrl } from 'qrcode';
 import type { SessionRecord } from '../types';
 import {
   FIRST_DONATION_BONUS_INR,
@@ -15,7 +14,7 @@ import {
 import { TIP_SNOOZE_SESSIONS } from '../utils/tipPromptPolicy';
 import { ZeroSupporterGoldenBadge } from './AchievementBadgeChip';
 import { ObsidianCard } from './ObsidianCard';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import {
   Sparkles,
   X,
@@ -59,20 +58,25 @@ export const TipAfterSessionModal: React.FC<TipAfterSessionModalProps> = ({
   const [showQr, setShowQr] = useState(false);
   const [upiQrUrl, setUpiQrUrl] = useState('');
   const [copiedUpi, setCopiedUpi] = useState(false);
-  const [confirmingDonationClaim, setConfirmingDonationClaim] = useState(false);
-
-  useEffect(() => {
-    setConfirmingDonationClaim(false);
-  }, [completedSession]);
+  const [confirmingSessionId, setConfirmingSessionId] = useState<string | null>(null);
+  const completedSessionId = completedSession?.id ?? null;
+  const confirmingDonationClaim =
+    completedSessionId !== null && confirmingSessionId === completedSessionId;
+  const setConfirmingDonationClaim = (value: boolean) => {
+    setConfirmingSessionId(value && completedSessionId ? completedSessionId : null);
+  };
 
   useEffect(() => {
     if (!completedSession || !showQr || upiQrUrl) return;
     let cancelled = false;
-    generateQrDataUrl(UPI_PAY_URL, {
-      width: 240,
-      margin: 2,
-      color: { dark: '#000000', light: '#FFFFFF' },
-    })
+    void import('qrcode')
+      .then(({ toDataURL }) =>
+        toDataURL(UPI_PAY_URL, {
+          width: 240,
+          margin: 2,
+          color: { dark: '#000000', light: '#FFFFFF' },
+        }),
+      )
       .then((url) => {
         if (!cancelled) setUpiQrUrl(url);
       })

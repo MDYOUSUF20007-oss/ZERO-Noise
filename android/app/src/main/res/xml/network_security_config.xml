@@ -19,9 +19,10 @@
         <!-- Capacitor Local Bundle Asset Server -->
         <domain includeSubdomains="false">localhost</domain>
 
-        <!-- Official ZERO Distribution & Supporter Destinations -->
+        <!-- Official ZERO-Noise Distribution & Supporter Destinations -->
         <domain includeSubdomains="false">mdyousuf20007-oss.github.io</domain>
         <domain includeSubdomains="false">github.com</domain>
+        <domain includeSubdomains="false">api.github.com</domain>
         <domain includeSubdomains="true">githubusercontent.com</domain>
         <domain includeSubdomains="false">ko-fi.com</domain>
 

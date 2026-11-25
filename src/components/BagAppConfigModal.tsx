@@ -13,7 +13,7 @@ import {
   sanitizeAppRuleConfig,
 } from '../utils/bagAppConfig';
 import { ObsidianCard } from './ObsidianCard';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { X, ShieldAlert, Trash2, Check, Lock, SlidersHorizontal } from 'lucide-react';
 
 interface BagAppConfigModalProps {

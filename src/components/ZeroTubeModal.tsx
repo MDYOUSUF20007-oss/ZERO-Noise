@@ -198,9 +198,11 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
   const feedRequestSeqRef = useRef<number>(0);
   const channelVideosCacheRef = useRef<Record<string, ZeroTubeSearchVideo[]>>({});
 
-  activeLectureRef.current = activeLecture;
-  currentTimeRef.current = currentTime;
-  mediaDurationRef.current = mediaDuration;
+  useEffect(() => {
+    activeLectureRef.current = activeLecture;
+    currentTimeRef.current = currentTime;
+    mediaDurationRef.current = mediaDuration;
+  });
 
   const persistCurrentWatchProgress = useCallback((force = false) => {
     const lec = activeLectureRef.current;
@@ -306,7 +308,8 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
   // Ensure native landscape/immersive fullscreen always cleans up on close or unmount
   useEffect(() => {
     if (!isOpen && isVideoFullscreen) {
-      exitVideoFullscreen();
+      const timer = window.setTimeout(() => exitVideoFullscreen(), 0);
+      return () => window.clearTimeout(timer);
     }
   }, [isOpen, isVideoFullscreen, exitVideoFullscreen]);
 
@@ -703,30 +706,33 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
   // Sync on modal open & auto-load channel videos feed
   useEffect(() => {
     if (!isOpen) return;
-    const channels = getWhitelistedChannels();
-    const lectures = getSavedZeroTubeLectures();
-    setWhitelistedChannels(channels);
-    setSavedLectures(lectures);
-    setVideoProgressMap(getAllVideoProgress());
-    setBlockedNotice(null);
-    setSearchError('');
+    const timer = window.setTimeout(() => {
+      const channels = getWhitelistedChannels();
+      const lectures = getSavedZeroTubeLectures();
+      setWhitelistedChannels(channels);
+      setSavedLectures(lectures);
+      setVideoProgressMap(getAllVideoProgress());
+      setBlockedNotice(null);
+      setSearchError('');
 
-    if (initialVideoId) {
-      const existing = lectures.find((l) => l.videoId === initialVideoId);
-      if (existing) {
-        void loadLectureIntoPlayer({
-          videoId: existing.videoId,
-          url: existing.url,
-          title: existing.title,
-          uploaderName: existing.uploaderName,
-          uploaderChannelId: existing.uploaderChannelId,
-          uploaderHandle: existing.uploaderHandle,
-          duration: existing.duration,
-          thumbnailUrl: existing.thumbnailUrl,
-          isLive: Boolean(existing.isLive),
-        });
+      if (initialVideoId) {
+        const existing = lectures.find((l) => l.videoId === initialVideoId);
+        if (existing) {
+          void loadLectureIntoPlayer({
+            videoId: existing.videoId,
+            url: existing.url,
+            title: existing.title,
+            uploaderName: existing.uploaderName,
+            uploaderChannelId: existing.uploaderChannelId,
+            uploaderHandle: existing.uploaderHandle,
+            duration: existing.duration,
+            thumbnailUrl: existing.thumbnailUrl,
+            isLive: Boolean(existing.isLive),
+          });
+        }
       }
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, initialVideoId]);
 
@@ -734,7 +740,10 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     if (whitelistedChannels.length === 0) return;
-    void fetchChannelVideosFeed(selectedChannelKey, whitelistedChannels, false);
+    const timer = window.setTimeout(() => {
+      void fetchChannelVideosFeed(selectedChannelKey, whitelistedChannels, false);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [isOpen, selectedChannelKey, whitelistedChannels, fetchChannelVideosFeed]);
 
   // Compute active media source URL for HTML5 <video>

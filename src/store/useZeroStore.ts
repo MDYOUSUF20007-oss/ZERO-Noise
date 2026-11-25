@@ -33,7 +33,6 @@ import type {
 } from '../types';
 import { haptics } from '../utils/haptics';
 import { voidAudio } from '../utils/voidAudio';
-import confetti from 'canvas-confetti';
 import {
   TIP_SNOOZE_SESSIONS,
   evaluatePostSessionTipPrompt,
@@ -864,6 +863,8 @@ export function useZeroStore() {
   const justEarnedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bootRecoveryHandledRef = useRef(false);
   const queueSilentCloudWriteRef = useRef<(() => void) | null>(null);
+  const activeAccentTokensRef = useRef<{ hex: string; rgb: string; badgeText: string } | null>(null);
+  const [todayStr, setTodayStr] = useState<string>(() => new Date().toISOString().split('T')[0]);
 
   const activeLockRef = useRef(activeLock);
   useEffect(() => {
@@ -903,6 +904,7 @@ export function useZeroStore() {
 
   const refreshCloudBackupStatus = useCallback(async () => {
     setWeeklyCheckNowMs(Date.now());
+    setTodayStr(new Date().toISOString().split('T')[0]);
     const nativeStatus = await fetchUniversalCloudAutoBackupStatus();
     if (!nativeStatus) return;
 
@@ -952,17 +954,19 @@ export function useZeroStore() {
 
   const emitParachuteReward = useCallback((event: Omit<ParachuteRewardEvent, 'id'>) => {
     haptics.milestoneChime();
-    try {
-      const activeHex = activeAccentTokensRef.current?.hex || '#FFFFFF';
-      confetti({
-        particleCount: 110,
-        spread: 75,
-        origin: { y: 0.6 },
-        colors: ['#FFFFFF', activeHex, '#E4E4E7'],
+    const activeHex = activeAccentTokensRef.current?.hex || '#FFFFFF';
+    void import('canvas-confetti')
+      .then((mod) => {
+        mod.default({
+          particleCount: 110,
+          spread: 75,
+          origin: { y: 0.6 },
+          colors: ['#FFFFFF', activeHex, '#E4E4E7'],
+        });
+      })
+      .catch(() => {
+        // Ignore confetti errors
       });
-    } catch {
-      // Ignore confetti errors
-    }
     setParachuteRewardEvent({
       id: `rew_${Date.now()}`,
       ...event,
@@ -1119,12 +1123,12 @@ export function useZeroStore() {
     }
   }, [applyPostCompletionSideEffects, syncNativeLedger]);
 
-  const activeAccentTokensRef = useRef<{ hex: string; rgb: string; badgeText: string } | null>(null);
-
   useEffect(() => {
-    refreshPermissions();
-    syncWithNativeState();
-    void refreshCloudBackupStatus();
+    const initTimer = window.setTimeout(() => {
+      refreshPermissions();
+      syncWithNativeState();
+      void refreshCloudBackupStatus();
+    }, 0);
     let tries = 0;
     const bootPoll = setInterval(() => {
       tries++;
@@ -1164,6 +1168,7 @@ export function useZeroStore() {
     window.addEventListener('zero-permissions-updated', onFocus);
     document.addEventListener('visibilitychange', onVis);
     return () => {
+      window.clearTimeout(initTimer);
       clearInterval(bootPoll);
       window.removeEventListener('focus', onFocus);
       window.removeEventListener('zero-permissions-updated', onFocus);
@@ -1231,24 +1236,33 @@ export function useZeroStore() {
     localStorage.setItem(UI_STORAGE_KEYS.CUSTOM_HASHTAGS, JSON.stringify(customHashtags));
   }, [customHashtags]);
 
-  useEffect(() => {
-    localStorage.setItem(UI_STORAGE_KEYS.THEME_CONFIG, JSON.stringify(themeConfig));
-    localStorage.setItem(UI_STORAGE_KEYS.INTERFACE_STYLE, interfaceStyle);
+  const derivedAccentTokens = useMemo(() => {
     const runtime = computeThemeRuntime(themeConfig);
     const activeTokens = resolveActiveAccentTokens(themeConfig);
     const derived = computeDynamicAccentTokens(runtime.cssVars['--zero-accent'] || activeTokens.hex);
-    activeAccentTokensRef.current = {
+    return {
       hex: derived.hex,
       rgb: derived.rgb,
       badgeText: derived.badgeText,
+      metaThemeColor: runtime.metaThemeColor || '#000000',
+    };
+  }, [themeConfig]);
+
+  useEffect(() => {
+    localStorage.setItem(UI_STORAGE_KEYS.THEME_CONFIG, JSON.stringify(themeConfig));
+    localStorage.setItem(UI_STORAGE_KEYS.INTERFACE_STYLE, interfaceStyle);
+    activeAccentTokensRef.current = {
+      hex: derivedAccentTokens.hex,
+      rgb: derivedAccentTokens.rgb,
+      badgeText: derivedAccentTokens.badgeText,
     };
 
     try {
       window.ZeroNative?.setInterfaceStyle?.(interfaceStyle);
       window.ZeroNative?.setActiveThemeAccent?.(
-        derived.hex,
-        derived.rgb,
-        derived.badgeText
+        derivedAccentTokens.hex,
+        derivedAccentTokens.rgb,
+        derivedAccentTokens.badgeText
       );
     } catch {
       // Ignore on web preview
@@ -1256,9 +1270,9 @@ export function useZeroStore() {
 
     const metaTheme = document.querySelector('meta[name="theme-color"]');
     if (metaTheme) {
-      metaTheme.setAttribute('content', runtime.metaThemeColor || '#000000');
+      metaTheme.setAttribute('content', derivedAccentTokens.metaThemeColor);
     }
-  }, [themeConfig, interfaceStyle, materialYouSeed, materialYouAmoled]);
+  }, [themeConfig, interfaceStyle, materialYouSeed, materialYouAmoled, derivedAccentTokens]);
 
   useEffect(() => {
     localStorage.setItem(UI_STORAGE_KEYS.SLEEP_FARMING_MODE, sleepFarmingMode);
@@ -1336,7 +1350,6 @@ export function useZeroStore() {
     [integrityState, sleepFarmingMode]
   );
 
-  const todayStr = new Date().toISOString().split('T')[0];
   const todayReclaimedHours = Number(
     (
       sessions
@@ -1968,7 +1981,9 @@ export function useZeroStore() {
 
   // Foreground recurring schedule watchdog (complements native AlarmManager/WorkManager)
   const igniteSessionRef = useRef(igniteSession);
-  igniteSessionRef.current = igniteSession;
+  useEffect(() => {
+    igniteSessionRef.current = igniteSession;
+  });
 
   useEffect(() => {
     const checkSchedules = () => {
@@ -2539,17 +2554,15 @@ export function useZeroStore() {
   const saveSessionReflection = useCallback(
     (sessionId: string, note: string, rating: 'deep_flow' | 'steady' | 'challenging') => {
       setVictorySession(null);
-      setIntegrityState((prev) => {
-        const updatedSessions = prev.sessions.map((s) =>
-          s.id === sessionId ? { ...s, reflectionNote: note, flowRating: rating } : s
-        );
-        const next = { ...prev, sessions: updatedSessions };
-        integrityStateRef.current = next;
-        try {
-          localStorage.setItem('zero_sessions_v3', JSON.stringify(updatedSessions));
-        } catch {}
-        return next;
-      });
+      const nextState = IntegrityEngine.updateSessionReflection(
+        integrityStateRef.current,
+        sessionId,
+        note,
+        rating,
+        true
+      );
+      integrityStateRef.current = nextState;
+      setIntegrityState(nextState);
     },
     []
   );

@@ -1,41 +1,64 @@
-import React, { useState } from 'react';
-import { useZeroStore } from '../store/useZeroStore';
+import React, { useState, lazy, Suspense } from 'react';
+import type { useZeroStore } from '../store/useZeroStore';
+import type { CloudReminderScheduleInfo } from '../core/integrity/IntegrityEngine';
 import { AetherialNav, type AetherialTab } from './AetherialNav';
 import { AetherialLandingView } from './AetherialLandingView';
 import { AetherialDashboardView } from './AetherialDashboardView';
 import { AetherialBagsView } from './AetherialBagsView';
 import { AetherialAnalyticsView } from './AetherialAnalyticsView';
-import { SchedulesDonateView } from '../components/SchedulesDonateView';
 import { AmbientBackground } from '../components/AmbientBackground';
 import { User, Settings, ArrowLeft } from 'lucide-react';
 
+const SchedulesDonateView = lazy(() =>
+  import('../components/SchedulesDonateView').then((m) => ({
+    default: m.SchedulesDonateView,
+  }))
+);
+
 interface AetherialControllerProps {
+  store: ReturnType<typeof useZeroStore>;
   onOpenProfileModal?: () => void;
   onOpenBagDrawer?: () => void;
   onOpenThemes?: () => void;
+  onRestoreSuccess?: () => void;
+  onRecalibrateHabitProfile?: () => void;
+  tipSkipRemaining?: number;
+  onResetTipPromptBlock?: () => void;
+  isDeveloper?: boolean;
+  nextCloudReminderInfo?: CloudReminderScheduleInfo | null;
 }
 
 export const AetherialController: React.FC<AetherialControllerProps> = ({
+  store,
   onOpenProfileModal,
   onOpenBagDrawer,
   onOpenThemes,
+  onRestoreSuccess,
+  onRecalibrateHabitProfile,
+  tipSkipRemaining = 0,
+  onResetTipPromptBlock,
+  isDeveloper = false,
+  nextCloudReminderInfo = null,
 }) => {
-  const store = useZeroStore();
   const [activeTab, setActiveTab] = useState<AetherialTab>('focus');
-  const [showSettingsSection, setShowSettingsSection] = useState<
-    'themes' | 'schedules' | 'settings' | 'os_security' | 'support' | null
-  >(null);
+  const [settingsOverride, setSettingsOverride] = useState<{
+    section: 'themes' | 'schedules' | 'settings' | 'os_security' | 'support';
+    key: number;
+  } | null>(null);
 
   const handleOpenThemeSettings = () => {
     if (onOpenThemes) {
       onOpenThemes();
     } else {
-      setShowSettingsSection('themes');
+      setSettingsOverride((prev) => ({
+        section: 'themes',
+        key: (prev?.key ?? 0) + 1,
+      }));
     }
   };
 
   // If in settings mode, display full settings overlay with back button
-  if (showSettingsSection) {
+  if (settingsOverride) {
     return (
       <div className="min-h-screen bg-[#11131b] text-[#e2e1ed] flex flex-col justify-start relative selection:bg-[#38bdf8] selection:text-[#001e2c] font-sans">
         <header
@@ -45,65 +68,73 @@ export const AetherialController: React.FC<AetherialControllerProps> = ({
           <div className="h-14 px-4 sm:px-6 flex items-center justify-between">
             <button
               type="button"
-              onClick={() => setShowSettingsSection(null)}
+              onClick={() => setSettingsOverride(null)}
               className="flex items-center gap-2 text-xs font-semibold text-[#38bdf8] hover:text-[#7bd0ff] transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} />
               <span>Back to Aetherial Focus</span>
             </button>
             <span className="text-xs uppercase tracking-wider text-[#87929a] font-bold">
-              {showSettingsSection === 'themes' ? 'Themes & Styles' : 'Settings & Routines'}
+              {settingsOverride.section === 'themes' ? 'Themes & Styles' : 'Settings & Routines'}
             </span>
           </div>
         </header>
 
         <main className="p-4 sm:p-6 pb-20 max-w-xl mx-auto w-full">
-          <SchedulesDonateView
-            schedules={store.schedules}
-            permissions={store.permissions}
-            appBuildInfo={store.appBuildInfo}
-            environmentSecurity={store.environmentSecurity}
-            onRefreshPermissions={store.refreshPermissions}
-            onToggleSchedule={store.toggleSchedule}
-            onToggleScheduleBurnTheBoats={store.toggleScheduleBurnTheBoats}
-            onAddSchedule={store.addSchedule}
-            onDeleteSchedule={store.deleteSchedule}
-            onTriggerTestWarning={store.triggerTestWarning}
-            themeConfig={store.themeConfig}
-            onThemeConfigChange={store.setThemeConfig}
-            interfaceStyle={store.interfaceStyle}
-            onInterfaceStyleChange={store.setInterfaceStyle}
-            materialYouSeed={store.materialYouSeed}
-            onMaterialYouSeedChange={store.setMaterialYouSeed}
-            materialYouAmoled={store.materialYouAmoled}
-            onMaterialYouAmoledChange={store.setMaterialYouAmoled}
-            sleepFarmingMode={store.sleepFarmingMode}
-            onSleepFarmingModeChange={store.setSleepFarmingMode}
-            onExportZbakData={store.exportZbakData}
-            onOneTapSaveBackup={store.oneTapSaveBackup}
-            onImportData={store.importData}
-            onResetData={store.resetAllData}
-            cloudBackupStatus={store.cloudBackupStatus}
-            cloudReminderInterval={store.cloudReminderInterval}
-            lastCloudUploadTimestamp={store.lastCloudUploadTimestamp}
-            onCloudReminderIntervalChange={store.setCloudReminderInterval}
-            isCloudBusy={store.isCloudBusy}
-            onEnableCloudAutoBackup={store.enableCloudAutoBackup}
-            onDisableCloudAutoBackup={store.disableCloudAutoBackup}
-            onOneTapCloudUpload={store.oneTapCloudUpload}
-            onRestoreFromCloudPicker={store.restoreBackupFromCloudPicker}
-            profile={store.profile}
-            isZeroSupporter={store.isZeroSupporter}
-            remainingEscapeTickets={store.parachuteMetrics.currentBalance}
-            hasClaimedFirstTimeParachute={store.hasClaimedFirstTimeParachute}
-            hasClaimedFirstDonationParachute={store.hasClaimedFirstDonationParachute}
-            onClaimFirstDonationBonus={store.claimFirstDonationBonus}
-            onActivateDonorToken={store.activateDonorUnlockToken}
-            onBurnAllEscapeTickets={store.burnAllEscapeTickets}
-            onOpenProfileModal={onOpenProfileModal}
-            sectionOverride={{ section: showSettingsSection, key: Date.now() }}
-            viewMode="all"
-          />
+          <Suspense fallback={<div className="py-12 text-center text-xs text-zinc-500">Loading settings…</div>}>
+            <SchedulesDonateView
+              schedules={store.schedules}
+              permissions={store.permissions}
+              appBuildInfo={store.appBuildInfo}
+              environmentSecurity={store.environmentSecurity}
+              onRefreshPermissions={store.refreshPermissions}
+              onToggleSchedule={store.toggleSchedule}
+              onToggleScheduleBurnTheBoats={store.toggleScheduleBurnTheBoats}
+              onAddSchedule={store.addSchedule}
+              onDeleteSchedule={store.deleteSchedule}
+              onTriggerTestWarning={store.triggerTestWarning}
+              themeConfig={store.themeConfig}
+              onThemeConfigChange={store.setThemeConfig}
+              interfaceStyle={store.interfaceStyle}
+              onInterfaceStyleChange={store.setInterfaceStyle}
+              materialYouSeed={store.materialYouSeed}
+              onMaterialYouSeedChange={store.setMaterialYouSeed}
+              materialYouAmoled={store.materialYouAmoled}
+              onMaterialYouAmoledChange={store.setMaterialYouAmoled}
+              sleepFarmingMode={store.sleepFarmingMode}
+              onSleepFarmingModeChange={store.setSleepFarmingMode}
+              onExportZbakData={store.exportZbakData}
+              onOneTapSaveBackup={store.oneTapSaveBackup}
+              onImportData={store.importData}
+              onResetData={store.resetAllData}
+              onRestoreSuccess={onRestoreSuccess}
+              onRecalibrateHabitProfile={onRecalibrateHabitProfile}
+              cloudBackupStatus={store.cloudBackupStatus}
+              cloudReminderInterval={store.cloudReminderInterval}
+              lastCloudUploadTimestamp={store.lastCloudUploadTimestamp}
+              nextCloudReminderInfo={nextCloudReminderInfo ?? undefined}
+              onCloudReminderIntervalChange={store.setCloudReminderInterval}
+              isCloudBusy={store.isCloudBusy}
+              onEnableCloudAutoBackup={store.enableCloudAutoBackup}
+              onDisableCloudAutoBackup={store.disableCloudAutoBackup}
+              onOneTapCloudUpload={store.oneTapCloudUpload}
+              onRestoreFromCloudPicker={store.restoreBackupFromCloudPicker}
+              profile={store.profile}
+              isZeroSupporter={store.isZeroSupporter}
+              remainingEscapeTickets={store.parachuteMetrics.currentBalance}
+              hasClaimedFirstTimeParachute={store.hasClaimedFirstTimeParachute}
+              hasClaimedFirstDonationParachute={store.hasClaimedFirstDonationParachute}
+              tipSkipRemaining={tipSkipRemaining}
+              onResetTipPromptBlock={onResetTipPromptBlock}
+              isDeveloper={isDeveloper}
+              onClaimFirstDonationBonus={store.claimFirstDonationBonus}
+              onActivateDonorToken={store.activateDonorUnlockToken}
+              onBurnAllEscapeTickets={store.burnAllEscapeTickets}
+              onOpenProfileModal={onOpenProfileModal}
+              sectionOverride={settingsOverride}
+              viewMode="all"
+            />
+          </Suspense>
         </main>
       </div>
     );

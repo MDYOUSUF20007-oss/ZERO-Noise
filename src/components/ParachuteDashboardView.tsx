@@ -12,7 +12,7 @@ import type {
 import { ShareStatsModal } from './ShareStatsModal';
 import { ProfileAvatar } from './ProfileAvatar';
 import { ObsidianCard } from './ObsidianCard';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { getZeroRankFromHours } from '../utils/parachuteRewardsPolicy';
 import { evaluateBadges, type AchievementBadgeId } from '../utils/achievements';
 import {
@@ -394,15 +394,17 @@ export const ParachuteDashboardView: React.FC<ParachuteDashboardViewProps> = ({
   }, [sessions, completedSessions]);
 
   // Honest Daily Streak (0 when no completed sessions)
+  const [todayIsoDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const currentStreak = useMemo(() => {
     const completed = sessions.filter((s) => s.status === 'completed');
     if (completed.length === 0) return 0;
     const completedDates = new Set(completed.map((s) => s.dateStr));
     let streak = 0;
-    const today = new Date();
+    const [yr, mo, dy] = todayIsoDate.split('-').map(Number);
+    const today = new Date(Date.UTC(yr, mo - 1, dy));
     for (let i = 0; i < 365; i++) {
       const d = new Date(today);
-      d.setDate(today.getDate() - i);
+      d.setUTCDate(today.getUTCDate() - i);
       const str = d.toISOString().split('T')[0];
       if (completedDates.has(str)) {
         streak++;
@@ -413,7 +415,7 @@ export const ParachuteDashboardView: React.FC<ParachuteDashboardViewProps> = ({
       }
     }
     return streak;
-  }, [sessions]);
+  }, [sessions, todayIsoDate]);
 
   const allTimeTagBreakdown = useMemo(() => {
     const map: Record<string, number> = {};

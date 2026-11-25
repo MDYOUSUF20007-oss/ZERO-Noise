@@ -2,7 +2,7 @@
 import type { ParachuteRewardEvent } from '../types';
 import { ZeroSupporterGoldenBadge } from './AchievementBadgeChip';
 import { ObsidianCard } from './ObsidianCard';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { mixHexColors } from '../utils/themes';
 import { haptics } from '../utils/haptics';
 import confetti from 'canvas-confetti';

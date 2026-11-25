@@ -14,7 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import type { BagApp } from '../types';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { ObsidianCard } from './ObsidianCard';
 import { haptics } from '../utils/haptics';
 import {
@@ -62,15 +62,23 @@ export const CompulsoryStudyAppsCard: React.FC<CompulsoryStudyAppsCardProps> = (
   useEffect(() => {
     if (installedAppsProp && installedAppsProp.length > 0) return;
     if (nativeInstalledApps.length > 0) return;
-    try {
-      const raw = window.ZeroNative?.getInstalledAppsJson?.();
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) setNativeInstalledApps(parsed as BagApp[]);
+    const readInstalled = () => {
+      try {
+        const raw = window.ZeroNative?.getInstalledAppsJson?.();
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) setNativeInstalledApps(parsed as BagApp[]);
+        }
+      } catch {
+        // Ignore
       }
-    } catch {
-      // Ignore
-    }
+    };
+    const timer = window.setTimeout(readInstalled, 0);
+    window.addEventListener('zero-permissions-updated', readInstalled);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('zero-permissions-updated', readInstalled);
+    };
   }, [installedAppsProp, nativeInstalledApps.length]);
   const [config, setConfig] = useState<CompulsoryStudyAppsConfig>(() =>
     getCompulsoryStudyAppsConfig()

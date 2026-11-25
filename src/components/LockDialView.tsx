@@ -8,7 +8,7 @@ import type {
   ZeroProfile,
   CloudReminderInterval,
 } from '../types';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { haptics } from '../utils/haptics';
 import {
   DEFAULT_SESSION_TAGS,
@@ -40,6 +40,9 @@ import {
   Loader2,
   Download,
 } from 'lucide-react';
+
+const MAX_BURN_THE_BOATS_SECONDS = 4 * 3600;
+const HOLD_DURATION_MS = 3000;
 
 interface LockDialViewProps {
   onIgnite: (durationSeconds: number, tag: SessionTag, burnTheBoats?: boolean) => boolean;
@@ -498,7 +501,6 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
   const [showIntentionRitual, setShowIntentionRitual] = useState<boolean>(false);
 
   // Burn the Boats state (Hard maximum limit: 4 hours = 14,400 seconds)
-  const MAX_BURN_THE_BOATS_SECONDS = 4 * 3600;
   const [burnTheBoatsEnabled, setBurnTheBoatsEnabled] = useState<boolean>(() => {
     try {
       return localStorage.getItem('zero_burn_the_boats_v1') === 'true';
@@ -508,16 +510,21 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
   });
   const [burnBoatsWarning, setBurnBoatsWarning] = useState<string | null>(null);
 
-  // Auto-disable Burn the Boats if session duration exceeds 4 hours
-  useEffect(() => {
-    if (durationSeconds > MAX_BURN_THE_BOATS_SECONDS && burnTheBoatsEnabled) {
-      setBurnTheBoatsEnabled(false);
-      try {
-        localStorage.setItem('zero_burn_the_boats_v1', 'false');
-      } catch {}
-      setBurnBoatsWarning('Burn the Boats auto-disabled: sessions exceeding 4 hours cannot use Burn the Boats.');
-    }
-  }, [durationSeconds, burnTheBoatsEnabled]);
+  const handleSelectDuration = useCallback(
+    (nextDuration: number) => {
+      setDurationSeconds(nextDuration);
+      if (nextDuration > MAX_BURN_THE_BOATS_SECONDS && burnTheBoatsEnabled) {
+        setBurnTheBoatsEnabled(false);
+        try {
+          localStorage.setItem('zero_burn_the_boats_v1', 'false');
+        } catch {}
+        setBurnBoatsWarning(
+          'Burn the Boats auto-disabled: sessions exceeding 4 hours cannot use Burn the Boats.'
+        );
+      }
+    },
+    [burnTheBoatsEnabled]
+  );
 
   useEffect(() => {
     if (!burnBoatsWarning) return;
@@ -529,8 +536,6 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
     () => mergeHashtagList([...customHashtags, ...localExtraTags], DEFAULT_SESSION_TAGS),
     [customHashtags, localExtraTags]
   );
-
-  const HOLD_DURATION_MS = 3000;
 
   const triggerIgnition = useCallback(() => {
     setIsHolding(false);
@@ -555,33 +560,54 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
     }
   }, [durationSeconds, selectedTag, burnTheBoatsEnabled, onIgnite, permissions.isNativeAndroid, permissions.strictReady, onOpenPermissionGate]);
 
-  const updateHold = useCallback(() => {
-    if (!holdStartTimeRef.current) return;
-    const elapsed = Date.now() - holdStartTimeRef.current;
-    const prog = Math.min(1, elapsed / HOLD_DURATION_MS);
-    setHoldProgress(prog);
+  useEffect(() => {
+    if (!isHolding) return;
+    const startMs = holdStartTimeRef.current ?? Date.now();
+    holdStartTimeRef.current = startMs;
 
-    if (prog >= 1) {
-      setIsHolding(false);
-      setHoldProgress(0);
-      holdStartTimeRef.current = null;
-      if (holdAnimFrameRef.current) cancelAnimationFrame(holdAnimFrameRef.current);
-      haptics.stopHoldCharge();
+    let frameId = 0;
+    const tick = () => {
+      const elapsed = Date.now() - startMs;
+      const prog = Math.min(1, elapsed / HOLD_DURATION_MS);
+      setHoldProgress(prog);
 
-      if (permissions.isNativeAndroid && !permissions.strictReady) {
-        onOpenPermissionGate();
-        return;
-      }
+      if (prog >= 1) {
+        setIsHolding(false);
+        setHoldProgress(0);
+        holdStartTimeRef.current = null;
+        holdAnimFrameRef.current = null;
+        haptics.stopHoldCharge();
 
-      if (intentionRitualEnabled) {
-        setShowIntentionRitual(true);
+        if (permissions.isNativeAndroid && !permissions.strictReady) {
+          onOpenPermissionGate();
+          return;
+        }
+
+        if (intentionRitualEnabled) {
+          setShowIntentionRitual(true);
+        } else {
+          triggerIgnition();
+        }
       } else {
-        triggerIgnition();
+        frameId = requestAnimationFrame(tick);
+        holdAnimFrameRef.current = frameId;
       }
-    } else {
-      holdAnimFrameRef.current = requestAnimationFrame(updateHold);
-    }
-  }, [triggerIgnition, intentionRitualEnabled, permissions.isNativeAndroid, permissions.strictReady, onOpenPermissionGate]);
+    };
+
+    frameId = requestAnimationFrame(tick);
+    holdAnimFrameRef.current = frameId;
+    return () => {
+      cancelAnimationFrame(frameId);
+      holdAnimFrameRef.current = null;
+    };
+  }, [
+    isHolding,
+    triggerIgnition,
+    intentionRitualEnabled,
+    permissions.isNativeAndroid,
+    permissions.strictReady,
+    onOpenPermissionGate,
+  ]);
 
   const startHold = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
@@ -590,11 +616,10 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
       onOpenPermissionGate();
       return;
     }
-    setIsHolding(true);
-    setHoldProgress(0);
     holdStartTimeRef.current = Date.now();
+    setHoldProgress(0);
+    setIsHolding(true);
     haptics.startHoldCharge();
-    holdAnimFrameRef.current = requestAnimationFrame(updateHold);
   };
 
   const cancelHold = () => {
@@ -603,7 +628,10 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
       setHoldProgress(0);
       holdStartTimeRef.current = null;
       haptics.stopHoldCharge();
-      if (holdAnimFrameRef.current) cancelAnimationFrame(holdAnimFrameRef.current);
+      if (holdAnimFrameRef.current) {
+        cancelAnimationFrame(holdAnimFrameRef.current);
+        holdAnimFrameRef.current = null;
+      }
     }
   };
 
@@ -1075,7 +1103,7 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
       {/* Center: Tactile Duration Dial Wheel */}
       <DialWheelSection
         durationSeconds={durationSeconds}
-        onSelectDuration={setDurationSeconds}
+        onSelectDuration={handleSelectDuration}
         isAero={isAero}
       />
 

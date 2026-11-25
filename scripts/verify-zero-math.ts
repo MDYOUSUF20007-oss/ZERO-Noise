@@ -177,7 +177,7 @@ class TestParachuteEngine {
     return earnedParachuteSecs;
   }
 
-  deployParachute(elapsedSecondsInAbortedSession: number): boolean {
+  deployParachute(_elapsedSecondsInAbortedSession: number): boolean {
     if (this.balance < 1) return false;
 
     this.usedParachutes += 1;
@@ -1067,12 +1067,15 @@ failIf(
 // Official external URLs, support email & UPI allowlist vs tampering/redirection attempts
 failIf(
   IntegrityEngine.isAllowedExternalUrl('https://ko-fi.com/mdyousuf2620') === true &&
+    IntegrityEngine.isAllowedExternalUrl('https://github.com/MDYOUSUF20007-oss/ZERO-Noise') === true &&
+    IntegrityEngine.isAllowedExternalUrl('https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases') === true &&
+    IntegrityEngine.isAllowedExternalUrl('https://mdyousuf20007-oss.github.io/ZERO-Noise/') === true &&
     IntegrityEngine.isAllowedExternalUrl('https://github.com/MDYOUSUF20007-oss/ZERO') === true &&
     IntegrityEngine.isAllowedExternalUrl('https://github.com/MDYOUSUF20007-oss/ZERO/releases') === true &&
     IntegrityEngine.isAllowedExternalUrl('https://mdyousuf20007-oss.github.io/ZERO/') === true &&
     IntegrityEngine.isAllowedExternalUrl('mailto:mdyousuf982007@proton.me?subject=ZERO%20Ko-fi%20Donor%20Verification') === true &&
     IntegrityEngine.isAllowedExternalUrl('upi://pay?pa=md.y2007@ptaxis&pn=Zero%20FOSS&am=50&cu=INR') === true,
-  'Official ZERO links, official Ko-fi, official Proton support email & official UPI ID must pass'
+  'Official ZERO-Noise (and legacy ZERO) links, official Ko-fi, official Proton support email & official UPI ID must pass'
 );
 failIf(
   IntegrityEngine.isAllowedExternalUrl('http://ko-fi.com/mdyousuf2620') === false &&
@@ -1848,5 +1851,59 @@ failIf(
 );
 
 console.log('PASS: Burn the Boats Strict 4-Hour Limit & Escape Ticket Lockout Verified');
+
+console.log('\n=== TEST 25: Burned Ticket Restore Guard & Session Reflection Persistence ===');
+const burnedTicketsPayload = {
+  ...sampleZbakPayload,
+  cumulativeSeconds: 7200,
+  usedParachutes: 2,
+  bonusParachutes: 0,
+  hasClaimedFirstTimeParachute: true,
+  hasClaimedFirstDonationParachute: true,
+  isZeroSupporter: true,
+  sessions: [
+    {
+      id: 'sess-reflect-1',
+      startTime: 1_700_000_000_000,
+      endTime: 1_700_003_600_000,
+      durationSeconds: 3600,
+      tag: 'Deep Work',
+      status: 'completed' as const,
+      dateStr: '2026-11-25',
+    },
+  ],
+};
+const burnedRestoreResult = IntegrityEngine.applyVerifiedRestore(
+  {
+    rawInput: encodeZbakPayload(burnedTicketsPayload),
+    defaultSchedules: [],
+    defaultBags: sampleZbakPayload.bags,
+    sanitizeProfile: sanitizeZeroProfile,
+    sanitizeThemeConfig,
+    environmentSecurity: safeEnv,
+  },
+  false
+);
+failIf(
+  burnedRestoreResult.ok === true &&
+    burnedRestoreResult.state?.bonusParachutes === 0 &&
+    burnedRestoreResult.state?.usedParachutes === 2,
+  'Verified restore must keep burned bonusParachutes at 0 instead of resurrecting tickets'
+);
+
+const reflectedState = IntegrityEngine.updateSessionReflection(
+  burnedRestoreResult.state!,
+  'sess-reflect-1',
+  'Finished chapter review cleanly.',
+  'deep_flow',
+  false
+);
+const reflectedSession = reflectedState.sessions.find((s) => s.id === 'sess-reflect-1');
+failIf(
+  reflectedSession?.flowRating === 'deep_flow' &&
+    reflectedSession?.reflectionNote === 'Finished chapter review cleanly.',
+  'IntegrityEngine.updateSessionReflection must persist flowRating and reflectionNote onto matching session'
+);
+console.log('PASS: Burned Ticket Restore Guard & Session Reflection Persistence Verified');
 
 console.log('\n>>> ALL SPECIFICATION AND ANTI-EXPLOIT TESTS PASSED WITH 100% SUCCESS! <<<');

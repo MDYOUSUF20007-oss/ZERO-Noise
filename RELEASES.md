@@ -10,8 +10,8 @@ Official binaries are hosted directly on **[GitHub Releases](https://github.com/
 
 | Version | Status | Release Date | Package Name | Android Support | Recommended For |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **v1.0.0** | **Latest Stable** | Nov 2026 | `ZERO-Noise-v1.0.0.apk` | Android 8.0 – 16+ | Direct install without ADB. Usage Access + Display Over Other Apps. |
-| **v1.0.0 (Strict)** | **Latest Stable** | Nov 2026 | `ZERO-Noise-strict-adb-v1.0.0.apk` | Android 8.0 – 16+ | Maximum discipline. Blocks notifications, Quick Settings, Recents & Settings via Accessibility. |
+| **v1.0.0** | **Latest Stable** | Nov 2026 | `ZERO-v1.0.0.apk` | Android 8.0 – 16+ | Direct install without ADB. Usage Access + Display Over Other Apps. |
+| **v1.0.0 (Strict)** | **Latest Stable** | Nov 2026 | `ZERO-requires-adb-v1.0.0.apk` | Android 8.0 – 16+ | Maximum discipline. Blocks notifications, Quick Settings, Recents & Settings via Accessibility. |
 
 - **Official Release Channel:** [https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases](https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases)
 - **Release Certificate SHA-256:** `A1:4A:36:...CE:11` (V1 + V2 + V3 in-place upgrades guaranteed)
@@ -54,16 +54,16 @@ Official binaries are hosted directly on **[GitHub Releases](https://github.com/
 ## Installation & Upgrade Guide
 
 ### Standard Edition (Recommended)
-1. Download `ZERO-Noise-v1.0.0.apk` from [GitHub Releases](https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases).
+1. Download `ZERO-v1.0.0.apk` from [GitHub Releases](https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases).
 2. Tap the downloaded APK to install.
 3. Grant **Usage Access** and **Display Over Other Apps** when prompted.
 4. Ready to focus!
 
 ### Strict Edition (Full Zero Mode via ADB)
-1. Download `ZERO-Noise-strict-adb-v1.0.0.apk`.
+1. Download `ZERO-requires-adb-v1.0.0.apk`.
 2. Install via ADB or Shizuku:
    ```bash
-   adb install -r ZERO-Noise-strict-adb-v1.0.0.apk
+   adb install -r ZERO-requires-adb-v1.0.0.apk
    ```
 3. On Android 13–16:
    - Go to `Settings → Apps → Zero-Noise → ⋮ (top right) → Allow restricted settings`.
@@ -74,7 +74,7 @@ Official binaries are hosted directly on **[GitHub Releases](https://github.com/
 All releases share Zero-Noise's official V1 + V2 + V3 release key:
 ```
 Owner: CN=Zero Detox, OU=Mobile Security, O=Zero Detox Project, L=Bangalore, ST=Karnataka, C=IN
-SHA-256: A1:4A:36:9C:5F:85:2B:12:F6:39:1A:E7:09:A6:6C:56:53:7E:89:1E:FE:CB:AC:3B:5A:0B:4D:43:2F:CE:9F:11
+SHA-256: A1:4A:36:1E:D4:B7:F7:D6:6E:57:69:92:99:9D:02:8A:05:32:65:85:0A:6C:A4:AF:EE:4F:C1:2F:29:48:CE:11
 ```
 You can install updates directly over existing installations without losing your focus statistics, streaks, or Escape Tickets.
 

@@ -63,8 +63,8 @@ For complete version changelogs, architecture notes, and checksums, see **[RELEA
 
 | Edition | Package | Recommended For |
 | :--- | :--- | :--- |
-| **Standard Edition** *(Direct Install)* | `ZERO-Noise-v<version>.apk` | Quick sideloading without root or ADB. Enforces your Bags and limits via Android **Usage Access** + **Display Over Other Apps**. |
-| **Strict Edition** *(Full Zero Mode)* | `ZERO-Noise-strict-adb-v<version>.apk` | Maximum discipline. Uses Android's **Accessibility Service** to block the notification shade, Quick Settings, Recents, and Settings. *(On Android 13–16, enable via App Info → ⋮ Allow restricted settings, or install via `adb install -r` / Shizuku).* |
+| **Standard Edition** *(Direct Install)* | `ZERO-v<version>.apk` | Quick sideloading without root or ADB. Enforces your Bags and limits via Android **Usage Access** + **Display Over Other Apps**. |
+| **Strict Edition** *(Full Zero Mode)* | `ZERO-requires-adb-v<version>.apk` | Maximum discipline. Uses Android's **Accessibility Service** to block the notification shade, Quick Settings, Recents, and Settings. *(On Android 13–16, enable via App Info → ⋮ Allow restricted settings, or install via `adb install -r` / Shizuku).* |
 
 - **Release Documentation & History:** [RELEASES.md](./RELEASES.md)
 - **Live Web / PWA Preview:** [mdyousuf20007-oss.github.io/ZERO-Noise](https://mdyousuf20007-oss.github.io/ZERO-Noise/)

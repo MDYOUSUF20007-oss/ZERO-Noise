@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useId, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useId, useMemo, useRef, lazy, Suspense } from 'react';
 import type {
   ActiveLockSession,
   ParachuteMetrics,
@@ -6,7 +6,7 @@ import type {
   ZeroProfile,
   ThemeConfig,
 } from '../types';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { isWorkBag } from '../utils/bagLayout';
 import { resolveEffectiveAppRuleConfig } from '../utils/bagAppConfig';
 import { buildPixelClockLayout } from '../utils/pixelFont';
@@ -16,8 +16,11 @@ import { voidAudio, FOCUS_SOUND_TRACKS, type FocusSoundTrack } from '../utils/vo
 import { getRandomVoidQuote, type VoidQuote } from '../utils/voidQuotes';
 import { computeThemeRuntime, DEFAULT_THEME_CONFIG, hexToRgba } from '../utils/themes';
 import { AppFrictionModal } from './AppFrictionModal';
-import { ZeroTubeModal } from './ZeroTubeModal';
 import { EscapeTicketDockButton, EscapeTicketModal } from './EscapeTicketSystem';
+
+const ZeroTubeModal = lazy(() =>
+  import('./ZeroTubeModal').then((m) => ({ default: m.ZeroTubeModal }))
+);
 import {
   COMPULSORY_STUDY_APPS_EVENT,
   getCompulsoryStudyAppsConfig,
@@ -104,18 +107,18 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
   onDeployParachute,
   onExtendLock,
 }) => {
-  const { fluentOrbIntensity, gpuThermalSafeguard, isAero, isDusk, aeroAccentColor, accent } = useInterfaceStyle();
+  const { fluentOrbIntensity, gpuThermalSafeguard, isAero, isDusk, aeroAccentColor } = useInterfaceStyle();
   const themeRuntime = useMemo(
     () => computeThemeRuntime(themeConfig ?? DEFAULT_THEME_CONFIG),
     [themeConfig]
   );
-  const activeAccent = useMemo(() => {
+  const activeAccent = (() => {
     if (typeof document !== 'undefined') {
       const docAccent = document.documentElement.style.getPropertyValue('--accent-primary')?.trim();
       if (docAccent && docAccent.startsWith('#')) return docAccent;
     }
     return '#00f0ff';
-  }, [isAero, isDusk, aeroAccentColor, accent]);
+  })();
 
   const voidBackgroundImage = useMemo(() => {
     return 'none';
@@ -224,27 +227,35 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
   }, []);
 
   // Silence Mode / Optional DND state (Phone is silent, Calls & WhatsApp unblocked)
-  const [isDndEnabled, setIsDndEnabled] = useState<boolean>(false);
+  const [isDndEnabled, setIsDndEnabled] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && window.ZeroNative?.isDoNotDisturbActive) {
+      try {
+        return Boolean(window.ZeroNative.isDoNotDisturbActive());
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  });
 
   // Payment and Wallet Launch Modal & Detected Packages
   const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
-  const [installedPaymentApps, setInstalledPaymentApps] = useState<PaymentAppOption[]>([]);
-
-  useEffect(() => {
+  const [installedPaymentApps] = useState<PaymentAppOption[]>(() => {
     if (typeof window !== 'undefined' && window.ZeroNative?.getInstalledPaymentAppsJson) {
       try {
         const raw = window.ZeroNative.getInstalledPaymentAppsJson();
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setInstalledPaymentApps(parsed);
+            return parsed;
           }
         }
       } catch (err) {
         console.warn('Failed to parse installed payment apps', err);
       }
     }
-  }, []);
+    return [];
+  });
 
   // AOD & Void AMOLED Burn-in Protection Pixel Drift (+/- 2-4px periodically)
   const [aodDrift, setAodDrift] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -270,15 +281,6 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       });
     }, 90000);
     return () => clearInterval(shiftTimer);
-  }, []);
-
-  // Sync initial Do Not Disturb (DND) state from native Android OS policy
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.ZeroNative?.isDoNotDisturbActive) {
-      try {
-        setIsDndEnabled(Boolean(window.ZeroNative.isDoNotDisturbActive()));
-      } catch {}
-    }
   }, []);
 
   // On session exit / component unmount, cleanly restore normal notification policy
@@ -371,10 +373,17 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
         )
       : 0;
 
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNowMs(Date.now()), 10_000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const targetEndTimeFormatted = useMemo(() => {
-    const finishDate = new Date(Date.now() + activeLock.remainingSeconds * 1000);
+    const finishDate = new Date(nowMs + activeLock.remainingSeconds * 1000);
     return format12HourClock(finishDate);
-  }, [activeLock.remainingSeconds]);
+  }, [nowMs, activeLock.remainingSeconds]);
 
   // Hide Android top notification/status bar while inside The Void (Immersive Fullscreen)
   useEffect(() => {
@@ -479,7 +488,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
 
   // Feature 3: Flexible Hourly Pomodoro Break Bank (10 minutes total per hour, usable in any increments)
   const currentHourBlock = Math.floor(activeLock.elapsedSeconds / 3600);
-  const [trackedHourBlock, setTrackedHourBlock] = useState<number>(currentHourBlock);
+  const lastHourBlockRef = useRef<number>(currentHourBlock);
   const [hourlyBreakBankSecondsLeft, setHourlyBreakBankSecondsLeft] = useState<number>(600);
   const [pomodoroMode, setPomodoroMode] = useState<PomodoroMode>('flexible_hourly');
   const [pomodoroIsBreak, setPomodoroIsBreak] = useState<boolean>(false);
@@ -487,16 +496,18 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
 
   // New hour rollover: replenishes the 10-minute break bank
   useEffect(() => {
-    if (currentHourBlock !== trackedHourBlock) {
-      setTrackedHourBlock(currentHourBlock);
+    if (currentHourBlock === lastHourBlockRef.current) return;
+    const timer = window.setTimeout(() => {
+      lastHourBlockRef.current = currentHourBlock;
       setHourlyBreakBankSecondsLeft(600);
       setPomodoroIsBreak(false);
       setShowPomodoroBreakModal(false);
       if (typeof window !== 'undefined' && window.ZeroNative?.endPomodoroBreak) {
         window.ZeroNative.endPomodoroBreak();
       }
-    }
-  }, [currentHourBlock, trackedHourBlock]);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [currentHourBlock]);
 
   // Start or resume break using remaining bank seconds
   const handleStartPomodoroBreak = (customDuration?: number) => {
@@ -584,7 +595,16 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
     const cyclePos = activeLock.elapsedSeconds % cycleSpan;
 
     if (cyclePos >= focusSpan && hourlyBreakBankSecondsLeft > 0) {
-      handleStartPomodoroBreak(Math.min(breakSpan, hourlyBreakBankSecondsLeft));
+      const breakDuration = Math.min(breakSpan, hourlyBreakBankSecondsLeft);
+      const timer = window.setTimeout(() => {
+        haptics.tick(900);
+        setPomodoroIsBreak(true);
+        setShowPomodoroBreakModal(true);
+        if (typeof window !== 'undefined' && window.ZeroNative?.startPomodoroBreak) {
+          window.ZeroNative.startPomodoroBreak(breakDuration);
+        }
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [pomodoroMode, activeLock.elapsedSeconds, hourlyBreakBankSecondsLeft, pomodoroIsBreak]);
 
@@ -2211,30 +2231,34 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       )}
 
       {/* ZEROTUBE DISTRACTION-FREE PRODUCTIVE STUDY PLAYER */}
-      <ZeroTubeModal
-        isOpen={showZeroTube}
-        onClose={() => setShowZeroTube(false)}
-        onLaunchMorphApp={() => {
-          setShowZeroTube(false);
-          const pkg = 'app.morphe.android.youtube';
-          if (typeof window !== 'undefined' && (window.ZeroNative as any)?.launchYouTubeOrMorphApp) {
-            const launched = (window.ZeroNative as any).launchYouTubeOrMorphApp();
-            if (launched) {
+      <Suspense fallback={null}>
+        {showZeroTube && (
+          <ZeroTubeModal
+            isOpen={showZeroTube}
+            onClose={() => setShowZeroTube(false)}
+            onLaunchMorphApp={() => {
+              setShowZeroTube(false);
+              const pkg = 'app.morphe.android.youtube';
+              if (typeof window !== 'undefined' && (window.ZeroNative as any)?.launchYouTubeOrMorphApp) {
+                const launched = (window.ZeroNative as any).launchYouTubeOrMorphApp();
+                if (launched) {
+                  haptics.thud();
+                  return;
+                }
+              }
+              if (typeof window !== 'undefined' && (window.ZeroNative as any)?.launchBagApp) {
+                const launched = (window.ZeroNative as any).launchBagApp(pkg);
+                if (launched) {
+                  haptics.thud();
+                  return;
+                }
+              }
+              window.location.href = `intent:#Intent;package=${pkg};end`;
               haptics.thud();
-              return;
-            }
-          }
-          if (typeof window !== 'undefined' && (window.ZeroNative as any)?.launchBagApp) {
-            const launched = (window.ZeroNative as any).launchBagApp(pkg);
-            if (launched) {
-              haptics.thud();
-              return;
-            }
-          }
-          window.location.href = `intent:#Intent;package=${pkg};end`;
-          haptics.thud();
-        }}
-      />
+            }}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

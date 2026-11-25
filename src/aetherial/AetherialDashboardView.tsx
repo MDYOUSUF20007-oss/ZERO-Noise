@@ -46,12 +46,12 @@ export const AetherialDashboardView: React.FC<AetherialDashboardViewProps> = ({
   const userName = profile?.displayName || 'Explorer';
   const motto = profile?.motto || 'Your attention is your superpower';
 
-  const greeting = useMemo(() => {
+  const [greeting] = useState<string>(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
     if (hour < 17) return 'Good afternoon';
     return 'Good evening';
-  }, []);
+  });
 
   const handleStartSession = () => {
     haptics.lockEngaged();

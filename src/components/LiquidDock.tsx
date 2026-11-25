@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { Clock, Heart, Settings, BarChart3, Play } from 'lucide-react';
 import { haptics } from '../utils/haptics';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 
 export type ZeroNavTab = 'dial' | 'dashboard' | 'zerotube' | 'schedules' | 'support';
 

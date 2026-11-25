@@ -8,7 +8,7 @@ import {
 } from '../utils/bagAppConfig';
 import { BagAppConfigModal } from './BagAppConfigModal';
 import { ObsidianCard } from './ObsidianCard';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import {
   Briefcase,
   X,

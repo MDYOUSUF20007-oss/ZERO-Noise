@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 
 /**
  * Ambient Background Mesh

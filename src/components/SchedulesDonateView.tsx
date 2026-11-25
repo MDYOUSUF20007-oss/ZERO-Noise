@@ -1,5 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
-import { toDataURL as generateQrDataUrl } from 'qrcode';
+﻿import React, { useState, useEffect, lazy, Suspense } from 'react';
 import {
   FIRST_DONATION_BONUS_INR,
   KOFI_URL,
@@ -26,19 +25,24 @@ import type {
   CloudAutoBackupStatus,
   CloudReminderInterval,
 } from '../types';
-import { useInterfaceStyle, AMOLED_ACCENTS } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle, AMOLED_ACCENTS } from '../context/interfaceStyleStore';
 import { evaluatePermissionPriority } from '../utils/permissionPriority';
 import { RestrictedSettingsGuideCard } from './RestrictedSettingsGuideCard';
 import { ProfileAvatar } from './ProfileAvatar';
 import { ZeroSupporterGoldenBadge } from './AchievementBadgeChip';
 import { DonorPerksBadgesCard } from './DonorPerksBadgesCard';
 import { ObsidianCard } from './ObsidianCard';
-import { CreditsModal } from './CreditsModal';
 import { ZeroTubeSettingsCard } from './ZeroTubeSettingsCard';
 import { CompulsoryStudyAppsCard } from './CompulsoryStudyAppsCard';
 import { ActionRemindersSettingsCard } from './ActionRemindersSettingsCard';
-import { ZeroTubeModal } from './ZeroTubeModal';
 import { isOvernightSchedule, getScheduleDurationMinutes } from '../utils/routineEngine';
+
+const CreditsModal = lazy(() =>
+  import('./CreditsModal').then((m) => ({ default: m.CreditsModal }))
+);
+const ZeroTubeModal = lazy(() =>
+  import('./ZeroTubeModal').then((m) => ({ default: m.ZeroTubeModal }))
+);
 import { haptics } from '../utils/haptics';
 import {
   Plus,
@@ -252,19 +256,29 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   const [cloudNotice, setCloudNotice] = useState<{ ok: boolean; message: string } | null>(null);
   const supporterBadgeUnlocked = Boolean(isZeroSupporter ?? (hasClaimedFirstDonationParachute || isDeveloper));
   const restoreDisabled = Boolean(environmentSecurity?.restrictions?.backupRestoreDisabled);
-  const [activeSection, setActiveSection] = useState<'schedules' | 'themes' | 'settings' | 'os_security' | 'support'>(
-    sectionOverride?.section || 'schedules'
-  );
+  const [sectionState, setSectionState] = useState<{
+    section: 'schedules' | 'themes' | 'settings' | 'os_security' | 'support';
+    overrideKey: string | number | undefined;
+  }>(() => ({
+    section: sectionOverride?.section || 'schedules',
+    overrideKey: sectionOverride?.key,
+  }));
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCreditsModal, setShowCreditsModal] = useState(false);
   const [showZeroTubeModal, setShowZeroTubeModal] = useState(false);
   const [selectedZeroTubeVideoId, setSelectedZeroTubeVideoId] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    if (sectionOverride?.section) {
-      setActiveSection(sectionOverride.section);
-    }
-  }, [sectionOverride?.key, sectionOverride?.section]);
+  const currentOverrideKey = sectionOverride?.key;
+  const activeSection =
+    sectionOverride?.section && currentOverrideKey !== sectionState.overrideKey
+      ? sectionOverride.section
+      : sectionState.section;
+
+  const setActiveSection = (
+    section: 'schedules' | 'themes' | 'settings' | 'os_security' | 'support'
+  ) => {
+    setSectionState({ section, overrideKey: currentOverrideKey });
+  };
 
   const effectiveSection =
     viewMode === 'support'
@@ -283,11 +297,14 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   useEffect(() => {
     if (!showUPIQR || upiQrUrl) return;
     let cancelled = false;
-    generateQrDataUrl(UPI_PAY_URL, {
-      width: 240,
-      margin: 2,
-      color: { dark: '#000000', light: '#FFFFFF' },
-    })
+    void import('qrcode')
+      .then(({ toDataURL }) =>
+        toDataURL(UPI_PAY_URL, {
+          width: 240,
+          margin: 2,
+          color: { dark: '#000000', light: '#FFFFFF' },
+        })
+      )
       .then((url) => {
         if (!cancelled) setUpiQrUrl(url);
       })
@@ -319,6 +336,13 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   // Quick Settings Tile Configuration
   const [qsDuration, setQsDuration] = useState<number>(() => {
     if (typeof window !== 'undefined') {
+      try {
+        const raw = window.ZeroNative?.getQuickSettingsConfigJson?.();
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.durationSeconds) return Number(parsed.durationSeconds);
+        }
+      } catch {}
       const saved = localStorage.getItem('zero_qs_duration_seconds');
       if (saved) return Number(saved);
     }
@@ -326,6 +350,13 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   });
   const [qsTag, setQsTag] = useState<string>(() => {
     if (typeof window !== 'undefined') {
+      try {
+        const raw = window.ZeroNative?.getQuickSettingsConfigJson?.();
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.tag) return String(parsed.tag);
+        }
+      } catch {}
       const saved = localStorage.getItem('zero_qs_tag');
       if (saved) return saved;
     }
@@ -368,17 +399,13 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
   };
 
   useEffect(() => {
-    checkBatteryState();
-    if (typeof window !== 'undefined' && window.ZeroNative?.getQuickSettingsConfigJson) {
-      try {
-        const raw = window.ZeroNative.getQuickSettingsConfigJson();
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed.durationSeconds) setQsDuration(Number(parsed.durationSeconds));
-          if (parsed.tag) setQsTag(String(parsed.tag));
-        }
-      } catch {}
-    }
+    const syncNative = () => checkBatteryState();
+    window.addEventListener('focus', syncNative);
+    document.addEventListener('visibilitychange', syncNative);
+    return () => {
+      window.removeEventListener('focus', syncNative);
+      document.removeEventListener('visibilitychange', syncNative);
+    };
   }, []);
 
   const handleOpenExternal = (e: React.MouseEvent, url: string) => {
@@ -4176,21 +4203,25 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
           />
         </div>
       )}
-      {/* Credits & Contributors Modal */}
-      <CreditsModal
-        isOpen={showCreditsModal}
-        onClose={() => setShowCreditsModal(false)}
-      />
+      <Suspense fallback={null}>
+        {showCreditsModal && (
+          <CreditsModal
+            isOpen={showCreditsModal}
+            onClose={() => setShowCreditsModal(false)}
+          />
+        )}
 
-      {/* ZeroTube Study Player Modal */}
-      <ZeroTubeModal
-        isOpen={showZeroTubeModal}
-        onClose={() => {
-          setShowZeroTubeModal(false);
-          setSelectedZeroTubeVideoId(undefined);
-        }}
-        initialVideoId={selectedZeroTubeVideoId}
-      />
+        {showZeroTubeModal && (
+          <ZeroTubeModal
+            isOpen={showZeroTubeModal}
+            onClose={() => {
+              setShowZeroTubeModal(false);
+              setSelectedZeroTubeVideoId(undefined);
+            }}
+            initialVideoId={selectedZeroTubeVideoId}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

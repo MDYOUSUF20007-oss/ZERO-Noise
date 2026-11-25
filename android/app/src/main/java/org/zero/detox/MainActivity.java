@@ -389,7 +389,7 @@ public class MainActivity extends BridgeActivity {
                 .setMessage(
                     "Zero-Noise detected an unauthorized APK signature modification or cloned package.\n\n"
                         + "For your safety and integrity protection, modified or re-signed APKs cannot run. "
-                        + "Install the official release only from GitHub Releases (MDYOUSUF20007-oss/ZERO)."
+                        + "Install the official release only from GitHub Releases (MDYOUSUF20007-oss/ZERO-Noise)."
                 )
                 .setCancelable(false)
                 .setPositiveButton("Exit Zero-Noise", (dialog, which) -> terminateApplication())

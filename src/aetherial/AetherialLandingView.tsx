@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { OccasionBag, ZeroProfile, SessionRecord } from '../types';
 import { resolveAppBrandVisual } from '../utils/appBrandColors';
 import { voidAudio } from '../utils/voidAudio';
@@ -55,14 +55,21 @@ export const AetherialLandingView: React.FC<AetherialLandingViewProps> = ({
     onIgnite(selectedMinutes * 60, activeTag.replace(/^#+/, ''));
   };
 
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNowMs(Date.now()), 15_000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const targetTimeStr = useMemo(() => {
-    const end = new Date(Date.now() + selectedMinutes * 60 * 1000);
+    const end = new Date(nowMs + selectedMinutes * 60 * 1000);
     const rawH = end.getHours();
     const suf = rawH >= 12 ? 'PM' : 'AM';
     const h12 = rawH % 12 === 0 ? 12 : rawH % 12;
     const m = end.getMinutes().toString().padStart(2, '0');
     return `${h12}:${m} ${suf}`;
-  }, [selectedMinutes]);
+  }, [nowMs, selectedMinutes]);
 
   const presetDurations = [25, 50, 90];
 

@@ -6,7 +6,7 @@ import {
 } from './ProfileAvatar';
 import { ObsidianCard } from './ObsidianCard';
 import { ZeroSupporterGoldenBadge } from './AchievementBadgeChip';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 
 // 3. Upgraded Top Preview Badge Component (Frosted Two-Tier Obsidian)
 export interface ZeroProfilePreviewCardProps {

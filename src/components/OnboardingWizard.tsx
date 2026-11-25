@@ -11,6 +11,7 @@ import type {
 } from '../types';
 import { createDefaultAppRuleConfig } from '../utils/bagAppConfig';
 import { haptics } from '../utils/haptics';
+import { SOURCE_URL, handleOpenExternalUrl } from '../utils/supportLinks';
 import {
   Target,
   Flame,
@@ -798,13 +799,14 @@ export function OnboardingWizard({
                   Zero is 100% Free and Open-Source Software (FOSS). It contains zero ads, zero telemetry, and zero tracking code. Your data never leaves your phone.
                 </p>
                 <a
-                  href="https://github.com/MDYOUSUF20007-oss/ZERO"
+                  href={SOURCE_URL}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={(e) => handleOpenExternalUrl(e, SOURCE_URL)}
                   className="inline-flex items-center gap-1 text-[11px] font-mono pt-1 hover:underline"
                   style={{ color: 'var(--accent-primary, #38bdf8)' }}
                 >
-                  Inspect Zero Source Code on GitHub <ExternalLink size={11} />
+                  Inspect Zero-Noise Source Code on GitHub <ExternalLink size={11} />
                 </a>
               </div>
             </div>

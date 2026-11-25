@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { haptics } from '../utils/haptics';
 import { ArrowRight, X, Clock, BarChart3, Settings, Heart, Sparkles } from 'lucide-react';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { ObsidianCard } from './ObsidianCard';
 import type { ZeroNavTab } from './LiquidDock';
 

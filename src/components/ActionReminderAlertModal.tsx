@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dumbbell, X, ArrowRight, Volume2, VolumeX } from 'lucide-react';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { ObsidianCard } from './ObsidianCard';
 import { haptics } from '../utils/haptics';
 
@@ -24,7 +24,8 @@ export const ActionReminderAlertModal: React.FC<ActionReminderAlertModalProps> =
   const isModernFont = isBespoke || isFluentGlass;
 
   useEffect(() => {
-    setIsVisible(true);
+    const raf = requestAnimationFrame(() => setIsVisible(true));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const handleDismiss = () => {

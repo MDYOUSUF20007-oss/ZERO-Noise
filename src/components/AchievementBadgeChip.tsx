@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import type { AchievementBadgeId, BadgeTierColor, EvaluatedBadge } from '../utils/achievements';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import {
   Crown,
   Rocket,
@@ -75,7 +75,7 @@ const TIER_STYLES: Record<
   },
 };
 
-export function renderBadgeIcon(id: AchievementBadgeId, size: number = 14) {
+function renderBadgeIcon(id: AchievementBadgeId, size: number = 14) {
   switch (id) {
     case 'zero_supporter':
       return <Crown size={size} />;

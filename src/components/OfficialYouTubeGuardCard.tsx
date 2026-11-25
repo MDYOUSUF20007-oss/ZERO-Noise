@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Shield, ShieldAlert, CheckCircle2, ExternalLink } from 'lucide-react';
 import { haptics } from '../utils/haptics';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { ObsidianCard } from './ObsidianCard';
 import type { YouTubeGuardConfig } from '../plugins/zeroTube';
 import {

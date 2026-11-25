@@ -12,7 +12,7 @@ import {
 import { verifyDonorUnlockToken } from '../utils/donorUnlockToken';
 import { ZeroSupporterGoldenBadge } from './AchievementBadgeChip';
 import { ObsidianCard } from './ObsidianCard';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import {
   Award,
   Check,

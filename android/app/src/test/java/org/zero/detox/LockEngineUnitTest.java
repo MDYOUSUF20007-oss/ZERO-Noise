@@ -513,6 +513,8 @@ public class LockEngineUnitTest {
 
         // External link & email redirection guards
         assertNotNull(EndpointSecurityPolicy.parseAndValidateExternalUrl("https://ko-fi.com/mdyousuf2620"));
+        assertNotNull(EndpointSecurityPolicy.parseAndValidateExternalUrl("https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases"));
+        assertNotNull(EndpointSecurityPolicy.parseAndValidateExternalUrl("https://mdyousuf20007-oss.github.io/ZERO-Noise/"));
         assertNotNull(EndpointSecurityPolicy.parseAndValidateExternalUrl("https://github.com/MDYOUSUF20007-oss/ZERO/releases"));
         assertNotNull(EndpointSecurityPolicy.parseAndValidateExternalUrl("mailto:mdyousuf982007@proton.me?subject=Receipt"));
         assertNotNull(EndpointSecurityPolicy.parseAndValidateExternalUrl("upi://pay?pa=md.y2007@ptaxis&am=50&cu=INR"));
@@ -528,9 +530,14 @@ public class LockEngineUnitTest {
         assertTrue(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("https://localhost/assets/index.js"));
         assertTrue(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("https://fonts.googleapis.com/css2?family=Inter"));
         assertTrue(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("https://fonts.gstatic.com/s/inter/v1/font.woff2"));
+        assertTrue(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("https://api.github.com/repos/MDYOUSUF20007-oss/ZERO-Noise/releases/latest"));
+        assertTrue(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("https://avatars.githubusercontent.com/u/12345?v=4"));
+        assertTrue(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("https://github.com/MDYOUSUF20007-oss.png"));
         assertTrue(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("data:image/png;base64,iVBORw0KGgo="));
         assertFalse(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("http://localhost/assets/index.js"));
         assertFalse(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("https://evil.com/leak?hours=100"));
+        assertFalse(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("https://api.github.com/users/evil"));
+        assertFalse(EndpointSecurityPolicy.isAllowedWebViewRequestUrl("https://github.com/evil/repo.png"));
 
         // Path traversal filename sanitization
         assertEquals("passwd", EndpointSecurityPolicy.sanitizeBackupFileName("../../etc/passwd"));

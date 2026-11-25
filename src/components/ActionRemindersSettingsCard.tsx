@@ -17,7 +17,7 @@ import {
   saveActionReminderConfig,
   triggerActionReminder,
 } from '../utils/actionReminders';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { ObsidianCard } from './ObsidianCard';
 import { haptics } from '../utils/haptics';
 

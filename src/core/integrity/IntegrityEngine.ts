@@ -1870,13 +1870,16 @@ function applyVerifiedRestore(input: RestoreInputPayload, persist = true): Verif
       typeof parsed.bonusParachutes === 'number' && Number.isFinite(parsed.bonusParachutes)
         ? Math.max(0, Math.round(parsed.bonusParachutes))
         : 0;
+    const hasExplicitBonus =
+      typeof parsed.bonusParachutes === 'number' && Number.isFinite(parsed.bonusParachutes);
     const nextFirstTimeFlag =
       Boolean(parsed.hasClaimedFirstTimeParachute) || Boolean(nextProfile && rawBonus > 0);
     const nextClaimedFirstDonation = Boolean(
       parsed.hasClaimedFirstDonationParachute ?? parsed.isZeroSupporter
     );
-    const minBonusFromFlags =
-      (nextFirstTimeFlag ? 1 : 0) + (nextClaimedFirstDonation ? 1 : 0);
+    const minBonusFromFlags = hasExplicitBonus
+      ? 0
+      : (nextFirstTimeFlag ? 1 : 0) + (nextClaimedFirstDonation ? 1 : 0);
     const isDeveloper = Boolean(
       parsed.isDeveloper ||
       (typeof localStorage !== 'undefined' &&
@@ -1962,6 +1965,26 @@ function resetProtectedState(persist = true): ProtectedIntegrityState {
     persistProtectedState(empty);
   }
   return empty;
+}
+
+function updateSessionReflection(
+  currentState: ProtectedIntegrityState,
+  sessionId: string,
+  note: string,
+  rating: 'deep_flow' | 'steady' | 'challenging',
+  persist = true
+): ProtectedIntegrityState {
+  const updatedSessions = currentState.sessions.map((s) =>
+    s.id === sessionId ? { ...s, reflectionNote: note, flowRating: rating } : s
+  );
+  const nextState: ProtectedIntegrityState = {
+    ...currentState,
+    sessions: updatedSessions,
+  };
+  if (persist) {
+    persistProtectedState(nextState);
+  }
+  return nextState;
 }
 
 function computeParachuteMetrics(
@@ -2083,9 +2106,9 @@ function canAcceptNativeStateSync(perms: NativePermissionStatus): boolean {
 
 export const OFFICIAL_KOFI_URL = 'https://ko-fi.com/mdyousuf2620';
 export const OFFICIAL_SUPPORT_EMAIL = 'mdyousuf982007@proton.me';
-export const OFFICIAL_GITHUB_REPO_URL = 'https://github.com/MDYOUSUF20007-oss/ZERO';
-export const OFFICIAL_GITHUB_RELEASES_URL = 'https://github.com/MDYOUSUF20007-oss/ZERO/releases';
-export const OFFICIAL_PAGES_URL = 'https://mdyousuf20007-oss.github.io/ZERO';
+export const OFFICIAL_GITHUB_REPO_URL = 'https://github.com/MDYOUSUF20007-oss/ZERO-Noise';
+export const OFFICIAL_GITHUB_RELEASES_URL = 'https://github.com/MDYOUSUF20007-oss/ZERO-Noise/releases';
+export const OFFICIAL_PAGES_URL = 'https://mdyousuf20007-oss.github.io/ZERO-Noise';
 export const OFFICIAL_UPI_ID = 'md.y2007@ptaxis';
 
 export const HARDCODED_CLOUD_SAF_DESTINATIONS = Object.freeze([
@@ -2211,11 +2234,21 @@ export function isAllowedExternalUrl(rawUrl: string | null | undefined): boolean
       }
       if (host === 'github.com') {
         const lp = path.toLowerCase();
-        return lp === '/mdyousuf20007-oss/zero' || lp.startsWith('/mdyousuf20007-oss/zero/');
+        return (
+          lp === '/mdyousuf20007-oss/zero-noise' ||
+          lp.startsWith('/mdyousuf20007-oss/zero-noise/') ||
+          lp === '/mdyousuf20007-oss/zero' ||
+          lp.startsWith('/mdyousuf20007-oss/zero/')
+        );
       }
       if (host === 'mdyousuf20007-oss.github.io') {
         const lp = path.toLowerCase();
-        return lp === '/zero' || lp.startsWith('/zero/');
+        return (
+          lp === '/zero-noise' ||
+          lp.startsWith('/zero-noise/') ||
+          lp === '/zero' ||
+          lp.startsWith('/zero/')
+        );
       }
       return false;
     } catch {
@@ -2285,6 +2318,7 @@ export const IntegrityEngine = Object.freeze({
   burnAllEscapeTickets,
   applyVerifiedRestore,
   resetProtectedState,
+  updateSessionReflection,
   verifyNativeCompletionEvent,
   computeNativeCompletionProofDigest,
   encodeZbakPayload,

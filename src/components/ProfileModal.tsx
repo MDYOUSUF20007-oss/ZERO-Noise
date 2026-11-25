@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import type {
   NativeEnvironmentSecurity,
   ProfileAccent,
@@ -10,8 +10,8 @@ import type {
 import {
   AVATAR_ID_TO_EMBLEM,
   AVATAR_OPTIONS,
-  ProfileAvatar,
-} from './ProfileAvatar';
+} from '../utils/profileAvatarThemes';
+import { ProfileAvatar } from './ProfileAvatar';
 import { ZeroProfilePreviewCard } from './ZeroProfilePreviewCard';
 import { ObsidianCard } from './ObsidianCard';
 import {
@@ -19,7 +19,7 @@ import {
   normalizeProfileHandle,
 } from '../utils/parachuteRewardsPolicy';
 import { mergeHashtagList, normalizeCustomHashtag } from '../utils/bagLayout';
-import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 import { haptics } from '../utils/haptics';
 import {
   Sparkles,
@@ -69,7 +69,17 @@ const MISSION_PRESETS = [
   'Sleep Hygiene',
 ];
 
-export const ProfileModal: React.FC<ProfileModalProps> = ({
+export const ProfileModal: React.FC<ProfileModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return (
+    <ProfileModalInner
+      key={`${props.mode}-${props.initialProfile?.updatedAt ?? 'new'}`}
+      {...props}
+    />
+  );
+};
+
+const ProfileModalInner: React.FC<ProfileModalProps> = ({
   isOpen,
   mode,
   initialProfile,
@@ -98,26 +108,10 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   );
   const [customTagInput, setCustomTagInput] = useState('');
   const [dailyGoalHours, setDailyGoalHours] = useState(initialProfile?.dailyGoalHours || 4);
-  const [motto, setMotto] = useState(
-    initialProfile?.motto || 'Put your phone facedown. Reclaim your hours.'
-  );
+  const motto = initialProfile?.motto || 'Put your phone facedown. Reclaim your hours.';
   const [errorMsg, setErrorMsg] = useState('');
   const [restoreFeedback, setRestoreFeedback] = useState<string>('');
   const [isRestoringLocal, setIsRestoringLocal] = useState(false);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    setDisplayName(initialProfile?.displayName || '');
-    setHandleInput(initialProfile?.handle || '');
-    setAvatarId(initialProfile?.avatarId || 'monk');
-    setPrimaryMission(initialProfile?.primaryMission || 'Deep Work');
-    setCustomTagInput('');
-    setDailyGoalHours(initialProfile?.dailyGoalHours || 4);
-    setMotto(initialProfile?.motto || 'Put your phone facedown. Reclaim your hours.');
-    setErrorMsg('');
-    setRestoreFeedback('');
-    setIsRestoringLocal(false);
-  }, [isOpen, initialProfile]);
 
   const missionOptions = useMemo(
     () =>

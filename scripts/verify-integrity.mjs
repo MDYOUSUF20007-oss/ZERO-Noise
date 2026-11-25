@@ -513,10 +513,10 @@ for (const relFile of srcCodeFiles) {
       }
       const fetchUrls = [...code.matchAll(/\bfetch\s*\(\s*[`'"]([^`'"]+)[`'"]/g)].map((m) => m[1]);
       for (const url of fetchUrls) {
-        if (!url.startsWith('https://api.github.com/repos/MDYOUSUF20007-oss/ZERO/')) {
+        if (!url.startsWith('https://api.github.com/repos/MDYOUSUF20007-oss/ZERO-Noise/')) {
           fail(
             'E6',
-            `Unauthorized fetch URL "${url}" in ${relFile}. Must strictly target official GitHub repo API.`
+            `Unauthorized fetch URL "${url}" in ${relFile}. Must strictly target official ZERO-Noise GitHub repo API.`
           );
         }
       }
