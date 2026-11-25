@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Shield, ShieldAlert, CheckCircle2, ExternalLink } from 'lucide-react';
 import { haptics } from '../utils/haptics';
+import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { ObsidianCard } from './ObsidianCard';
 import type { YouTubeGuardConfig } from '../plugins/zeroTube';
 import {
   ZEROTUBE_GUARD_EVENT,
@@ -52,6 +54,8 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
   );
   const [permState, setPermState] = useState(() => readNativeAccessibilityState());
   const [showPermissionPrompt, setShowPermissionPrompt] = useState(false);
+  const { isBespoke, isFluentGlass } = useInterfaceStyle();
+  const isModernFont = isBespoke || isFluentGlass;
 
   const refreshState = useCallback(() => {
     setConfig(getYouTubeGuardConfig());
@@ -102,7 +106,6 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
     });
     setConfig(updated);
 
-    // If enabling either guard on native Android without Accessibility permission, prompt & redirect
     const latestPerm = readNativeAccessibilityState();
     setPermState(latestPerm);
     if (nextValue && latestPerm.isNative && !latestPerm.isAccessibilityEnabled) {
@@ -121,27 +124,20 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
     showPermissionPrompt ||
     (anyEnabled && permState.isNative && !permState.isAccessibilityEnabled);
 
-  return (
-    <div
-      className={compact ? 'p-3 rounded-2xl space-y-2.5' : 'p-4 rounded-2xl space-y-3'}
-      style={{
-        backgroundColor: 'var(--surface-tonal, var(--bg-surface))',
-        border: '1px solid var(--border-subtle)',
-        color: 'var(--text-primary)',
-      }}
-    >
+  const innerContent = (
+    <>
       {/* Card Header */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-2.5 min-w-0">
           <div
-            className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
+            className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
             style={{
-              backgroundColor: anyEnabled ? 'var(--accent-soft)' : 'var(--bg-surface)',
+              backgroundColor: anyEnabled ? 'var(--accent-soft)' : 'var(--bg-input)',
               border: `1px solid ${anyEnabled ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
               color: anyEnabled ? 'var(--accent-primary)' : 'var(--text-secondary)',
             }}
           >
-            <Shield size={14} />
+            <Shield size={15} />
           </div>
           <div className="min-w-0">
             <h4
@@ -160,12 +156,9 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
         </div>
 
         <span
-          className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold inline-flex items-center gap-1 shrink-0"
-          style={{
-            backgroundColor: anyEnabled ? 'var(--accent-soft)' : 'var(--bg-surface)',
-            border: `1px solid ${anyEnabled ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-            color: anyEnabled ? 'var(--accent-primary)' : 'var(--text-muted)',
-          }}
+          className={`px-2.5 py-0.5 text-[9px] font-mono font-bold inline-flex items-center gap-1 shrink-0 ${
+            anyEnabled ? 'liquid-pill-active' : 'liquid-pill-inactive'
+          }`}
         >
           {anyEnabled && (!permState.isNative || permState.isAccessibilityEnabled) && (
             <CheckCircle2 size={10} />
@@ -185,10 +178,9 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
       {/* Accessibility Edition / Permission Prompt Banner */}
       {needsAccessibilityBanner && (
         <div
-          className="p-3 rounded-xl space-y-2"
+          className="liquid-inset p-3 space-y-2"
           style={{
-            backgroundColor: 'var(--bg-primary)',
-            border: '1px solid var(--status-warning)',
+            borderColor: 'var(--status-warning)',
           }}
         >
           <div className="flex items-start gap-2 min-w-0">
@@ -211,10 +203,11 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
               <button
                 type="button"
                 onClick={handleOpenAccessibilitySettings}
-                className="px-3 py-1.5 rounded-xl text-[10px] font-bold inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                className="px-3 py-1.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shrink-0 cursor-pointer liquid-spring"
                 style={{
                   backgroundColor: 'var(--accent-primary)',
                   color: 'var(--text-on-accent)',
+                  boxShadow: '0 4px 14px -2px var(--liquid-accent-soft-glow)',
                 }}
               >
                 <span>Open Accessibility</span>
@@ -223,12 +216,8 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
               <button
                 type="button"
                 onClick={handleOpenAppInfoSettings}
-                className="px-3 py-1.5 rounded-xl text-[10px] font-bold inline-flex items-center gap-1 shrink-0 cursor-pointer"
-                style={{
-                  backgroundColor: 'var(--surface-tonal)',
-                  border: '1px solid var(--border-strong)',
-                  color: 'var(--text-primary)',
-                }}
+                className="px-3 py-1.5 text-[10px] font-bold inline-flex items-center gap-1 shrink-0 cursor-pointer liquid-pill-inactive liquid-spring"
+                style={{ color: 'var(--text-primary)' }}
               >
                 <span>App Info (Restricted Settings)</span>
               </button>
@@ -241,11 +230,16 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
       <div className="space-y-2">
         {/* Toggle 1: Block YouTube Shorts */}
         <div
-          className="p-3 rounded-xl flex items-center justify-between gap-3"
-          style={{
-            backgroundColor: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
-          }}
+          className={`p-3 flex items-center justify-between gap-3 transition-all ${
+            config.blockOfficialShorts
+              ? 'liquid-inset shadow-[0_0_14px_var(--liquid-accent-soft-glow)]'
+              : 'liquid-row'
+          }`}
+          style={
+            config.blockOfficialShorts
+              ? { borderColor: 'var(--accent-border)' }
+              : undefined
+          }
         >
           <div className="min-w-0 flex-1">
             <div
@@ -268,13 +262,14 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
             aria-checked={config.blockOfficialShorts}
             aria-label="Block YouTube Shorts"
             onClick={() => handleToggle('blockOfficialShorts')}
-            className="w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer shrink-0 flex items-center"
+            className="w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer shrink-0 flex items-center liquid-spring"
             style={{
               backgroundColor: config.blockOfficialShorts
                 ? 'var(--accent-primary)'
-                : 'var(--bg-primary)',
+                : 'var(--bg-input)',
               border: `1px solid ${config.blockOfficialShorts ? 'var(--accent-border)' : 'var(--border-strong)'}`,
               justifyContent: config.blockOfficialShorts ? 'flex-end' : 'flex-start',
+              boxShadow: config.blockOfficialShorts ? '0 0 12px var(--liquid-accent-soft-glow)' : undefined,
             }}
           >
             <span
@@ -290,11 +285,16 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
 
         {/* Toggle 2: Official App Study Mode */}
         <div
-          className="p-3 rounded-xl flex items-center justify-between gap-3"
-          style={{
-            backgroundColor: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
-          }}
+          className={`p-3 flex items-center justify-between gap-3 transition-all ${
+            config.strictOfficialStudyMode
+              ? 'liquid-inset shadow-[0_0_14px_var(--liquid-accent-soft-glow)]'
+              : 'liquid-row'
+          }`}
+          style={
+            config.strictOfficialStudyMode
+              ? { borderColor: 'var(--accent-border)' }
+              : undefined
+          }
         >
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -304,14 +304,7 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
               >
                 Official App Study Mode
               </span>
-              <span
-                className="text-[9px] font-mono px-1.5 py-0.5 rounded-full"
-                style={{
-                  backgroundColor: 'var(--surface-tonal)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-muted)',
-                }}
-              >
+              <span className="text-[9px] font-mono px-2 py-0.5 liquid-pill-inactive">
                 {whitelistCount} {whitelistCount === 1 ? 'channel' : 'channels'}
               </span>
             </div>
@@ -329,13 +322,14 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
             aria-checked={config.strictOfficialStudyMode}
             aria-label="Official App Study Mode"
             onClick={() => handleToggle('strictOfficialStudyMode')}
-            className="w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer shrink-0 flex items-center"
+            className="w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer shrink-0 flex items-center liquid-spring"
             style={{
               backgroundColor: config.strictOfficialStudyMode
                 ? 'var(--accent-primary)'
-                : 'var(--bg-primary)',
+                : 'var(--bg-input)',
               border: `1px solid ${config.strictOfficialStudyMode ? 'var(--accent-border)' : 'var(--border-strong)'}`,
               justifyContent: config.strictOfficialStudyMode ? 'flex-end' : 'flex-start',
+              boxShadow: config.strictOfficialStudyMode ? '0 0 12px var(--liquid-accent-soft-glow)' : undefined,
             }}
           >
             <span
@@ -349,6 +343,26 @@ export const OfficialYouTubeGuardCard: React.FC<OfficialYouTubeGuardCardProps> =
           </button>
         </div>
       </div>
-    </div>
+    </>
+  );
+
+  if (compact) {
+    return (
+      <div
+        className={`liquid-inset p-3 space-y-2.5 ${isModernFont ? 'font-sans' : 'font-mono'}`}
+        style={{ color: 'var(--text-primary)' }}
+      >
+        {innerContent}
+      </div>
+    );
+  }
+
+  return (
+    <ObsidianCard
+      ambientGlow
+      className={isModernFont ? 'font-sans' : 'font-mono'}
+      headerClassName="p-4 space-y-3"
+      headerContent={innerContent}
+    />
   );
 };

@@ -1382,11 +1382,12 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
             isLive: vid.isLive,
           });
         }}
-        className="w-full rounded-2xl overflow-hidden text-left cursor-pointer transition-all flex flex-col"
-        style={{
-          backgroundColor: isCurrent ? 'var(--accent-soft)' : 'var(--surface-tonal)',
-          border: `1px solid ${isCurrent ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-        }}
+        className={`w-full rounded-2xl overflow-hidden text-left cursor-pointer liquid-spring flex flex-col ${
+          isCurrent ? 'liquid-inset shadow-[0_0_16px_var(--liquid-accent-soft-glow)]' : 'liquid-glass'
+        }`}
+        style={
+          isCurrent ? { borderColor: 'var(--accent-border)' } : undefined
+        }
       >
         {/* 16:9 YouTube-Style Thumbnail */}
         <div
@@ -1518,10 +1519,10 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
     >
       {/* Top YouTube-Style App Header */}
       <div
-        className="px-4 py-2.5 flex items-center justify-between gap-2 shrink-0"
+        className="px-4 py-2.5 flex items-center justify-between gap-2 shrink-0 backdrop-blur-md"
         style={{
           borderBottom: '1px solid var(--border-subtle)',
-          backgroundColor: 'var(--surface-tonal, var(--bg-surface))',
+          backgroundColor: 'var(--glass-dock-bg, var(--surface-tonal))',
         }}
       >
         <div className="flex items-center gap-2 min-w-0">
@@ -1543,14 +1544,7 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
               >
                 ZeroTube
               </span>
-              <span
-                className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold inline-flex items-center gap-1 shrink-0"
-                style={{
-                  backgroundColor: 'var(--accent-soft)',
-                  color: 'var(--accent-primary)',
-                  border: '1px solid var(--accent-border)',
-                }}
-              >
+              <span className="liquid-pill-active px-2 py-0.5 text-[9px] font-mono font-bold inline-flex items-center gap-1 shrink-0">
                 <ShieldCheck size={9} />
                 Study Feed
               </span>
@@ -1565,12 +1559,9 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
               haptics.tick(500);
               setShowAppGuardPanel((prev) => !prev);
             }}
-            className="px-2.5 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-1 cursor-pointer shrink-0"
-            style={{
-              backgroundColor: showAppGuardPanel ? 'var(--accent-soft)' : 'var(--bg-surface)',
-              border: `1px solid ${showAppGuardPanel ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-              color: showAppGuardPanel ? 'var(--accent-primary)' : 'var(--text-primary)',
-            }}
+            className={`px-2.5 py-1.5 text-[10px] font-bold flex items-center gap-1 cursor-pointer shrink-0 liquid-spring ${
+              showAppGuardPanel ? 'liquid-pill-active' : 'liquid-pill-inactive'
+            }`}
           >
             <Shield size={11} />
             <span>Guard</span>
@@ -1582,12 +1573,9 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
               haptics.tick(500);
               setActiveTab(activeTab === 'catalog' ? 'notes' : 'catalog');
             }}
-            className="px-2.5 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-1 cursor-pointer shrink-0"
-            style={{
-              backgroundColor: activeTab === 'notes' ? 'var(--accent-soft)' : 'var(--bg-surface)',
-              border: `1px solid ${activeTab === 'notes' ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-              color: activeTab === 'notes' ? 'var(--accent-primary)' : 'var(--text-primary)',
-            }}
+            className={`px-2.5 py-1.5 text-[10px] font-bold flex items-center gap-1 cursor-pointer shrink-0 liquid-spring ${
+              activeTab === 'notes' ? 'liquid-pill-active' : 'liquid-pill-inactive'
+            }`}
           >
             <FileText size={11} />
             <span>{activeTab === 'notes' ? 'Feed' : 'Notes'}</span>
@@ -1601,12 +1589,7 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                 haptics.tick(600);
                 onOpenSettingsStudio();
               }}
-              className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 cursor-pointer"
-              style={{
-                backgroundColor: 'var(--bg-surface)',
-                border: '1px solid var(--border-subtle)',
-                color: 'var(--text-secondary)',
-              }}
+              className="w-8 h-8 rounded-full liquid-pill-inactive liquid-spring flex items-center justify-center shrink-0 cursor-pointer"
             >
               <Settings size={14} />
             </button>
@@ -1623,12 +1606,7 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
               }
               onClose();
             }}
-            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
-            style={{
-              backgroundColor: 'var(--bg-surface)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-secondary)',
-            }}
+            className="w-8 h-8 rounded-full liquid-pill-inactive liquid-spring flex items-center justify-center shrink-0 cursor-pointer"
           >
             <X size={15} />
           </button>
@@ -2307,10 +2285,10 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                         ? `Search ${selectedChannelObj.name} or paste video URL...`
                         : 'Search whitelisted topics or paste YouTube URL...'
                     }
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl text-xs focus:outline-none"
+                    className="w-full obsidian-input pl-9 pr-3 py-2.5 rounded-xl text-xs focus:outline-none"
                     style={{
                       backgroundColor: 'var(--bg-input)',
-                      border: '1px solid var(--border-subtle)',
+                      border: '1px solid var(--border-strong)',
                       color: 'var(--text-primary)',
                     }}
                   />
@@ -2318,10 +2296,11 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSearching || !searchOrUrlInput.trim()}
-                  className="px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2.5 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50 liquid-spring"
                   style={{
                     backgroundColor: 'var(--accent-primary)',
                     color: 'var(--text-on-accent)',
+                    boxShadow: '0 4px 14px -2px var(--liquid-accent-soft-glow)',
                   }}
                 >
                   {isSearching ? (
@@ -2342,18 +2321,9 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                     setSelectedChannelKey('all');
                     setHasSearched(false);
                   }}
-                  className="px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap shrink-0 cursor-pointer transition-colors"
-                  style={{
-                    backgroundColor:
-                      selectedChannelKey === 'all'
-                        ? 'var(--accent-soft)'
-                        : 'var(--surface-tonal)',
-                    border: `1px solid ${selectedChannelKey === 'all' ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-                    color:
-                      selectedChannelKey === 'all'
-                        ? 'var(--accent-primary)'
-                        : 'var(--text-secondary)',
-                  }}
+                  className={`px-3 py-1.5 text-[11px] font-semibold whitespace-nowrap shrink-0 cursor-pointer liquid-spring ${
+                    selectedChannelKey === 'all' ? 'liquid-pill-active' : 'liquid-pill-inactive'
+                  }`}
                 >
                   All Channels ({whitelistedChannels.length})
                 </button>
@@ -2364,13 +2334,9 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                   return (
                     <div
                       key={key}
-                      className="inline-flex items-center rounded-full shrink-0 overflow-hidden"
-                      style={{
-                        backgroundColor: isSelected
-                          ? 'var(--accent-soft)'
-                          : 'var(--surface-tonal)',
-                        border: `1px solid ${isSelected ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-                      }}
+                      className={`inline-flex items-center rounded-full shrink-0 overflow-hidden ${
+                        isSelected ? 'liquid-pill-active' : 'liquid-pill-inactive'
+                      }`}
                     >
                       <button
                         type="button"
@@ -2380,11 +2346,6 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                           setHasSearched(false);
                         }}
                         className="pl-3 pr-2 py-1.5 text-[11px] font-semibold whitespace-nowrap cursor-pointer"
-                        style={{
-                          color: isSelected
-                            ? 'var(--accent-primary)'
-                            : 'var(--text-primary)',
-                        }}
                       >
                         {ch.name || ch.handle || ch.id}
                       </button>
@@ -2393,7 +2354,6 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                         aria-label={`Remove ${ch.name}`}
                         onClick={() => handleRemoveChannel(ch)}
                         className="pr-2.5 pl-0.5 py-1.5 cursor-pointer opacity-70 hover:opacity-100"
-                        style={{ color: 'var(--text-muted)' }}
                       >
                         <X size={11} />
                       </button>
@@ -2408,14 +2368,10 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                     setShowQuickAddChannel((prev) => !prev);
                     setChannelAddFeedback(null);
                   }}
-                  className="px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap shrink-0 inline-flex items-center gap-1 cursor-pointer"
-                  style={{
-                    backgroundColor: showQuickAddChannel
-                      ? 'var(--accent-soft)'
-                      : 'var(--surface-tonal)',
-                    border: `1px solid ${showQuickAddChannel ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-                    color: 'var(--accent-primary)',
-                  }}
+                  className={`px-3 py-1.5 text-[11px] font-semibold whitespace-nowrap shrink-0 inline-flex items-center gap-1 cursor-pointer liquid-spring ${
+                    showQuickAddChannel ? 'liquid-pill-active' : 'liquid-pill-inactive'
+                  }`}
+                  style={!showQuickAddChannel ? { color: 'var(--accent-primary)' } : undefined}
                 >
                   <Plus size={12} />
                   <span>Add Channel</span>
@@ -2426,11 +2382,7 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
               {showQuickAddChannel && (
                 <form
                   onSubmit={handleQuickAddChannel}
-                  className="p-3 rounded-2xl space-y-2 animate-fadeIn"
-                  style={{
-                    backgroundColor: 'var(--surface-tonal)',
-                    border: '1px solid var(--border-strong)',
-                  }}
+                  className="liquid-inset p-3 space-y-2 animate-fadeIn"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span
@@ -2455,17 +2407,17 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                       value={channelAddInput}
                       onChange={(e) => setChannelAddInput(e.target.value)}
                       placeholder="@handle, channel URL, UC... ID, or sample video URL"
-                      className="flex-1 min-w-0 px-3 py-2 rounded-xl text-xs focus:outline-none"
+                      className="flex-1 min-w-0 obsidian-input px-3 py-2 rounded-xl text-xs focus:outline-none"
                       style={{
                         backgroundColor: 'var(--bg-input)',
-                        border: '1px solid var(--border-subtle)',
+                        border: '1px solid var(--border-strong)',
                         color: 'var(--text-primary)',
                       }}
                     />
                     <button
                       type="submit"
                       disabled={isResolvingChannel || !channelAddInput.trim()}
-                      className="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
+                      className="px-3.5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50 liquid-spring"
                       style={{
                         backgroundColor: 'var(--accent-primary)',
                         color: 'var(--text-on-accent)',
@@ -2861,13 +2813,7 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                 </div>
               ) : (
                 !showQuickAddChannel && (
-                  <div
-                    className="py-10 px-4 text-center rounded-2xl space-y-3"
-                    style={{
-                      backgroundColor: 'var(--surface-tonal)',
-                      border: '1px solid var(--border-subtle)',
-                    }}
-                  >
+                  <div className="liquid-glass py-10 px-4 text-center space-y-3">
                     <div
                       className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto"
                       style={{
@@ -2890,10 +2836,11 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowQuickAddChannel(true)}
-                      className="px-4 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
+                      className="px-4 py-2 rounded-full text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer liquid-spring"
                       style={{
                         backgroundColor: 'var(--accent-primary)',
                         color: 'var(--text-on-accent)',
+                        boxShadow: '0 4px 14px -2px var(--liquid-accent-soft-glow)',
                       }}
                     >
                       <Plus size={14} />
@@ -2919,13 +2866,10 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                       return (
                         <div
                           key={lec.videoId}
-                          className="p-2.5 rounded-xl flex items-start justify-between gap-2 transition-colors"
-                          style={{
-                            backgroundColor: isCurrent
-                              ? 'var(--accent-soft)'
-                              : 'var(--surface-tonal)',
-                            border: `1px solid ${isCurrent ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-                          }}
+                          className={`p-2.5 flex items-start justify-between gap-2 transition-all ${
+                            isCurrent ? 'liquid-inset' : 'liquid-row'
+                          }`}
+                          style={isCurrent ? { borderColor: 'var(--accent-border)' } : undefined}
                         >
                           <button
                             type="button"
@@ -2981,12 +2925,7 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                   <button
                     type="button"
                     onClick={handleLaunchExternalApp}
-                    className="px-3.5 py-2 rounded-xl text-[11px] font-semibold inline-flex items-center gap-1.5 cursor-pointer"
-                    style={{
-                      backgroundColor: 'var(--surface-tonal)',
-                      border: '1px solid var(--border-subtle)',
-                      color: 'var(--text-secondary)',
-                    }}
+                    className="px-3.5 py-2 liquid-pill-inactive liquid-spring text-[11px] font-semibold inline-flex items-center gap-1.5 cursor-pointer"
                   >
                     <ExternalLink size={12} />
                     <span>Open External YouTube App</span>
@@ -3020,10 +2959,9 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
       {/* Accidental Misclick Guard Confirmation Toast */}
       {pendingSwitchLecture && !isVideoFullscreen && (
         <div
-          className="fixed bottom-4 left-4 right-4 z-[150] max-w-xl mx-auto p-3.5 rounded-2xl shadow-2xl space-y-2.5 animate-fadeIn"
+          className="fixed bottom-4 left-4 right-4 z-[150] max-w-xl mx-auto modal-glass rounded-2xl p-3.5 shadow-2xl space-y-2.5 animate-fadeIn"
           style={{
-            backgroundColor: 'var(--bg-surface)',
-            border: '1px solid var(--accent-border)',
+            borderColor: 'var(--accent-border)',
           }}
         >
           <div className="min-w-0">
@@ -3047,12 +2985,8 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                 haptics.tick(450);
                 setPendingSwitchLecture(null);
               }}
-              className="flex-1 py-2 rounded-xl text-xs font-bold cursor-pointer"
-              style={{
-                backgroundColor: 'var(--surface-tonal)',
-                border: '1px solid var(--border-subtle)',
-                color: 'var(--text-primary)',
-              }}
+              className="flex-1 py-2 liquid-pill-inactive liquid-spring text-xs font-bold cursor-pointer"
+              style={{ color: 'var(--text-primary)' }}
             >
               Keep Watching
             </button>
@@ -3064,10 +2998,11 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                 setPendingSwitchLecture(null);
                 void loadLectureIntoPlayer(nextTarget);
               }}
-              className="flex-1 py-2 rounded-xl text-xs font-bold cursor-pointer"
+              className="flex-1 py-2 rounded-full text-xs font-bold cursor-pointer liquid-spring"
               style={{
                 backgroundColor: 'var(--accent-primary)',
                 color: 'var(--text-on-accent)',
+                boxShadow: '0 4px 14px -2px var(--liquid-accent-soft-glow)',
               }}
             >
               Switch Video

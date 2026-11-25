@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { haptics } from '../utils/haptics';
 import { ArrowRight, X, Clock, BarChart3, Settings, Heart, Sparkles } from 'lucide-react';
 import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { ObsidianCard } from './ObsidianCard';
 import type { ZeroNavTab } from './LiquidDock';
 
 interface InteractiveTourProps {
@@ -56,7 +57,8 @@ export function InteractiveTour({ onComplete, onNavigateTab }: InteractiveTourPr
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentStep = TOUR_STEPS[currentIndex];
   const StepIcon = currentStep.icon;
-  const { isAero } = useInterfaceStyle();
+  const { isBespoke, isFluentGlass } = useInterfaceStyle();
+  const isModernFont = isBespoke || isFluentGlass;
 
   useEffect(() => {
     onNavigateTab(TOUR_STEPS[0].tab);
@@ -82,101 +84,119 @@ export function InteractiveTour({ onComplete, onNavigateTab }: InteractiveTourPr
     <div className="fixed inset-0 z-50 pointer-events-none flex flex-col justify-between p-4 pb-20 sm:pb-24">
       {/* Crystal-clear non-blurring touch backdrop to allow underlying cards to remain 100% sharp & visible */}
       <div
-        className="absolute inset-0 bg-black/20 pointer-events-auto transition-opacity"
+        className="absolute inset-0 bg-black/25 pointer-events-auto transition-opacity"
         onClick={handleSkip}
         aria-label="Tap to skip tour"
       />
 
-      {/* Top Floating Spotlight Badge pointing to the exact feature on screen */}
+      {/* Top Floating Spotlight Badge */}
       <div className="relative pointer-events-none w-full flex justify-center pt-3 animate-fadeIn">
         <div
-          className={`px-3.5 py-1.5 rounded-full border shadow-lg flex items-center gap-2 backdrop-blur-md ${
-            isAero
-              ? 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B]'
-              : 'bg-[#2C314C] border-[rgba(243,237,232,0.10)] text-[#F3EDE8]'
-          }`}
+          className="liquid-inset px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 backdrop-blur-xl"
+          style={{ borderColor: 'var(--accent-border)' }}
         >
           <span
-            className="w-2 h-2 rounded-full animate-ping shrink-0 bg-[#E69F86]"
+            className="w-2 h-2 rounded-full animate-ping shrink-0"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
           />
-          <span className="text-xs font-semibold">{currentStep.spotlight}</span>
+          <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
+            {currentStep.spotlight}
+          </span>
         </div>
       </div>
 
       {/* Floating Tour Card Docked Neatly at Bottom */}
-      <div
-        className={`relative pointer-events-auto max-w-md mx-auto w-full rounded-2xl p-5 shadow-2xl space-y-4 backdrop-blur-xl animate-slideUp border ${
-          isAero
-            ? 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B]'
-            : 'bg-[#2C314C] border-[rgba(243,237,232,0.10)] text-[#F3EDE8]'
-        }`}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div
-              className="p-2 rounded-xl border bg-[rgba(230,159,134,0.18)] text-[#E69F86] border-[rgba(230,159,134,0.40)] shadow-sm"
-            >
-              <StepIcon size={18} />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <Sparkles size={11} className="text-[#E69F86]" />
-                <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#E69F86]">
-                  {currentStep.badge}
-                </span>
+      <div className="relative pointer-events-auto max-w-md mx-auto w-full animate-slideUp">
+        <ObsidianCard
+          ambientGlow
+          className={`rounded-[24px] shadow-2xl ${isModernFont ? 'font-sans' : 'font-mono'}`}
+          headerClassName="p-5 space-y-4"
+          headerContent={
+            <>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className="p-2 rounded-xl shadow-sm shrink-0"
+                    style={{
+                      backgroundColor: 'var(--accent-soft)',
+                      border: '1px solid var(--accent-border)',
+                      color: 'var(--accent-primary)',
+                    }}
+                  >
+                    <StepIcon size={18} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles size={11} style={{ color: 'var(--accent-primary)' }} />
+                      <span
+                        className="text-[10px] font-mono uppercase tracking-wider font-bold"
+                        style={{ color: 'var(--accent-primary)' }}
+                      >
+                        {currentStep.badge}
+                      </span>
+                    </div>
+                    <h3
+                      className="text-base font-bold truncate"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      {currentStep.title}
+                    </h3>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSkip}
+                  className="w-8 h-8 rounded-full liquid-pill-inactive liquid-spring flex items-center justify-center shrink-0 cursor-pointer"
+                  title="Skip Tour"
+                  aria-label="Skip Tour"
+                >
+                  <X size={15} />
+                </button>
               </div>
-              <h3 className={`text-base font-bold ${isAero ? 'text-[#353B5B]' : 'text-[#F3EDE8]'}`}>
-                {currentStep.title}
-              </h3>
-            </div>
-          </div>
 
-          <button
-            type="button"
-            onClick={handleSkip}
-            className={`p-1.5 rounded-lg transition-colors ${
-              isAero ? 'text-[rgba(53,59,91,0.60)] hover:text-[#353B5B] hover:bg-[#EDE6DF]' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-            }`}
-            title="Skip Tour"
-          >
-            <X size={16} />
-          </button>
-        </div>
+              <p
+                className="text-xs leading-relaxed font-sans"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                {currentStep.description}
+              </p>
 
-        <p className={`text-xs leading-relaxed font-sans ${isAero ? 'text-[rgba(53,59,91,0.75)]' : 'text-[rgba(243,237,232,0.75)]'}`}>
-          {currentStep.description}
-        </p>
+              {/* Step indicators & Next Button */}
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-1.5">
+                  {TOUR_STEPS.map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-1.5 rounded-full transition-all duration-300"
+                      style={{
+                        width: i === currentIndex ? 24 : 6,
+                        backgroundColor:
+                          i === currentIndex ? 'var(--accent-primary)' : 'var(--border-strong)',
+                        boxShadow:
+                          i === currentIndex ? '0 0 8px var(--liquid-accent-glow)' : undefined,
+                      }}
+                    />
+                  ))}
+                </div>
 
-        {/* Step indicators & Next Button */}
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex items-center gap-1.5">
-            {TOUR_STEPS.map((_, i) => (
-              <div
-                key={i}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === currentIndex
-                    ? 'w-6 bg-[#E69F86] shadow-sm'
-                    : isAero
-                    ? 'w-1.5 bg-[#EDE6DF]'
-                    : 'w-1.5 bg-[#202438]'
-                }`}
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={handleNext}
-            className={`py-2 px-4 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md ${
-              isAero
-                ? 'bg-[#353B5B] text-[#F3EDE8] hover:bg-[#434A70]'
-                : 'bg-[#E69F86] text-[#24283F] hover:bg-[#EEB9A4]'
-            }`}
-          >
-            <span>{currentIndex === TOUR_STEPS.length - 1 ? 'Finish Tour' : 'Next Glance'}</span>
-            <ArrowRight size={14} />
-          </button>
-        </div>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="py-2 px-4 rounded-full text-xs font-bold flex items-center gap-1.5 liquid-spring shadow-md cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--accent-primary)',
+                    color: 'var(--text-on-accent)',
+                    boxShadow: '0 6px 16px -4px var(--liquid-accent-glow)',
+                  }}
+                >
+                  <span>{currentIndex === TOUR_STEPS.length - 1 ? 'Finish Tour' : 'Next Glance'}</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            </>
+          }
+        />
       </div>
     </div>
   );

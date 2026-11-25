@@ -14,6 +14,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import type { BagApp } from '../types';
+import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { ObsidianCard } from './ObsidianCard';
 import { haptics } from '../utils/haptics';
 import {
   StudyAppsPlugin,
@@ -39,6 +41,8 @@ interface CompulsoryStudyAppsCardProps {
 export const CompulsoryStudyAppsCard: React.FC<CompulsoryStudyAppsCardProps> = ({
   installedApps: installedAppsProp,
 }) => {
+  const { isBespoke, isFluentGlass } = useInterfaceStyle();
+  const isModernFont = isBespoke || isFluentGlass;
   const [nativeInstalledApps, setNativeInstalledApps] = useState<BagApp[]>(() => {
     if (installedAppsProp && installedAppsProp.length > 0) return installedAppsProp;
     try {
@@ -252,440 +256,394 @@ export const CompulsoryStudyAppsCard: React.FC<CompulsoryStudyAppsCardProps> = (
 
   return (
     <>
-      <div
-        className="rounded-3xl p-4 sm:p-5 space-y-4"
-        style={{
-          backgroundColor: 'var(--surface-tonal, var(--bg-surface))',
-          border: '1px solid var(--border-subtle)',
-        }}
-      >
-        {/* Header with Master Toggle */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-2.5 min-w-0">
-            <div
-              className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 mt-0.5"
-              style={{
-                backgroundColor: 'var(--accent-soft)',
-                border: '1px solid var(--accent-border)',
-                color: 'var(--accent-primary)',
-              }}
-            >
-              <GraduationCap size={18} />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3
-                  className="text-sm font-bold tracking-tight"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  Compulsory Study Apps
-                </h3>
-                <span
-                  className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold"
+      <ObsidianCard
+        ambientGlow
+        className={isModernFont ? 'font-sans' : 'font-mono'}
+        headerClassName="p-4 sm:p-5 space-y-4"
+        headerContent={
+          <>
+            {/* Header with Master Toggle */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0">
+                <div
+                  className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 mt-0.5"
                   style={{
                     backgroundColor: 'var(--accent-soft)',
                     border: '1px solid var(--accent-border)',
                     color: 'var(--accent-primary)',
                   }}
                 >
-                  {config.apps.length}/{MAX_COMPULSORY_STUDY_APPS} SLOTS
-                </span>
+                  <GraduationCap size={18} />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3
+                      className="text-sm font-bold tracking-tight"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      Compulsory Study Apps
+                    </h3>
+                    <span className="liquid-pill-active px-2 py-0.5 text-[9px] font-mono font-bold">
+                      {config.apps.length}/{MAX_COMPULSORY_STUDY_APPS} SLOTS
+                    </span>
+                  </div>
+                  <p
+                    className="text-[11px] leading-relaxed mt-0.5"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    Available directly inside The Void without packing a Bag. AI assistants are already built in — keep this lean for your main course or online class app (chat &amp; other apps belong in a Bag).
+                  </p>
+                </div>
               </div>
-              <p
-                className="text-[11px] leading-relaxed mt-0.5"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                Available directly inside The Void without packing a Bag. AI assistants are already built in — keep this lean for your main course or online class app (chat &amp; other apps belong in a Bag).
-              </p>
-            </div>
-          </div>
 
-          {/* Toggleable ON/OFF Switch */}
-          <button
-            type="button"
-            role="switch"
-            aria-checked={config.enabled}
-            aria-label="Toggle Compulsory Study Apps in The Void"
-            onClick={handleToggleEnabled}
-            className="w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer shrink-0 mt-0.5"
-            style={{
-              backgroundColor: config.enabled ? 'var(--accent-primary)' : 'var(--bg-input)',
-              border: `1px solid ${config.enabled ? 'var(--accent-primary)' : 'var(--border-strong)'}`,
-            }}
-          >
-            <div
-              className="w-4 h-4 rounded-full transition-transform"
-              style={{
-                backgroundColor: config.enabled ? 'var(--text-on-accent)' : 'var(--text-muted)',
-                transform: config.enabled ? 'translateX(20px)' : 'translateX(0px)',
-              }}
-            />
-          </button>
-        </div>
-
-        {/* Status Pill */}
-        <div
-          className="px-3 py-2 rounded-xl text-[11px] flex items-center justify-between gap-2"
-          style={{
-            backgroundColor: 'var(--bg-primary)',
-            border: '1px solid var(--border-subtle)',
-          }}
-        >
-          <span style={{ color: 'var(--text-secondary)' }}>
-            {config.enabled
-              ? config.apps.length > 0
-                ? 'Active in The Void — launches without a Bag'
-                : 'Enabled — blank until you scan or add a verified study app'
-              : 'Paused — hidden from The Void & blocked unless in your active Bag'}
-          </span>
-          <span
-            className="text-[10px] font-mono font-bold shrink-0"
-            style={{
-              color: config.enabled ? 'var(--status-success)' : 'var(--text-muted)',
-            }}
-          >
-            {config.enabled ? 'ON' : 'OFF'}
-          </span>
-        </div>
-
-        {/* First-Time Auto-Scan Prompt (when blank & not dismissed) */}
-        {config.apps.length === 0 && !scanPromptDismissed && (
-          <div
-            className="p-3.5 rounded-2xl space-y-2.5"
-            style={{
-              backgroundColor: 'var(--accent-soft)',
-              border: '1px solid var(--accent-border)',
-            }}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-1.5">
-                <Sparkles size={13} style={{ color: 'var(--accent-primary)' }} />
-                <span
-                  className="text-xs font-bold"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  Find your study or online class app?
-                </span>
-              </div>
+              {/* Toggleable ON/OFF Switch */}
               <button
                 type="button"
-                aria-label="Dismiss scan prompt"
-                onClick={dismissFirstTimePrompt}
-                className="p-0.5 cursor-pointer"
-                style={{ color: 'var(--text-muted)' }}
+                role="switch"
+                aria-checked={config.enabled}
+                aria-label="Toggle Compulsory Study Apps in The Void"
+                onClick={handleToggleEnabled}
+                className="w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer shrink-0 mt-0.5 liquid-spring"
+                style={{
+                  backgroundColor: config.enabled ? 'var(--accent-primary)' : 'var(--bg-input)',
+                  border: `1px solid ${config.enabled ? 'var(--accent-border)' : 'var(--border-strong)'}`,
+                  boxShadow: config.enabled ? '0 0 12px var(--liquid-accent-soft-glow)' : undefined,
+                }}
               >
-                <X size={13} />
+                <div
+                  className="w-4 h-4 rounded-full transition-transform"
+                  style={{
+                    backgroundColor: config.enabled ? 'var(--text-on-accent)' : 'var(--text-muted)',
+                    transform: config.enabled ? 'translateX(20px)' : 'translateX(0px)',
+                  }}
+                />
               </button>
             </div>
-            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              Auto-Scan detects coaching apps (Paramount, PW, Next Toppers, Classplus, etc.) and class tools like Google Meet while strictly excluding chat, social media, and games.
-            </p>
+
+            {/* Status Pill */}
+            <div className="liquid-row px-3 py-2 text-[11px] flex items-center justify-between gap-2">
+              <span style={{ color: 'var(--text-secondary)' }}>
+                {config.enabled
+                  ? config.apps.length > 0
+                    ? 'Active in The Void — launches without a Bag'
+                    : 'Enabled — blank until you scan or add a verified study app'
+                  : 'Paused — hidden from The Void & blocked unless in your active Bag'}
+              </span>
+              <span
+                className={`px-2 py-0.5 text-[10px] font-mono font-bold shrink-0 ${
+                  config.enabled ? 'liquid-pill-active' : 'liquid-pill-inactive'
+                }`}
+              >
+                {config.enabled ? 'ON' : 'OFF'}
+              </span>
+            </div>
+
+            {/* First-Time Auto-Scan Prompt (when blank & not dismissed) */}
+            {config.apps.length === 0 && !scanPromptDismissed && (
+              <div
+                className="liquid-inset p-3.5 space-y-2.5 shadow-[0_0_16px_var(--liquid-accent-soft-glow)]"
+                style={{ borderColor: 'var(--accent-border)' }}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles size={13} style={{ color: 'var(--accent-primary)' }} />
+                    <span
+                      className="text-xs font-bold"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      Find your study or online class app?
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label="Dismiss scan prompt"
+                    onClick={dismissFirstTimePrompt}
+                    className="p-0.5 cursor-pointer"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+                <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  Auto-Scan detects coaching apps (Paramount, PW, Next Toppers, Classplus, etc.) and class tools like Google Meet while strictly excluding chat, social media, and games.
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleOpenAndRunScan}
+                    className="flex-1 py-2 px-3 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer liquid-spring"
+                    style={{
+                      backgroundColor: 'var(--accent-primary)',
+                      color: 'var(--text-on-accent)',
+                      boxShadow: '0 4px 14px -2px var(--liquid-accent-soft-glow)',
+                    }}
+                  >
+                    <ScanSearch size={14} />
+                    <span>Auto-Scan My Apps</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptics.tick(500);
+                      setShowManualPicker(true);
+                      setVerifyFeedback(null);
+                    }}
+                    className="py-2 px-3 liquid-pill-inactive liquid-spring text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    <Plus size={13} />
+                    <span>Manual</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Added Verified Study Apps List (Blank by default!) */}
+            {config.apps.length > 0 && (
+              <div className="space-y-2">
+                {config.apps.map((app) => (
+                  <div
+                    key={app.packageName}
+                    className="liquid-inset p-3 flex items-center justify-between gap-2.5"
+                    style={{ borderColor: 'var(--accent-border)' }}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div
+                        className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold shrink-0"
+                        style={{
+                          backgroundColor: 'var(--accent-soft)',
+                          border: '1px solid var(--accent-border)',
+                          color: 'var(--accent-primary)',
+                        }}
+                      >
+                        {app.appName.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="text-xs font-bold truncate"
+                            style={{ color: 'var(--text-primary)' }}
+                          >
+                            {app.appName}
+                          </span>
+                          <ShieldCheck
+                            size={12}
+                            className="shrink-0"
+                            style={{ color: 'var(--accent-primary)' }}
+                          />
+                        </div>
+                        <p
+                          className="text-[10px] font-mono truncate"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
+                          {app.categoryLabel} • Available in The Void
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      aria-label={`Remove ${app.appName}`}
+                      onClick={() => handleRemoveApp(app.packageName)}
+                      className="p-2 rounded-full liquid-pill-inactive liquid-spring hover:text-rose-400 cursor-pointer shrink-0"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Action Buttons Row */}
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleOpenAndRunScan}
-                className="flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
-                style={{
-                  backgroundColor: 'var(--accent-primary)',
-                  color: 'var(--text-on-accent)',
-                }}
+                disabled={slotsFull}
+                className="flex-1 py-2.5 px-3 liquid-pill-active liquid-spring text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-45"
               >
                 <ScanSearch size={14} />
-                <span>Auto-Scan My Apps</span>
+                <span>Auto-Scan Apps</span>
               </button>
+
               <button
                 type="button"
                 onClick={() => {
                   haptics.tick(500);
-                  setShowManualPicker(true);
+                  setShowManualPicker((prev) => !prev);
                   setVerifyFeedback(null);
                 }}
-                className="py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer"
-                style={{
-                  backgroundColor: 'var(--bg-surface)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-primary)',
-                }}
+                disabled={slotsFull && !showManualPicker}
+                className={`flex-1 py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-45 liquid-spring ${
+                  showManualPicker ? 'liquid-pill-active' : 'liquid-pill-inactive'
+                }`}
               >
-                <Plus size={13} />
-                <span>Manual</span>
+                <Plus size={14} />
+                <span>{showManualPicker ? 'Close Manual' : 'Add Manually'}</span>
               </button>
             </div>
-          </div>
-        )}
 
-        {/* Added Verified Study Apps List (Blank by default!) */}
-        {config.apps.length > 0 && (
-          <div className="space-y-2">
-            {config.apps.map((app) => (
-              <div
-                key={app.packageName}
-                className="p-3 rounded-2xl flex items-center justify-between gap-2.5"
-                style={{
-                  backgroundColor: 'var(--bg-surface)',
-                  border: '1px solid var(--border-subtle)',
-                }}
-              >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold shrink-0"
-                    style={{
-                      backgroundColor: 'var(--accent-soft)',
-                      border: '1px solid var(--accent-border)',
-                      color: 'var(--accent-primary)',
-                    }}
-                  >
-                    {app.appName.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className="text-xs font-bold truncate"
-                        style={{ color: 'var(--text-primary)' }}
-                      >
-                        {app.appName}
-                      </span>
-                      <ShieldCheck
-                        size={12}
-                        className="shrink-0"
-                        style={{ color: 'var(--status-success)' }}
-                      />
-                    </div>
-                    <p
-                      className="text-[10px] font-mono truncate"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      {app.categoryLabel} • Available in The Void
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  aria-label={`Remove ${app.appName}`}
-                  onClick={() => handleRemoveApp(app.packageName)}
-                  className="p-2 rounded-xl cursor-pointer shrink-0"
-                  style={{
-                    backgroundColor: 'var(--surface-tonal)',
-                    border: '1px solid var(--border-subtle)',
-                    color: 'var(--text-muted)',
-                  }}
-                >
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Action Buttons Row */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleOpenAndRunScan}
-            disabled={slotsFull}
-            className="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-45"
-            style={{
-              backgroundColor: 'var(--bg-surface)',
-              border: '1px solid var(--accent-border)',
-              color: 'var(--accent-primary)',
-            }}
-          >
-            <ScanSearch size={14} />
-            <span>Auto-Scan Apps</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              haptics.tick(500);
-              setShowManualPicker((prev) => !prev);
-              setVerifyFeedback(null);
-            }}
-            disabled={slotsFull && !showManualPicker}
-            className="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-45"
-            style={{
-              backgroundColor: showManualPicker ? 'var(--accent-soft)' : 'var(--bg-surface)',
-              border: `1px solid ${showManualPicker ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-              color: showManualPicker ? 'var(--accent-primary)' : 'var(--text-primary)',
-            }}
-          >
-            <Plus size={14} />
-            <span>{showManualPicker ? 'Close Manual' : 'Add Manually'}</span>
-          </button>
-        </div>
-
-        {slotsFull && (
-          <p className="text-[10px] font-mono text-center" style={{ color: 'var(--text-muted)' }}>
-            Max {MAX_COMPULSORY_STUDY_APPS} Compulsory Study App slots reached. Put other apps in a Bag.
-          </p>
-        )}
-
-        {/* Inline Manual App Picker & Deterministic Verifier */}
-        {showManualPicker && (
-          <div
-            className="p-3.5 rounded-2xl space-y-3 animate-fadeIn"
-            style={{
-              backgroundColor: 'var(--bg-primary)',
-              border: '1px solid var(--border-strong)',
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <span
-                className="text-[11px] font-bold"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                Pick &amp; Verify Study App
-              </span>
-              <span className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
-                Chat &amp; games rejected
-              </span>
-            </div>
-
-            <div className="relative">
-              <Search
-                size={13}
-                className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: 'var(--text-muted)' }}
-              />
-              <input
-                type="text"
-                value={manualQuery}
-                onChange={(e) => setManualQuery(e.target.value)}
-                placeholder="Search installed apps (e.g. Paramount, Meet, PW)..."
-                className="w-full pl-8 pr-3 py-2 rounded-xl text-xs focus:outline-none"
-                style={{
-                  backgroundColor: 'var(--bg-input)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-primary)',
-                }}
-              />
-            </div>
-
-            {verifyFeedback && (
-              <div
-                className="p-3 rounded-xl text-xs space-y-2"
-                style={{
-                  backgroundColor: 'var(--surface-tonal)',
-                  border: `1px solid ${
-                    verifyFeedback.status === 'verified'
-                      ? 'var(--status-success)'
-                      : verifyFeedback.status === 'unlisted'
-                      ? 'var(--status-warning)'
-                      : 'var(--status-danger)'
-                  }`,
-                }}
-              >
-                <div className="flex items-start gap-2">
-                  {verifyFeedback.status === 'verified' ? (
-                    <CheckCircle2
-                      size={14}
-                      className="shrink-0 mt-0.5"
-                      style={{ color: 'var(--status-success)' }}
-                    />
-                  ) : verifyFeedback.status === 'unlisted' ? (
-                    <AlertTriangle
-                      size={14}
-                      className="shrink-0 mt-0.5"
-                      style={{ color: 'var(--status-warning)' }}
-                    />
-                  ) : (
-                    <ShieldBan
-                      size={14}
-                      className="shrink-0 mt-0.5"
-                      style={{ color: 'var(--status-danger)' }}
-                    />
-                  )}
-                  <div className="min-w-0">
-                    <p className="font-bold" style={{ color: 'var(--text-primary)' }}>
-                      {verifyFeedback.appName} — {verifyFeedback.categoryLabel}
-                    </p>
-                    <p
-                      className="text-[11px] mt-0.5 leading-relaxed"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      {verifyFeedback.reason}
-                    </p>
-                  </div>
-                </div>
-
-                {verifyFeedback.status === 'unlisted' && !slotsFull && (
-                  <button
-                    type="button"
-                    onClick={() => handleConfirmUnlistedManualAdd(verifyFeedback)}
-                    className="w-full py-1.5 px-3 rounded-lg text-[11px] font-bold cursor-pointer"
-                    style={{
-                      backgroundColor: 'var(--accent-primary)',
-                      color: 'var(--text-on-accent)',
-                    }}
-                  >
-                    Confirm &amp; Add Private Study APK
-                  </button>
-                )}
-              </div>
+            {slotsFull && (
+              <p className="text-[10px] font-mono text-center" style={{ color: 'var(--text-muted)' }}>
+                Max {MAX_COMPULSORY_STUDY_APPS} Compulsory Study App slots reached. Put other apps in a Bag.
+              </p>
             )}
 
-            <div className="max-h-52 overflow-y-auto space-y-1.5 pr-0.5">
-              {filteredInstalledApps.length === 0 ? (
-                <p
-                  className="text-[11px] text-center py-4"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  {installedApps.length === 0
-                    ? 'Installed app list loads natively on Android.'
-                    : 'No matching apps found.'}
-                </p>
-              ) : (
-                filteredInstalledApps.map((app) => {
-                  const busy = verifyingPkg === app.packageName;
-                  return (
-                    <div
-                      key={app.packageName}
-                      className="px-3 py-2 rounded-xl flex items-center justify-between gap-2"
-                      style={{
-                        backgroundColor: 'var(--surface-tonal)',
-                        border: '1px solid var(--border-subtle)',
-                      }}
-                    >
+            {/* Inline Manual App Picker & Deterministic Verifier */}
+            {showManualPicker && (
+              <div className="liquid-inset p-3.5 space-y-3 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <span
+                    className="text-[11px] font-bold"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    Pick &amp; Verify Study App
+                  </span>
+                  <span className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
+                    Chat &amp; games rejected
+                  </span>
+                </div>
+
+                <div className="relative">
+                  <Search
+                    size={13}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    style={{ color: 'var(--text-muted)' }}
+                  />
+                  <input
+                    type="text"
+                    value={manualQuery}
+                    onChange={(e) => setManualQuery(e.target.value)}
+                    placeholder="Search installed apps (e.g. Paramount, Meet, PW)..."
+                    className="w-full obsidian-input pl-8 pr-3 py-2 rounded-xl text-xs focus:outline-none"
+                    style={{
+                      backgroundColor: 'var(--bg-input)',
+                      border: '1px solid var(--border-strong)',
+                      color: 'var(--text-primary)',
+                    }}
+                  />
+                </div>
+
+                {verifyFeedback && (
+                  <div
+                    className="liquid-inset p-3 text-xs space-y-2"
+                    style={{
+                      borderColor:
+                        verifyFeedback.status === 'verified'
+                          ? 'var(--status-success)'
+                          : verifyFeedback.status === 'unlisted'
+                          ? 'var(--status-warning)'
+                          : 'var(--status-danger)',
+                    }}
+                  >
+                    <div className="flex items-start gap-2">
+                      {verifyFeedback.status === 'verified' ? (
+                        <CheckCircle2
+                          size={14}
+                          className="shrink-0 mt-0.5"
+                          style={{ color: 'var(--status-success)' }}
+                        />
+                      ) : verifyFeedback.status === 'unlisted' ? (
+                        <AlertTriangle
+                          size={14}
+                          className="shrink-0 mt-0.5"
+                          style={{ color: 'var(--status-warning)' }}
+                        />
+                      ) : (
+                        <ShieldBan
+                          size={14}
+                          className="shrink-0 mt-0.5"
+                          style={{ color: 'var(--status-danger)' }}
+                        />
+                      )}
                       <div className="min-w-0">
-                        <p
-                          className="text-xs font-semibold truncate"
-                          style={{ color: 'var(--text-primary)' }}
-                        >
-                          {app.appName}
+                        <p className="font-bold" style={{ color: 'var(--text-primary)' }}>
+                          {verifyFeedback.appName} — {verifyFeedback.categoryLabel}
                         </p>
                         <p
-                          className="text-[9px] font-mono truncate"
-                          style={{ color: 'var(--text-muted)' }}
+                          className="text-[11px] mt-0.5 leading-relaxed"
+                          style={{ color: 'var(--text-secondary)' }}
                         >
-                          {app.packageName}
+                          {verifyFeedback.reason}
                         </p>
                       </div>
+                    </div>
+
+                    {verifyFeedback.status === 'unlisted' && !slotsFull && (
                       <button
                         type="button"
-                        disabled={busy || Boolean(verifyingPkg) || slotsFull}
-                        onClick={() => handleManualVerifyAndAdd(app)}
-                        className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-50"
+                        onClick={() => handleConfirmUnlistedManualAdd(verifyFeedback)}
+                        className="w-full py-1.5 px-3 rounded-full text-[11px] font-bold liquid-spring cursor-pointer"
                         style={{
                           backgroundColor: 'var(--accent-primary)',
                           color: 'var(--text-on-accent)',
                         }}
                       >
-                        {busy ? (
-                          <Loader2 size={11} className="animate-spin" />
-                        ) : (
-                          <ShieldCheck size={11} />
-                        )}
-                        <span>{busy ? 'Checking' : 'Verify'}</span>
+                        Confirm &amp; Add Private Study APK
                       </button>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="max-h-52 overflow-y-auto space-y-1.5 pr-0.5">
+                  {filteredInstalledApps.length === 0 ? (
+                    <p
+                      className="text-[11px] text-center py-4"
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      {installedApps.length === 0
+                        ? 'Installed app list loads natively on Android.'
+                        : 'No matching apps found.'}
+                    </p>
+                  ) : (
+                    filteredInstalledApps.map((app) => {
+                      const busy = verifyingPkg === app.packageName;
+                      return (
+                        <div
+                          key={app.packageName}
+                          className="liquid-row px-3 py-2 flex items-center justify-between gap-2"
+                        >
+                          <div className="min-w-0">
+                            <p
+                              className="text-xs font-semibold truncate"
+                              style={{ color: 'var(--text-primary)' }}
+                            >
+                              {app.appName}
+                            </p>
+                            <p
+                              className="text-[9px] font-mono truncate"
+                              style={{ color: 'var(--text-muted)' }}
+                            >
+                              {app.packageName}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            disabled={busy || Boolean(verifyingPkg) || slotsFull}
+                            onClick={() => handleManualVerifyAndAdd(app)}
+                            className="px-2.5 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-50 liquid-spring"
+                            style={{
+                              backgroundColor: 'var(--accent-primary)',
+                              color: 'var(--text-on-accent)',
+                            }}
+                          >
+                            {busy ? (
+                              <Loader2 size={11} className="animate-spin" />
+                            ) : (
+                              <ShieldCheck size={11} />
+                            )}
+                            <span>{busy ? 'Checking' : 'Verify'}</span>
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        }
+      />
 
       {/* Auto-Scan Results Popup Modal */}
       {showScanPopup && (
@@ -693,184 +651,176 @@ export const CompulsoryStudyAppsCard: React.FC<CompulsoryStudyAppsCardProps> = (
           role="dialog"
           aria-modal="true"
           aria-label="Study App Auto-Scanner"
-          className="fixed inset-0 z-[130] flex items-center justify-center p-4 animate-fadeIn"
-          style={{
-            backgroundColor: 'rgba(4, 8, 16, 0.80)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-          }}
+          className="fixed inset-0 z-[130] flex items-center justify-center p-4 animate-fadeIn bg-black/75 backdrop-blur-md"
         >
-          <div
-            className="w-full max-w-md rounded-3xl p-5 space-y-4 max-h-[82vh] flex flex-col"
-            style={{
-              backgroundColor: 'var(--bg-modal, var(--bg-surface))',
-              border: '1px solid var(--border-strong)',
-            }}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <ScanSearch size={18} style={{ color: 'var(--accent-primary)' }} />
-                <div>
-                  <h4 className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                    Study &amp; Class App Scanner
-                  </h4>
-                  <p className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
-                    AI already built-in • Chat &amp; games excluded
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                aria-label="Close scanner"
-                onClick={() => setShowScanPopup(false)}
-                className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer"
-                style={{
-                  backgroundColor: 'var(--surface-tonal)',
-                  color: 'var(--text-secondary)',
-                }}
-              >
-                <X size={14} />
-              </button>
-            </div>
-
-            <div className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-0.5">
-              {isScanning ? (
-                <div className="py-10 flex flex-col items-center justify-center gap-2.5 text-center">
-                  <Loader2
-                    size={26}
-                    className="animate-spin"
-                    style={{ color: 'var(--accent-primary)' }}
-                  />
-                  <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
-                    Scanning installed apps &amp; verifying Play Store categories...
-                  </p>
-                  <p className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
-                    Filtering out chat apps, social media, and games.
-                  </p>
-                </div>
-              ) : scanError ? (
-                <div
-                  className="p-4 rounded-2xl text-xs space-y-1.5"
-                  style={{
-                    backgroundColor: 'var(--surface-tonal)',
-                    border: '1px solid var(--status-warning)',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  <p className="font-bold" style={{ color: 'var(--status-warning)' }}>
-                    Could not run auto-scan
-                  </p>
-                  <p>{scanError}</p>
-                </div>
-              ) : hasCompletedScan && scannedCandidates.length === 0 ? (
-                <div
-                  className="p-5 rounded-2xl text-center space-y-2"
-                  style={{
-                    backgroundColor: 'var(--surface-tonal)',
-                    border: '1px solid var(--border-subtle)',
-                  }}
-                >
-                  <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
-                    No study or online class apps detected ({scannedTotalCount} apps checked)
-                  </p>
-                  <p className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
-                    Use &quot;Add Manually&quot; to pick and verify a custom coaching or college app.
-                  </p>
-                </div>
-              ) : (
+          <div className="w-full max-w-md max-h-[82vh] flex flex-col">
+            <ObsidianCard
+              ambientGlow
+              className={`rounded-[26px] shadow-2xl max-h-[82vh] ${isModernFont ? 'font-sans' : 'font-mono'}`}
+              headerClassName="p-5 flex-1 min-h-0 flex flex-col space-y-4 overflow-hidden"
+              footerClassName="p-4 flex items-center gap-2"
+              headerContent={
                 <>
-                  <p className="text-[10px] font-mono px-0.5" style={{ color: 'var(--text-muted)' }}>
-                    FOUND {scannedCandidates.length} VERIFIED STUDY / CLASS APPS (
-                    {config.apps.length}/{MAX_COMPULSORY_STUDY_APPS} SLOTS USED)
-                  </p>
-                  {scannedCandidates.map((cand) => {
-                    const alreadyAdded = config.apps.some(
-                      (a) => a.packageName === cand.packageName
-                    );
-                    return (
+                  <div className="flex items-start justify-between gap-2 shrink-0">
+                    <div className="flex items-center gap-2.5">
                       <div
-                        key={cand.packageName}
-                        className="p-3 rounded-2xl flex items-center justify-between gap-2.5"
+                        className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0"
                         style={{
-                          backgroundColor: 'var(--surface-tonal)',
-                          border: `1px solid ${alreadyAdded ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
+                          backgroundColor: 'var(--accent-soft)',
+                          border: '1px solid var(--accent-border)',
+                          color: 'var(--accent-primary)',
                         }}
                       >
-                        <div className="min-w-0">
-                          <p
-                            className="text-xs font-bold truncate"
-                            style={{ color: 'var(--text-primary)' }}
-                          >
-                            {cand.appName}
-                          </p>
-                          <p
-                            className="text-[10px] font-mono truncate"
-                            style={{ color: 'var(--accent-primary)' }}
-                          >
-                            {cand.categoryLabel}
-                          </p>
-                        </div>
-
-                        {alreadyAdded ? (
-                          <span
-                            className="px-2.5 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 shrink-0"
-                            style={{
-                              backgroundColor: 'var(--accent-soft)',
-                              color: 'var(--accent-primary)',
-                            }}
-                          >
-                            <CheckCircle2 size={11} /> Added
-                          </span>
-                        ) : (
-                          <button
-                            type="button"
-                            disabled={slotsFull}
-                            onClick={() => handleAddScannedApp(cand)}
-                            className="px-3 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer shrink-0 disabled:opacity-45"
-                            style={{
-                              backgroundColor: 'var(--accent-primary)',
-                              color: 'var(--text-on-accent)',
-                            }}
-                          >
-                            Add
-                          </button>
-                        )}
+                        <ScanSearch size={18} />
                       </div>
-                    );
-                  })}
-                </>
-              )}
-            </div>
+                      <div>
+                        <h4 className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                          Study &amp; Class App Scanner
+                        </h4>
+                        <p className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
+                          AI already built-in • Chat &amp; games excluded
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="Close scanner"
+                      onClick={() => setShowScanPopup(false)}
+                      className="w-8 h-8 rounded-full liquid-pill-inactive liquid-spring flex items-center justify-center cursor-pointer"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
 
-            <div className="flex items-center gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowScanPopup(false);
-                  setShowManualPicker(true);
-                  setVerifyFeedback(null);
-                }}
-                className="flex-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer"
-                style={{
-                  backgroundColor: 'var(--surface-tonal)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-primary)',
-                }}
-              >
-                Add Manually Instead
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowScanPopup(false)}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
-                style={{
-                  backgroundColor: 'var(--accent-primary)',
-                  color: 'var(--text-on-accent)',
-                }}
-              >
-                Done
-              </button>
-            </div>
+                  <div className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-0.5">
+                    {isScanning ? (
+                      <div className="py-10 flex flex-col items-center justify-center gap-2.5 text-center">
+                        <Loader2
+                          size={26}
+                          className="animate-spin"
+                          style={{ color: 'var(--accent-primary)' }}
+                        />
+                        <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
+                          Scanning installed apps &amp; verifying Play Store categories...
+                        </p>
+                        <p className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+                          Filtering out chat apps, social media, and games.
+                        </p>
+                      </div>
+                    ) : scanError ? (
+                      <div
+                        className="liquid-inset p-4 text-xs space-y-1.5"
+                        style={{
+                          borderColor: 'var(--status-warning)',
+                          color: 'var(--text-secondary)',
+                        }}
+                      >
+                        <p className="font-bold" style={{ color: 'var(--status-warning)' }}>
+                          Could not run auto-scan
+                        </p>
+                        <p>{scanError}</p>
+                      </div>
+                    ) : hasCompletedScan && scannedCandidates.length === 0 ? (
+                      <div className="liquid-row p-5 text-center space-y-2">
+                        <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
+                          No study or online class apps detected ({scannedTotalCount} apps checked)
+                        </p>
+                        <p className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+                          Use &quot;Add Manually&quot; to pick and verify a custom coaching or college app.
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-[10px] font-mono px-0.5" style={{ color: 'var(--text-muted)' }}>
+                          FOUND {scannedCandidates.length} VERIFIED STUDY / CLASS APPS (
+                          {config.apps.length}/{MAX_COMPULSORY_STUDY_APPS} SLOTS USED)
+                        </p>
+                        {scannedCandidates.map((cand) => {
+                          const alreadyAdded = config.apps.some(
+                            (a) => a.packageName === cand.packageName
+                          );
+                          return (
+                            <div
+                              key={cand.packageName}
+                              className={`p-3 flex items-center justify-between gap-2.5 ${
+                                alreadyAdded ? 'liquid-inset' : 'liquid-row'
+                              }`}
+                              style={
+                                alreadyAdded
+                                  ? { borderColor: 'var(--accent-border)' }
+                                  : undefined
+                              }
+                            >
+                              <div className="min-w-0">
+                                <p
+                                  className="text-xs font-bold truncate"
+                                  style={{ color: 'var(--text-primary)' }}
+                                >
+                                  {cand.appName}
+                                </p>
+                                <p
+                                  className="text-[10px] font-mono truncate"
+                                  style={{ color: 'var(--accent-primary)' }}
+                                >
+                                  {cand.categoryLabel}
+                                </p>
+                              </div>
+
+                              {alreadyAdded ? (
+                                <span className="liquid-pill-active px-2.5 py-1 text-[10px] font-bold flex items-center gap-1 shrink-0">
+                                  <CheckCircle2 size={11} /> Added
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  disabled={slotsFull}
+                                  onClick={() => handleAddScannedApp(cand)}
+                                  className="px-3 py-1.5 rounded-full text-[10px] font-bold liquid-spring cursor-pointer shrink-0 disabled:opacity-45"
+                                  style={{
+                                    backgroundColor: 'var(--accent-primary)',
+                                    color: 'var(--text-on-accent)',
+                                  }}
+                                >
+                                  Add
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </>
+                    )}
+                  </div>
+                </>
+              }
+              footerContent={
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowScanPopup(false);
+                      setShowManualPicker(true);
+                      setVerifyFeedback(null);
+                    }}
+                    className="flex-1 py-2.5 liquid-pill-inactive liquid-spring text-xs font-semibold cursor-pointer"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    Add Manually Instead
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowScanPopup(false)}
+                    className="px-5 py-2.5 rounded-full text-xs font-bold liquid-spring cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--accent-primary)',
+                      color: 'var(--text-on-accent)',
+                      boxShadow: '0 4px 14px -2px var(--liquid-accent-soft-glow)',
+                    }}
+                  >
+                    Done
+                  </button>
+                </>
+              }
+            />
           </div>
         </div>
       )}

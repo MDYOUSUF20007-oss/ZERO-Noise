@@ -16,6 +16,8 @@ import {
   saveActionReminderConfig,
   triggerActionReminder,
 } from '../utils/actionReminders';
+import { useInterfaceStyle } from '../context/InterfaceStyleContext';
+import { ObsidianCard } from './ObsidianCard';
 import { haptics } from '../utils/haptics';
 
 export interface ActionReminderModalProps {
@@ -32,6 +34,8 @@ export const ActionReminderModal: React.FC<ActionReminderModalProps> = ({
   onConfigChange,
 }) => {
   const [newReminderText, setNewReminderText] = useState('');
+  const { isAero, isBespoke, isFluentGlass } = useInterfaceStyle();
+  const isModernFont = isBespoke || isFluentGlass;
 
   if (!isOpen) return null;
 
@@ -112,196 +116,295 @@ export const ActionReminderModal: React.FC<ActionReminderModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label="Action & Movement Reminders"
-      className="fixed inset-0 z-[10020] flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-fadeIn"
+      className={`fixed inset-0 z-[10020] flex items-center justify-center p-4 animate-fadeIn ${
+        isAero
+          ? 'bg-slate-900/40 backdrop-blur-md'
+          : isFluentGlass
+          ? 'bg-black/75 backdrop-blur-md'
+          : 'bg-black/85 backdrop-blur-xl'
+      }`}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md rounded-[28px] bg-[#0c1017] border border-white/10 p-5 shadow-2xl flex flex-col space-y-4 font-sans select-none max-h-[88vh] overflow-y-auto"
+        className="w-full max-w-md max-h-[88vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Header */}
-        <div className="flex items-center justify-between border-b border-white/5 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 border border-emerald-500/30">
-              <Dumbbell size={18} strokeWidth={2.2} />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white tracking-wide">
-                Movement Reminders
-              </h3>
-              <p className="text-[11px] text-zinc-400 font-mono">
-                No tick marks • No guilt • Just the next move
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-zinc-800/80 hover:bg-zinc-700 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer transition-colors"
-            aria-label="Close"
-          >
-            <X size={15} />
-          </button>
-        </div>
-
-        {/* Status / Quick Settings Bar */}
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          {/* Master Toggle */}
-          <button
-            type="button"
-            onClick={handleToggleEnabled}
-            className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-colors ${
-              config.enabled
-                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
-                : 'bg-zinc-900/60 border-zinc-800 text-zinc-500'
-            }`}
-          >
-            <span className="font-medium">Reminder Status</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
-                config.enabled ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-800 text-zinc-500'
-              }`}
-            >
-              {config.enabled ? 'Active' : 'Off'}
-            </span>
-          </button>
-
-          {/* Voice Toggle */}
-          <button
-            type="button"
-            onClick={handleToggleVoice}
-            className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-colors ${
-              config.voiceEnabled
-                ? 'bg-sky-950/40 border-sky-500/40 text-sky-300'
-                : 'bg-zinc-900/60 border-zinc-800 text-zinc-500'
-            }`}
-          >
-            <span className="font-medium flex items-center gap-1.5">
-              {config.voiceEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
-              <span>Voice Cue</span>
-            </span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
-                config.voiceEnabled ? 'bg-sky-500/20 text-sky-400' : 'bg-zinc-800 text-zinc-500'
-              }`}
-            >
-              {config.voiceEnabled ? 'On' : 'Silent'}
-            </span>
-          </button>
-        </div>
-
-        {/* Schedule Summary Banner */}
-        <div className="p-3 rounded-2xl bg-zinc-900/60 border border-white/5 flex items-center justify-between text-xs text-zinc-300 font-mono">
-          <div className="flex items-center gap-2">
-            <Clock size={14} className="text-zinc-400" />
-            <span>
-              {formatTime12h(config.startTime)} &ndash; {formatTime12h(config.endTime)}
-            </span>
-          </div>
-          <span className="px-2 py-0.5 rounded-md bg-white/5 text-zinc-300">
-            Every {formatIntervalLabel(config.intervalMinutes)}
-          </span>
-        </div>
-
-        {/* Add Custom Reminder Form */}
-        <form onSubmit={handleAddReminder} className="flex gap-2">
-          <input
-            type="text"
-            value={newReminderText}
-            onChange={(e) => setNewReminderText(e.target.value)}
-            placeholder="e.g. Do 10 pushups, Drink water..."
-            className="flex-1 bg-zinc-900/90 border border-zinc-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/70"
-          />
-          <button
-            type="submit"
-            disabled={!newReminderText.trim()}
-            className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer shrink-0"
-          >
-            <Plus size={14} />
-            <span>Add</span>
-          </button>
-        </form>
-
-        {/* Active Reminders List */}
-        <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-          {config.items.length === 0 ? (
-            <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 text-center text-xs text-zinc-500 font-mono">
-              No reminders added. Tap Add above to create one.
-            </div>
-          ) : (
-            config.items.map((item) => (
+        <ObsidianCard
+          ambientGlow
+          className={`w-full max-h-[88vh] rounded-[28px] shadow-2xl select-none ${
+            isModernFont ? 'font-sans' : 'font-mono'
+          }`}
+          headerClassName="p-5 flex-1 min-h-0 flex flex-col space-y-4 overflow-y-auto"
+          footerClassName="p-4 flex items-center gap-2"
+          headerContent={
+            <>
+              {/* Top Header */}
               <div
-                key={item.id}
-                className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 text-xs transition-colors ${
-                  item.enabled
-                    ? 'bg-zinc-900/70 border-white/10 text-zinc-200'
-                    : 'bg-zinc-950/40 border-zinc-900 text-zinc-600 line-through'
-                }`}
+                className="flex items-center justify-between pb-3"
+                style={{ borderBottom: '1px solid var(--border-subtle)' }}
               >
-                <div
-                  className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer"
-                  onClick={() => handleToggleItem(item.id)}
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0"
+                    style={{
+                      backgroundColor: 'var(--accent-soft)',
+                      border: '1px solid var(--accent-border)',
+                      color: 'var(--accent-primary)',
+                    }}
+                  >
+                    <Dumbbell size={18} strokeWidth={2.2} />
+                  </div>
+                  <div>
+                    <h3
+                      className="text-sm font-bold tracking-wide"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      Movement Reminders
+                    </h3>
+                    <p
+                      className="text-[11px] font-mono"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      No tick marks • No guilt • Just the next move
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="w-8 h-8 rounded-full liquid-pill-inactive liquid-spring flex items-center justify-center cursor-pointer shrink-0"
+                  aria-label="Close"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+
+              {/* Status / Quick Settings Bar */}
+              <div className="grid grid-cols-2 gap-2.5 text-xs">
+                {/* Master Toggle */}
+                <button
+                  type="button"
+                  onClick={handleToggleEnabled}
+                  className={`p-3 rounded-2xl flex items-center justify-between gap-2 cursor-pointer liquid-spring ${
+                    config.enabled
+                      ? 'liquid-inset shadow-[0_0_16px_var(--liquid-accent-soft-glow)]'
+                      : 'liquid-row opacity-80'
+                  }`}
+                  style={
+                    config.enabled
+                      ? { borderColor: 'var(--accent-border)' }
+                      : undefined
+                  }
                 >
                   <span
-                    className={`w-2 h-2 rounded-full shrink-0 ${
-                      item.enabled ? 'bg-emerald-400' : 'bg-zinc-700'
+                    className="font-semibold text-left truncate"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    Status
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase shrink-0 ${
+                      config.enabled ? 'liquid-pill-active' : 'liquid-pill-inactive'
                     }`}
-                  />
-                  <span className="truncate font-sans font-medium">{item.text}</span>
-                </div>
+                  >
+                    {config.enabled ? 'Active' : 'Off'}
+                  </span>
+                </button>
 
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => handleTriggerNudge(item.text)}
-                    title="Nudge Now"
-                    className="p-1.5 rounded-lg bg-zinc-800/60 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                {/* Voice Toggle */}
+                <button
+                  type="button"
+                  onClick={handleToggleVoice}
+                  className={`p-3 rounded-2xl flex items-center justify-between gap-2 cursor-pointer liquid-spring ${
+                    config.voiceEnabled
+                      ? 'liquid-inset shadow-[0_0_16px_var(--liquid-accent-soft-glow)]'
+                      : 'liquid-row opacity-80'
+                  }`}
+                  style={
+                    config.voiceEnabled
+                      ? { borderColor: 'var(--accent-border)' }
+                      : undefined
+                  }
+                >
+                  <span
+                    className="font-semibold flex items-center gap-1.5 truncate"
+                    style={{ color: 'var(--text-primary)' }}
                   >
-                    <Play size={11} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteItem(item.id)}
-                    title="Delete"
-                    className="p-1.5 rounded-lg bg-zinc-800/60 hover:bg-red-950/60 text-zinc-500 hover:text-red-400 transition-colors cursor-pointer"
+                    {config.voiceEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
+                    <span>Voice</span>
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase shrink-0 ${
+                      config.voiceEnabled ? 'liquid-pill-active' : 'liquid-pill-inactive'
+                    }`}
                   >
-                    <Trash2 size={11} />
-                  </button>
-                </div>
+                    {config.voiceEnabled ? 'On' : 'Silent'}
+                  </span>
+                </button>
               </div>
-            ))
-          )}
-        </div>
 
-        {/* Zero-Guilt Manifesto Note */}
-        <div className="p-3 rounded-2xl bg-zinc-950/80 border border-white/5 text-[11px] text-zinc-400 font-mono space-y-1">
-          <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-            <Sparkles size={12} />
-            <span>Zero-Guilt Philosophy</span>
-          </div>
-          <p className="leading-relaxed">
-            No checklists or streak tracking. When it pops up, you can do it or dismiss it. No guilt, no history logs &mdash; just the next move.
-          </p>
-        </div>
+              {/* Schedule Summary Banner */}
+              <div className="liquid-inset p-3 flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                  <Clock size={14} style={{ color: 'var(--accent-primary)' }} />
+                  <span>
+                    {formatTime12h(config.startTime)} &ndash; {formatTime12h(config.endTime)}
+                  </span>
+                </div>
+                <span className="liquid-pill-inactive px-2.5 py-0.5 text-[10px] font-bold">
+                  Every {formatIntervalLabel(config.intervalMinutes)}
+                </span>
+              </div>
 
-        {/* Bottom Actions */}
-        <div className="flex items-center gap-2 pt-1 border-t border-white/5">
-          <button
-            type="button"
-            onClick={() => handleTriggerNudge()}
-            className="flex-1 py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <Play size={13} className="text-emerald-400" />
-            <span>Nudge Me Now</span>
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center justify-center transition-colors cursor-pointer"
-          >
-            Got it
-          </button>
-        </div>
+              {/* Add Custom Reminder Form */}
+              <form onSubmit={handleAddReminder} className="flex gap-2">
+                <input
+                  type="text"
+                  value={newReminderText}
+                  onChange={(e) => setNewReminderText(e.target.value)}
+                  placeholder="e.g. Do 10 pushups, Drink water..."
+                  className="flex-1 obsidian-input rounded-xl px-3 py-2 text-xs focus:outline-none"
+                  style={{
+                    backgroundColor: 'var(--bg-input)',
+                    border: '1px solid var(--border-strong)',
+                    color: 'var(--text-primary)',
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={!newReminderText.trim()}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1 liquid-spring cursor-pointer shrink-0 disabled:opacity-40"
+                  style={{
+                    backgroundColor: 'var(--accent-primary)',
+                    color: 'var(--text-on-accent)',
+                    boxShadow: '0 4px 14px -2px var(--liquid-accent-soft-glow)',
+                  }}
+                >
+                  <Plus size={14} />
+                  <span>Add</span>
+                </button>
+              </form>
+
+              {/* Active Reminders List */}
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {config.items.length === 0 ? (
+                  <div
+                    className="liquid-row p-4 text-center text-xs font-mono"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    No reminders added. Tap Add above to create one.
+                  </div>
+                ) : (
+                  config.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className={`p-2.5 flex items-center justify-between gap-2 text-xs transition-all ${
+                        item.enabled
+                          ? 'liquid-inset'
+                          : 'liquid-row opacity-55 line-through'
+                      }`}
+                      style={
+                        item.enabled
+                          ? { borderColor: 'var(--accent-border)' }
+                          : undefined
+                      }
+                    >
+                      <div
+                        className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer"
+                        onClick={() => handleToggleItem(item.id)}
+                      >
+                        <span
+                          className="w-2 h-2 rounded-full shrink-0"
+                          style={{
+                            backgroundColor: item.enabled
+                              ? 'var(--accent-primary)'
+                              : 'var(--text-muted)',
+                            boxShadow: item.enabled
+                              ? '0 0 8px var(--liquid-accent-glow)'
+                              : undefined,
+                          }}
+                        />
+                        <span
+                          className="truncate font-sans font-medium"
+                          style={{
+                            color: item.enabled ? 'var(--text-primary)' : 'var(--text-muted)',
+                          }}
+                        >
+                          {item.text}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleTriggerNudge(item.text)}
+                          title="Nudge Now"
+                          className="p-1.5 rounded-full liquid-pill-inactive liquid-spring cursor-pointer"
+                        >
+                          <Play size={11} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteItem(item.id)}
+                          title="Delete"
+                          className="p-1.5 rounded-full liquid-pill-inactive liquid-spring hover:text-rose-400 cursor-pointer"
+                        >
+                          <Trash2 size={11} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Zero-Guilt Manifesto Note */}
+              <div
+                className="liquid-inset p-3 text-[11px] font-mono space-y-1"
+                style={{
+                  borderColor: 'var(--accent-border)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                <div
+                  className="flex items-center gap-1.5 font-bold"
+                  style={{ color: 'var(--accent-primary)' }}
+                >
+                  <Sparkles size={12} />
+                  <span>Zero-Guilt Philosophy</span>
+                </div>
+                <p className="leading-relaxed">
+                  No checklists or streak tracking. When it pops up, you can do it or dismiss it. No guilt, no history logs &mdash; just the next move.
+                </p>
+              </div>
+            </>
+          }
+          footerContent={
+            <>
+              <button
+                type="button"
+                onClick={() => handleTriggerNudge()}
+                className="flex-1 py-2.5 px-3 liquid-pill-inactive liquid-spring text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                <Play size={13} style={{ color: 'var(--accent-primary)' }} />
+                <span>Nudge Me Now</span>
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 py-2.5 px-3 rounded-full text-xs font-bold flex items-center justify-center liquid-spring cursor-pointer"
+                style={{
+                  backgroundColor: 'var(--accent-primary)',
+                  color: 'var(--text-on-accent)',
+                  boxShadow:
+                    '0 6px 18px -4px var(--liquid-accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.35)',
+                }}
+              >
+                Got it
+              </button>
+            </>
+          }
+        />
       </div>
     </div>
   );
