@@ -126,17 +126,8 @@ const DIAL_TICKS = Array.from({ length: 60 }, (_, idx) => {
 const DialTickRing = React.memo(function DialTickRing({ isAero }: { isAero?: boolean }) {
   const majorStroke = isAero ? 'rgba(53, 59, 91, 0.36)' : 'rgba(255, 255, 255, 0.28)';
   const minorStroke = isAero ? 'rgba(53, 59, 91, 0.14)' : 'rgba(255, 255, 255, 0.11)';
-  const innerRingStroke = isAero ? 'rgba(53, 59, 91, 0.08)' : 'rgba(255, 255, 255, 0.07)';
   return (
     <g>
-      <circle
-        cx="144"
-        cy="144"
-        r="104"
-        fill="none"
-        stroke={innerRingStroke}
-        strokeWidth="1"
-      />
       {DIAL_TICKS.map((t) => (
         <line
           key={t.idx}
