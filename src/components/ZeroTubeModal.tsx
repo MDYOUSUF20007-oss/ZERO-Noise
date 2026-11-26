@@ -2822,34 +2822,92 @@ export const ZeroTubeModal: React.FC<ZeroTubeModalProps> = ({
                 </div>
               ) : (
                 !showQuickAddChannel && (
-                  <div className="liquid-glass py-10 px-4 text-center space-y-3">
-                    <div
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto"
-                      style={{
-                        backgroundColor: 'var(--accent-soft)',
-                        border: '1px solid var(--accent-border)',
-                        color: 'var(--accent-primary)',
-                      }}
+                  <div className="liquid-glass py-8 px-5 text-center space-y-4">
+                    {/* Custom minimalist vector spot illustration */}
+                    <svg
+                      width="112"
+                      height="76"
+                      viewBox="0 0 112 76"
+                      fill="none"
+                      aria-hidden="true"
+                      className="mx-auto"
                     >
-                      <ShieldCheck size={22} />
+                      <rect
+                        x="10"
+                        y="10"
+                        width="92"
+                        height="56"
+                        rx="10"
+                        stroke="rgba(255,255,255,0.16)"
+                        strokeWidth="1.5"
+                      />
+                      <rect
+                        x="18"
+                        y="18"
+                        width="76"
+                        height="40"
+                        rx="6"
+                        fill="rgba(255,255,255,0.03)"
+                        stroke="rgba(255,255,255,0.09)"
+                        strokeWidth="1"
+                      />
+                      <circle cx="24" cy="24" r="1.5" fill="rgba(255,255,255,0.28)" />
+                      <circle cx="30" cy="24" r="1.5" fill="rgba(255,255,255,0.18)" />
+                      <path
+                        d="M50 31.5L65 39L50 46.5V31.5Z"
+                        fill="var(--accent-primary, #f43f5e)"
+                      />
+                      <line
+                        x1="28"
+                        y1="52"
+                        x2="84"
+                        y2="52"
+                        stroke="rgba(255,255,255,0.12)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                      <line
+                        x1="28"
+                        y1="52"
+                        x2="52"
+                        y2="52"
+                        stroke="var(--accent-primary, #f43f5e)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="space-y-1.5">
+                      <h3 className="text-base font-display font-bold" style={{ color: 'var(--text-primary)' }}>
+                        Build your distraction-free study feed
+                      </h3>
+                      <p
+                        className="text-xs max-w-sm mx-auto leading-relaxed"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        Whitelist trusted study channels by @handle, channel link, or video URL. Shorts, ads, and recommendations stay blocked.
+                      </p>
                     </div>
-                    <h3 className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                      Build Your Distraction-Free Study Feed
-                    </h3>
-                    <p
-                      className="text-xs max-w-sm mx-auto leading-relaxed"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Add your trusted study channels by @handle, channel link, or sample video URL. Their full-length videos appear right here — zero Shorts, zero ads, zero algorithm traps.
-                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-1.5 pt-0.5">
+                      <span className="px-2 py-1 rounded-md text-[10px] font-mono border border-white/10 text-zinc-300 bg-white/[0.03]">
+                        @handle
+                      </span>
+                      <span className="px-2 py-1 rounded-md text-[10px] font-mono border border-white/10 text-zinc-300 bg-white/[0.03]">
+                        youtube.com/@channel
+                      </span>
+                      <span className="px-2 py-1 rounded-md text-[10px] font-mono border border-white/10 text-zinc-300 bg-white/[0.03]">
+                        Lecture URL
+                      </span>
+                    </div>
                     <button
                       type="button"
-                      onClick={() => setShowQuickAddChannel(true)}
-                      className="px-4 py-2 rounded-full text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer liquid-spring"
+                      onClick={() => {
+                        haptics.tick(820);
+                        setShowQuickAddChannel(true);
+                      }}
+                      className="px-4 py-2.5 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer liquid-spring"
                       style={{
                         backgroundColor: 'var(--accent-primary)',
                         color: 'var(--text-on-accent)',
-                        boxShadow: '0 4px 14px -2px var(--liquid-accent-soft-glow)',
                       }}
                     >
                       <Plus size={14} />

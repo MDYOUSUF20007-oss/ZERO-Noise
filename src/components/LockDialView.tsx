@@ -21,7 +21,6 @@ import { getZeroRankFromHours } from '../utils/parachuteRewardsPolicy';
 import { evaluateBadges } from '../utils/achievements';
 import { ZeroSupporterGoldenBadge } from './AchievementBadgeChip';
 import { IntentionRitualModal } from './IntentionRitualModal';
-import { EscapeTicketDockButton } from './EscapeTicketSystem';
 import {
   ShieldAlert,
   Clock,
@@ -108,18 +107,49 @@ function secsToDialAngle(secs: number): number {
   return Math.min(360, Math.max(0, pct * 360));
 }
 
+const DIAL_TICKS = Array.from({ length: 60 }, (_, idx) => {
+  const angleDeg = idx * 6;
+  const isMajor = idx % 5 === 0;
+  const rad = ((angleDeg - 90) * Math.PI) / 180;
+  const rOuter = 136;
+  const rInner = isMajor ? 123 : 129;
+  return {
+    idx,
+    isMajor,
+    x1: Number((144 + rInner * Math.cos(rad)).toFixed(2)),
+    y1: Number((144 + rInner * Math.sin(rad)).toFixed(2)),
+    x2: Number((144 + rOuter * Math.cos(rad)).toFixed(2)),
+    y2: Number((144 + rOuter * Math.sin(rad)).toFixed(2)),
+  };
+});
+
 const DialTickRing = React.memo(function DialTickRing({ isAero }: { isAero?: boolean }) {
+  const majorStroke = isAero ? 'rgba(53, 59, 91, 0.36)' : 'rgba(255, 255, 255, 0.28)';
+  const minorStroke = isAero ? 'rgba(53, 59, 91, 0.14)' : 'rgba(255, 255, 255, 0.11)';
+  const innerRingStroke = isAero ? 'rgba(53, 59, 91, 0.08)' : 'rgba(255, 255, 255, 0.07)';
   return (
-    <circle
-      cx="144"
-      cy="144"
-      r="132"
-      fill="none"
-      stroke={isAero ? 'rgba(28, 25, 23, 0.16)' : 'rgba(255, 255, 255, 0.18)'}
-      strokeOpacity="0.85"
-      strokeWidth="9"
-      strokeDasharray="1.5 8.5"
-    />
+    <g>
+      <circle
+        cx="144"
+        cy="144"
+        r="104"
+        fill="none"
+        stroke={innerRingStroke}
+        strokeWidth="1"
+      />
+      {DIAL_TICKS.map((t) => (
+        <line
+          key={t.idx}
+          x1={t.x1}
+          y1={t.y1}
+          x2={t.x2}
+          y2={t.y2}
+          stroke={t.isMajor ? majorStroke : minorStroke}
+          strokeWidth={t.isMajor ? '1.8' : '1.1'}
+          strokeLinecap="round"
+        />
+      ))}
+    </g>
   );
 });
 
@@ -301,19 +331,19 @@ const DialWheelSection = React.memo(function DialWheelSection({
   const initialAngle = secsToDialAngle(durationSeconds);
 
   return (
-    <div className="my-auto flex flex-col items-center justify-center relative w-full py-2">
+    <div className="my-auto flex flex-col items-center justify-center relative w-full py-1">
       <div
         ref={dialRef}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
-        className={`zero-dial-surface zero-dial-ring liquid-dial-outer relative w-60 h-60 sm:w-68 sm:h-68 rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing transition-shadow ${
-          isAero ? 'border border-[#E8E0D2] shadow-[0_10px_30px_rgba(44,38,34,0.06)]' : ''
+        className={`zero-dial-surface zero-dial-ring liquid-dial-outer relative w-64 h-64 sm:w-72 sm:h-72 rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing transition-shadow ${
+          isAero
+            ? 'border border-[#E2D9CE] shadow-sm'
+            : 'border border-white/10'
         }`}
         style={{
           touchAction: 'none',
-          backgroundColor: isAero ? 'rgba(255, 253, 249, 0.88)' : undefined,
-          backdropFilter: isAero ? 'blur(20px)' : undefined,
-          WebkitBackdropFilter: isAero ? 'blur(20px)' : undefined,
+          backgroundColor: isAero ? 'rgba(248, 244, 240, 0.96)' : '#0F1117',
         }}
       >
         <svg
@@ -322,9 +352,8 @@ const DialWheelSection = React.memo(function DialWheelSection({
         >
           <defs>
             <linearGradient id="zeroLiquidDialGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#ffffff' }} />
-              <stop offset="50%" style={{ stopColor: 'var(--liquid-accent-tint)' }} />
-              <stop offset="100%" style={{ stopColor: 'var(--liquid-accent-vibrant)' }} />
+              <stop offset="0%" style={{ stopColor: 'var(--accent-primary, #f43f5e)' }} />
+              <stop offset="100%" style={{ stopColor: 'var(--accent-secondary, #fb7185)' }} />
             </linearGradient>
           </defs>
           <DialTickRing isAero={isAero} />
@@ -332,10 +361,10 @@ const DialWheelSection = React.memo(function DialWheelSection({
             ref={arcRef}
             cx="144"
             cy="144"
-            r="132"
+            r="130"
             fill="none"
             stroke={isAero ? (aeroAccentColor || '#E69F86') : 'url(#zeroLiquidDialGrad)'}
-            strokeWidth="5"
+            strokeWidth="4"
             strokeDasharray={`${(initialAngle / 360) * DIAL_ARC_CIRCUMFERENCE} ${DIAL_ARC_CIRCUMFERENCE}`}
             strokeLinecap="round"
             transform="rotate(-90 144 144)"
@@ -349,19 +378,16 @@ const DialWheelSection = React.memo(function DialWheelSection({
           style={{ transform: `rotate(${initialAngle}deg)` }}
         >
           <div
-            className={`absolute top-1 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full flex items-center justify-center ${
-              isAero ? 'border-2 bg-white shadow-sm' : 'border border-white/60 bg-white'
+            className={`absolute top-[7px] left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full flex items-center justify-center ${
+              isAero ? 'border-2 bg-white' : 'border border-white/80 bg-[#090A0E]'
             }`}
             style={{
-              borderColor: isAero ? (aeroAccentColor || '#0f172a') : undefined,
-              boxShadow: isAero
-                ? '0 2px 6px rgba(15, 23, 42, 0.18)'
-                : '0 2px 8px rgba(0, 0, 0, 0.50)',
+              borderColor: isAero ? (aeroAccentColor || '#353B5B') : 'var(--accent-primary, #f43f5e)',
             }}
           >
             <div
               className="w-1.5 h-1.5 rounded-full"
-              style={{ backgroundColor: isAero ? (aeroAccentColor || '#0f172a') : 'var(--liquid-accent-vibrant)' }}
+              style={{ backgroundColor: isAero ? (aeroAccentColor || '#353B5B') : 'var(--accent-primary, #f43f5e)' }}
             />
           </div>
         </div>
@@ -662,7 +688,7 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
     : 0;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-between max-w-md mx-auto w-full select-none px-4 py-4 pb-32 gap-5 font-sans">
+    <div className="flex-1 flex flex-col items-center justify-between max-w-md mx-auto w-full select-none px-4 py-4 pb-36 gap-4 font-sans">
       {/* Interactive Profile Strip + Compact Escape Ticket + 1-Tap Theme Studio Shortcut */}
       <div className="w-full flex items-stretch gap-2">
         {profile ? (
@@ -1471,20 +1497,15 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
             </div>
           )}
 
-          {parachuteMetrics.currentBalance > 0 && (
+          {burnTheBoatsEnabled && parachuteMetrics.currentBalance > 0 && (
             <div className="pt-2 flex flex-col items-center gap-1.5">
-              {burnTheBoatsEnabled ? (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300/80 text-xs">
-                  <Flame size={12} className="text-amber-400" />
-                  <span>{parachuteMetrics.currentBalance} {parachuteMetrics.currentBalance === 1 ? 'ticket' : 'tickets'} locked (Boats Burned)</span>
-                </div>
-              ) : (
-                <EscapeTicketDockButton
-                  ticketCount={parachuteMetrics.currentBalance}
-                  onOpen={onOpenTicketModal}
-                  isAero={isAero}
-                />
-              )}
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-300/85 text-xs">
+                <Flame size={12} className="text-amber-400" />
+                <span>
+                  {parachuteMetrics.currentBalance}{' '}
+                  {parachuteMetrics.currentBalance === 1 ? 'ticket' : 'tickets'} locked (Boats Burned)
+                </span>
+              </div>
             </div>
           )}
         </div>

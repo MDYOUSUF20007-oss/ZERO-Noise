@@ -654,7 +654,7 @@ export const ParachuteDashboardView: React.FC<ParachuteDashboardViewProps> = ({
                           : 'font-mono font-black text-white'
                       }`}
                     >
-                      {currentStreak} Days
+                      {currentStreak} {currentStreak === 1 ? 'Day' : 'Days'}
                     </div>
                   </div>
                   <div
@@ -1890,10 +1890,10 @@ export const ParachuteDashboardView: React.FC<ParachuteDashboardViewProps> = ({
     <div
       className={`flex flex-col px-4 max-w-md mx-auto w-full select-none ${
         isFluentGlass
-          ? 'gap-5 py-5 pb-32 font-sans'
+          ? 'gap-5 py-5 pb-36 font-sans'
           : isBespoke
-          ? 'gap-6 py-5 pb-24 font-sans'
-          : 'gap-5 py-4 pb-24'
+          ? 'gap-6 py-5 pb-32 font-sans'
+          : 'gap-5 py-4 pb-32'
       }`}
     >
       {/* Header + Widget Options & Flex Stats Triggers */}

@@ -376,23 +376,17 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   }
 
   /* -------------------------------------------------------------
-     Radial Dial Optical Glass Surface & Zero-Heat Touch Dragging
+     Radial Dial Hardware Instrument Surface & Zero-Heat Dragging
      ------------------------------------------------------------- */
   .zero-dial-surface {
-    background-color: var(--glass-dial-bg, rgba(16, 21, 30, 0.70)) !important;
-    background-image:
-      radial-gradient(
-        circle at 35% 25%,
-        rgba(255, 255, 255, 0.08) 0%,
-        rgba(255, 255, 255, 0.01) 50%,
-        transparent 80%
-      ) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12)) !important;
-    border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.30)) !important;
+    background-color: var(--glass-dial-bg, #0F1117) !important;
+    background-image: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.16) !important;
     border-radius: 9999px !important;
-    backdrop-filter: var(--surface-blur, blur(18px) saturate(140%)) !important;
-    -webkit-backdrop-filter: var(--surface-blur, blur(18px) saturate(140%)) !important;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22), 0 16px 36px -8px rgba(0, 0, 0, 0.70) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
     contain: layout style paint;
     touch-action: none !important;
   }
