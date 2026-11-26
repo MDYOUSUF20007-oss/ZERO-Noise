@@ -75,9 +75,9 @@ For complete version changelogs, architecture notes, and checksums, see **[RELEA
 
 ## Screenshots
 
-| The Home Dial | The Void (Lock Screen) | Discipline Heatmap (Insights) | Auto-Pilot Schedules (Settings) |
-| :---: | :---: | :---: | :---: |
-| <img src="./docs/screenshots/home-dial.jpg" width="220" alt="The Home Dial" /> | <img src="./docs/screenshots/the-void.jpg" width="220" alt="The Void Lock Screen" /> | <img src="./docs/screenshots/discipline-heatmap.jpg" width="220" alt="Discipline Heatmap Insights" /> | <img src="./docs/screenshots/schedules-settings.jpg" width="220" alt="Auto-Pilot Schedules in Settings" /> |
+| The Home Dial | The Void (Lock Screen) | Discipline Heatmap (Insights) | ZeroTube (Study Feed) | Auto-Pilot Schedules (Settings) |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="./docs/screenshots/home-dial.jpg" width="180" alt="The Home Dial" /> | <img src="./docs/screenshots/the-void.jpg" width="180" alt="The Void Lock Screen" /> | <img src="./docs/screenshots/discipline-heatmap.jpg" width="180" alt="Discipline Heatmap Insights" /> | <img src="./docs/screenshots/zerotube.jpg" width="180" alt="ZeroTube Distraction-Free Study Feed" /> | <img src="./docs/screenshots/schedules-settings.jpg" width="180" alt="Auto-Pilot Schedules in Settings" /> |
 
 ---
 
