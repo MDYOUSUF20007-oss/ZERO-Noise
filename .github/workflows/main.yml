@@ -272,13 +272,12 @@ jobs:
             - **`ZERO-requires-adb-v${{ env.ZERO_VERSION_NAME }}.apk` (Strict Accessibility Edition — Full Zero Mode):** Uses Android Accessibility Service to block Notification shade, Quick Settings, Settings, Recents, and unbagged apps. *(On Android 14–16 devices, install via `adb install -r` or Shizuku / "Install with Options", or tap **Open Zero App Info → ⋮ Allow restricted settings**.)*
 
             #### What's New
-            - **The Void Redesign — Pixelated Gradient Clock & Brand-Colored Bag Rows:** Added a retro terminal 5×7 pixelated clock shaded with your active theme accent (`SYSTEM TIME // SYNCED`) above the countdown timer, dynamic brand-colored Bag app rows with real app icons, Monk Mode tactical notice when empty, and compulsory **Phone Calls (`ALWAYS ON`)** access during locks.
-            - **Unified Backup & Restore Everything + Decluttered Home & 4th Support Tab:** Consolidated `.zbak` auto-sync and manual `.json`/`.zbak` export/restore into one clean card, compacted the Home Escape Ticket strip into a tappable ticket card viewer, and moved **Support** to a dedicated 4th bottom navigation tab.
-            - **Release Hardening (R8/ProGuard + Runtime APK Signature Guard + Root/Emulator Protection):** Enabled full R8 code & resource shrinking (`minifyEnabled true`, `shrinkResources true`) with tailored keep rules for Capacitor & `ZeroAccessibilityService`, added runtime APK SHA-256 signature verification in `MainActivity` + `AppSecurityGuard` to abort modified/re-signed APKs immediately, and added root / custom ROM / debug emulator checks that gracefully disable backup restore & preset Bag tampering.
-            - **Donor Perks & Badges + Ko-fi Manual Verification Support UI:** Added a dedicated **Donor Perks & Badges** section in **Settings** and **Support** showing live `ZERO-SUPPORTER` crest/ticket status, offline signed unlock token (`ZDON1...` / `ZBAK1...`) activation, native Android `mailto:` launching, and pure AMOLED `#000000` + purple `#8B5CF6` manual Ko-fi verification contact details (`mdyousuf982007@proton.me`).
-            - **APK Update Signing Fix (V1 + V2 + V3 + FOSS Clean Metadata) & Build Inspector:** Explicit multi-scheme V1+V2+V3 release signing in `build.gradle`, removed Play DependencyInfo block, and added **Installed Build & Update Key** diagnostics inside **Settings → OS** so you can verify your installed certificate and version code anytime.
-            - **Redesigned Permission Priority & Frosted Obsidian Restricted Settings Guide:** Enforces exact priority order **1. Usage Access / Accessibility (with Android 13–16 App Info `⋮` Restricted Settings unlock guide) → 2. Display Over Other Apps → 3. Lock Alerts** in a clean step-by-step layout.
-            - **Serverless Universal Cloud Auto-Backup (`zero-backup.zbak`) & Full Theme Studio (`AMOLED`, `Paper like Kindle`, `Matte Studio`):** Offline HMAC-signed `.zbak` backups, Emergency Escape Tickets (`🎫`), interactive focus profile card, and dynamic Daily / Weekly / Monthly / All-Time heatmaps.
+            - **Bold Self-Hosted Typography & UI Polish:** Switched to bundled `Bricolage Grotesque Variable`, `Space Grotesk Variable`, and `JetBrains Mono Variable` fonts across all theme engines (`Fluent Glass`, `Aero Porcelain`, `Twilight Dusk`), sharpened interactive controls, and added `:focus-visible` & `prefers-reduced-motion` accessibility support.
+            - **Liquid Glass Escape Tickets & Burn the Boats:** Physical tear-off Liquid Glass Escape Tickets earned every **35 cumulative focus hours**, plus optional **Burn the Boats** lockout (up to 4h) for zero-escape sessions.
+            - **ZeroTube Distraction-Free Study Feed:** Built-in study player restricted exclusively to your whitelisted channels — zero Shorts, zero recommendations, zero algorithm traps, plus channel guard and study notes.
+            - **The Void Redesign & Hourly 10m Pomodoro Break:** Retro 5×7 terminal pixelated clock shaded with your active theme accent (`SYSTEM TIME // SYNCED`), dynamic brand-colored Bag app rows, compulsory **Phone Calls (`ALWAYS ON`)**, and 10-minute hourly breaks with Zen bowl chimes.
+            - **3-Theme Engines, Phase 2 Bags & Universal `.zbak` Backups:** Switch between **Fluent Glass**, **Aero Porcelain**, and **Twilight Dusk**; configure unlimited Occasion Bags, per-app daily quotas, Compulsory Study Apps, Action Reminders, and HMAC-SHA256 signed `.zbak` cloud/local backups.
+            - **Release Hardening (R8/ProGuard + V1/V2/V3 Signing + Runtime Integrity Guard):** Full R8 shrinking, runtime APK SHA-256 verification, root/emulator tampering guards, and monotonic hardware clock (`SystemClock.elapsedRealtime()`) enforcement.
 
       - name: Publish Direct Download GitHub Release (Debug-Signed Preview)
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && steps.keystore.outputs.signed != 'true'
@@ -305,9 +304,22 @@ jobs:
             - **`ZERO-requires-adb-v${{ env.ZERO_VERSION_NAME }}-preview.apk` (Strict Accessibility Edition — Full Zero Mode):** Full Accessibility Service lock blocking Notification shade, Settings, Recents, and unbagged apps (use `adb install -r`, Shizuku, or Allow Restricted Settings on Android 14–16).
 
             #### What's New
-            - **The Void Redesign — Pixelated Gradient Clock & Brand-Colored Bag Rows:** Retro 5×7 terminal pixelated clock shaded with your active theme accent (`SYSTEM TIME // SYNCED`), dynamic brand-colored Bag app rows with real app icons, Monk Mode tactical notice when empty, and compulsory **Phone Calls (`ALWAYS ON`)** access.
-            - **Unified Backup & Restore Everything + Decluttered Home & 4th Support Tab:** Consolidated `.zbak` auto-sync and manual `.json`/`.zbak` export/restore, compact home Escape Ticket card viewer, and dedicated **Support** 4th bottom tab.
-            - **Release Hardening (R8/ProGuard + Runtime APK Signature Guard + Root/Emulator Protection):** Enabled full R8 code & resource shrinking (`minifyEnabled true`, `shrinkResources true`) with tailored keep rules for Capacitor & `ZeroAccessibilityService`, added runtime APK SHA-256 signature verification in `MainActivity` + `AppSecurityGuard` to abort modified/re-signed APKs immediately, and added root / custom ROM / debug emulator checks that gracefully disable backup restore & preset Bag tampering.
-            - **Donor Perks & Badges + Ko-fi Manual Verification Support UI:** Added **Donor Perks & Badges** inside **Settings** & **Support** with signed unlock token verification (`ZDON1...` / `ZBAK1...`) and pure AMOLED `#000000` + purple `#8B5CF6` Ko-fi receipt support contact (`mdyousuf982007@proton.me`).
-            - **Redesigned Permission Priority & Frosted Obsidian Restricted Settings Guide:** Priority setup order **1. Usage Access / Accessibility (with Android 13–16 App Info `⋮` Restricted Settings unlock guide) → 2. Display Over Other Apps → 3. Lock Alerts**.
-            - **Serverless Universal Cloud Auto-Backup (`zero-backup.zbak`) & Full Theme Studio (`AMOLED`, `Paper like Kindle`, `Matte Studio`):** Offline HMAC-signed `.zbak` backups, Emergency Escape Tickets (`🎫`), interactive focus profile card, and dynamic Daily / Weekly / Monthly / All-Time heatmaps.
+            - **Bold Self-Hosted Typography & UI Polish:** Bundled `Bricolage Grotesque Variable`, `Space Grotesk Variable`, and `JetBrains Mono Variable` fonts across all theme engines (`Fluent Glass`, `Aero Porcelain`, `Twilight Dusk`), sharpened controls, and added `:focus-visible` & `prefers-reduced-motion` accessibility support.
+            - **Liquid Glass Escape Tickets & Burn the Boats:** Physical tear-off Liquid Glass Escape Tickets earned every **35 cumulative focus hours**, plus optional **Burn the Boats** lockout (up to 4h).
+            - **ZeroTube Distraction-Free Study Feed:** Built-in study player restricted exclusively to your whitelisted channels — zero Shorts, zero recommendations, plus channel guard and study notes.
+            - **The Void Redesign & Hourly 10m Pomodoro Break:** Retro 5×7 terminal pixelated clock shaded with your active theme accent (`SYSTEM TIME // SYNCED`), dynamic brand-colored Bag app rows, compulsory **Phone Calls (`ALWAYS ON`)**, and 10-minute hourly breaks.
+            - **3-Theme Engines, Phase 2 Bags & Universal `.zbak` Backups:** **Fluent Glass**, **Aero Porcelain**, and **Twilight Dusk** themes, unlimited Occasion Bags, per-app daily quotas, Compulsory Study Apps, Action Reminders, and HMAC-SHA256 signed `.zbak` backups.
+            - **Release Hardening (R8/ProGuard + Runtime Integrity Guard):** Full R8 shrinking, runtime APK SHA-256 verification, root/emulator tampering guards, and monotonic hardware clock enforcement.
+
+      - name: Prune Old GitHub Releases (Keep Latest Only)
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LATEST_TAG="v${{ env.ZERO_VERSION_NAME }}"
+          echo "Keeping only latest release: $LATEST_TAG"
+          OLD_TAGS=$(gh release list --limit 500 --json tagName --jq ".[].tagName | select(. != \"$LATEST_TAG\")")
+          for tag in $OLD_TAGS; do
+            echo "Deleting old release $tag..."
+            gh release delete "$tag" --yes --cleanup-tag || true
+          done
