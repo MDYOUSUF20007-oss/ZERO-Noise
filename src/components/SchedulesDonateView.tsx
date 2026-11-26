@@ -469,7 +469,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                 : 'font-mono font-black text-white'
             }`}
           >
-            <span>KEEP ZERO FREE</span>
+            <span>Support Zero-Noise</span>
           </h1>
           <p className={`text-xs font-medium ${isAero ? 'font-sans text-[#5B6B79]' : isModernFont ? 'font-sans text-zinc-300' : 'font-mono text-zinc-300'}`}>
             100% FOSS • Voluntary UPI / Ko-fi Support &amp; Donor Perks
@@ -480,15 +480,15 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
           <h1
             className={`text-xl tracking-tight flex items-center gap-2 ${
               isAero
-                ? 'font-display font-extrabold text-[#111827]'
+                ? 'font-display font-bold text-[#111827]'
                 : isFluentGlass
-                ? 'font-display font-extrabold liquid-metric text-white'
+                ? 'font-display font-bold liquid-metric text-white'
                 : isBespoke
-                ? 'font-display font-extrabold text-white'
-                : 'font-mono font-black text-white'
+                ? 'font-display font-bold text-white'
+                : 'font-mono font-bold text-white'
             }`}
           >
-            <span>SETTINGS &amp; OS</span>
+            <span>Settings &amp; OS</span>
           </h1>
           <p className={`text-xs font-medium ${isAero ? 'font-sans text-[#5B6B79]' : isModernFont ? 'font-sans text-zinc-300' : 'font-mono text-zinc-300'}`}>
             Auto-Pilot Schedules, Theme Studio, Backups &amp; Android Guards
@@ -2441,7 +2441,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                             <span>Gift</span>
                           </>
                         ) : (
-                          <span>+1 Free 🎫 Gift</span>
+                          <span>+1 Free Ticket Gift</span>
                         )}
                       </span>
                     )}
@@ -2502,7 +2502,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                           ? 'Create Interactive Profile'
                           : isFluentGlass
                           ? 'Make Profile & Claim +1 Free Ticket'
-                          : 'Make Profile & Claim +1 Free 🎫'}
+                          : 'Make Profile & Claim +1 Free Ticket'}
                       </span>
                     </button>
                   )}
@@ -3702,7 +3702,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                           <span>
                             {isFluentGlass
                               ? `1st Tip ₹${FIRST_DONATION_BONUS_INR}+ = +1 Ticket & Supporter Badge`
-                              : `1st Tip ₹${FIRST_DONATION_BONUS_INR}+ = +1 🎫 & Gold Badge`}
+                              : `1st Tip ₹${FIRST_DONATION_BONUS_INR}+ = +1 Ticket & Gold Badge`}
                           </span>
                         </div>
                         <span
@@ -3718,7 +3718,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                         {isFluentGlass ? 'Platinum ' : 'Golden '}
                         <strong className="text-white">ZERO-SUPPORTER</strong> Profile Badge &amp;{' '}
                         <strong>
-                          +1 Free Emergency Escape Ticket{isFluentGlass ? '' : ' (🎫)'}
+                          +1 Free Emergency Escape Ticket
                         </strong>{' '}
                         <strong>ONLY unlock after your 1st tip of minimum ₹{FIRST_DONATION_BONUS_INR}</strong>{' '}
                         (smaller tips have no minimum limit via UPI but do not unlock the badge).
@@ -3742,7 +3742,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                             <span>
                               {isFluentGlass
                                 ? `Tip ₹${FIRST_DONATION_BONUS_INR}+ (+1 Ticket & Badge)`
-                                : `Tip ₹${FIRST_DONATION_BONUS_INR}+ (+1 🎫 & Gold)`}
+                                : `Tip ₹${FIRST_DONATION_BONUS_INR}+ (+1 Ticket & Gold)`}
                             </span>
                             <ExternalLink size={12} strokeWidth={1.75} />
                           </a>
@@ -3773,7 +3773,7 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
                             to unlock the {isFluentGlass ? 'Platinum ' : 'Golden '}
                             <strong className="text-white">ZERO-SUPPORTER</strong> Badge &amp;{' '}
                             <strong>
-                              +1 Free Emergency Escape Ticket{isFluentGlass ? '' : ' (🎫)'}
+                              +1 Free Emergency Escape Ticket
                             </strong>
                             :
                           </div>

@@ -262,7 +262,7 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                   {showGiftOffer
                     ? isModernFont
                       ? 'Set your emblem, mission & daily focus goal to claim your starter Emergency Escape Ticket.'
-                      : 'Set your avatar, mission & daily focus goal to claim your free starter Emergency Escape Ticket (🎫).'
+                      : 'Set your avatar, mission & daily focus goal to claim your free starter Emergency Escape Ticket.'
                     : 'Customize your focus identity, daily goal & lock pledge.'}
                 </p>
               </div>
@@ -835,7 +835,7 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                   <span>
                     {isModernFont
                       ? 'Create Profile & Claim +1 Free Ticket'
-                      : 'Create Profile & Claim +1 Free 🎫'}
+                      : 'Create Profile & Claim +1 Free Ticket'}
                   </span>
                 </>
               ) : (

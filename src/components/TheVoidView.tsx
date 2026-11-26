@@ -1596,7 +1596,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             </button>
             <span className={isAero ? 'text-[#5B6B79] font-medium' : 'text-cyan-300'}>
               {pomodoroIsBreak
-                ? '☕ Mindful Break'
+                ? 'Mindful Break'
                 : visibleBagApps.length === 0
                 ? 'Monk Mode'
                 : `${visibleBagApps.length} Apps Allowed`}

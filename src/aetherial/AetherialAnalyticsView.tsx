@@ -410,36 +410,30 @@ export const AetherialAnalyticsView: React.FC<AetherialAnalyticsViewProps> = ({
 
         <div className="flex gap-2.5 overflow-x-auto pb-2 no-scrollbar">
           {/* Badge 1 */}
-          <div className="w-36 shrink-0 rounded-xl bg-[#191b24]/90 p-3.5 flex flex-col items-center text-center border border-white/5">
-            <div className="w-12 h-12 rounded-full bg-[#00a572]/20 flex items-center justify-center text-[#4edea3] relative mb-2 shadow-[0_0_16px_rgba(78,222,163,0.3)]">
+          <div className="w-36 shrink-0 rounded-xl bg-[#191b24]/90 p-3.5 flex flex-col items-center text-center border border-white/10">
+            <div className="w-12 h-12 rounded-xl bg-[#00a572]/20 flex items-center justify-center text-[#4edea3] relative mb-2">
               <Award size={22} />
-              <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#4edea3] flex items-center justify-center text-[#001e2c] text-[10px] font-bold">
-                ✓
-              </span>
             </div>
             <span className="text-xs font-semibold text-[#e2e1ed] truncate w-full">First 10h</span>
-            <span className="text-[10px] text-[#4edea3] mt-0.5">Unlocked 🏅</span>
+            <span className="text-[10px] text-[#4edea3] mt-0.5">Unlocked</span>
             <span className="text-[10px] text-[#87929a] mt-1">Foundational Focus</span>
           </div>
 
           {/* Badge 2 */}
-          <div className="w-36 shrink-0 rounded-xl bg-[#191b24]/90 p-3.5 flex flex-col items-center text-center border border-white/5">
-            <div className="w-12 h-12 rounded-full bg-[#38bdf8]/20 flex items-center justify-center text-[#38bdf8] relative mb-2 shadow-[0_0_16px_rgba(56,189,248,0.3)]">
+          <div className="w-36 shrink-0 rounded-xl bg-[#191b24]/90 p-3.5 flex flex-col items-center text-center border border-white/10">
+            <div className="w-12 h-12 rounded-xl bg-[#38bdf8]/20 flex items-center justify-center text-[#38bdf8] relative mb-2">
               <Flame size={22} />
-              <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#4edea3] flex items-center justify-center text-[#001e2c] text-[10px] font-bold">
-                ✓
-              </span>
             </div>
             <span className="text-xs font-semibold text-[#e2e1ed] truncate w-full">7-Day Streak</span>
-            <span className="text-[10px] text-[#38bdf8] mt-0.5">Unlocked ⚡</span>
+            <span className="text-[10px] text-[#38bdf8] mt-0.5">Unlocked</span>
             <span className="text-[10px] text-[#87929a] mt-1">Zero Breakdowns</span>
           </div>
 
           {/* Badge 3 */}
-          <div className="w-36 shrink-0 rounded-xl bg-[#191b24]/90 p-3.5 flex flex-col items-center text-center border border-white/5">
-            <div className="w-12 h-12 rounded-full bg-[#282a32] flex items-center justify-center text-[#87929a] relative mb-2">
+          <div className="w-36 shrink-0 rounded-xl bg-[#191b24]/90 p-3.5 flex flex-col items-center text-center border border-white/10">
+            <div className="w-12 h-12 rounded-xl bg-[#282a32] flex items-center justify-center text-[#87929a] relative mb-2">
               <ShieldCheck size={22} />
-              <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#38bdf8] animate-pulse" />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#38bdf8]" />
             </div>
             <span className="text-xs font-semibold text-[#e2e1ed] truncate w-full">Centurion</span>
             <span className="text-[10px] text-[#7bd0ff] mt-0.5">62% (62/100h)</span>
@@ -449,12 +443,12 @@ export const AetherialAnalyticsView: React.FC<AetherialAnalyticsViewProps> = ({
           </div>
 
           {/* Badge 4 */}
-          <div className="w-36 shrink-0 rounded-xl bg-[#191b24]/50 p-3.5 flex flex-col items-center text-center border border-white/5 opacity-50">
-            <div className="w-12 h-12 rounded-full bg-[#282a32] flex items-center justify-center text-[#87929a] mb-2">
+          <div className="w-36 shrink-0 rounded-xl bg-[#191b24]/50 p-3.5 flex flex-col items-center text-center border border-white/10 opacity-50">
+            <div className="w-12 h-12 rounded-xl bg-[#282a32] flex items-center justify-center text-[#87929a] mb-2">
               <Lock size={20} />
             </div>
             <span className="text-xs font-semibold text-[#87929a] truncate w-full">Zero Monk</span>
-            <span className="text-[10px] text-[#87929a] mt-0.5">Locked 🔒</span>
+            <span className="text-[10px] text-[#87929a] mt-0.5">Locked</span>
             <span className="text-[10px] text-[#87929a] mt-1">10h Continuous</span>
           </div>
         </div>

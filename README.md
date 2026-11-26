@@ -41,13 +41,13 @@ It doesn't ask you nicely. When you start a lock, your phone is locked. No bypas
 
 ### 5. The 35-Hour Escape Ticket Economy
 - There is no paid bypass. You cannot buy your way out of a lock with money.
-- The only way to unlock an active session early is an **Emergency Escape Ticket (`🎫`)**, earned exclusively by completing **35 cumulative hours (126,000 seconds)** of verified, distraction-free focus.
+- The only way to unlock an active session early is an **Emergency Escape Ticket**, earned exclusively by completing **35 cumulative hours (126,000 seconds)** of verified, distraction-free focus.
 - **Strict Anti-Exploit:** Spending an Escape Ticket to abort mid-session forfeits 100% of the elapsed time from that session toward your next ticket.
 
 ### 6. 100% Free, Private & Serverless
 - **Zero Subscriptions:** No $12/month paywalls. Recurring routines, heatmaps, and customizable settings are unlocked from day one.
 - **Zero Telemetry SDKs:** No trackers, no ad networks, no analytics beacons, and no accounts.
-- **Universal `.zbak` Backups:** Export and restore your statistics, Escape Tickets, and routine schedules offline via HMAC-SHA256 sealed `.zbak` archives or sync seamlessly to your private cloud storage.
+- **Universal `.zbak` Backups:** Export and restore your statistics, Escape Tickets, and routine schedules offline via HMAC-SHA256 sealed `.zbak` archives or sync directly to your private cloud storage.
 
 ### 7. The Void & Aetherial Minimal Mesh
 - During an active lock, your phone enters **The Void**: an ambient, pitch-black space featuring a retro 5×7 pixelated system clock (`SYSTEM TIME // SYNCED`), a high-contrast focus countdown (`HH:MM:SS`), live battery status, and quick-access docks for your allowed Bag apps.
@@ -68,7 +68,7 @@ For complete version changelogs, architecture notes, and checksums, see **[RELEA
 
 - **Release Documentation & History:** [RELEASES.md](./RELEASES.md)
 - **Live Web / PWA Preview:** [mdyousuf20007-oss.github.io/ZERO-Noise](https://mdyousuf20007-oss.github.io/ZERO-Noise/)
-- **In-Place Updates (V1 + V2 + V3 Signed):** All official releases share Zero-Noise's permanent release certificate (`SHA-256: A1:4A:36:...CE:11`). Future updates install seamlessly in-place over previous versions without data loss.
+- **In-Place Updates (V1 + V2 + V3 Signed):** All official releases share Zero-Noise's permanent release certificate (`SHA-256: A1:4A:36:...CE:11`). Future updates install directly in-place over previous versions without data loss.
 - **Google Play Protect Notice:** Because GitHub APKs are direct open-source sideloads, Android asks to scan new APK hashes once before installation. Tap **Scan app** to verify cleanly and proceed.
 
 ---
@@ -94,13 +94,13 @@ For complete version changelogs, architecture notes, and checksums, see **[RELEA
 
 ### 3. The Void & Pomodoro Break (Active Lock Screen)
 - **Pixelated Clock & Inverted Timer:** Retro terminal 5×7 pixel matrix clock synchronized to the system accent, positioned directly above a high-contrast focus countdown.
-- **Hourly 10m Pomodoro Break:** Tap `☕ Take 10m Break` anytime during an hour to unlock your phone and use any app freely before re-arming.
+- **Hourly 10m Pomodoro Break:** Tap `Take 10m Break` anytime during an hour to unlock your phone and use any app freely before re-arming.
 - **Emergency Call Button:** Fast access to `911` / `112` and the phone dialer at all times.
 - **Escape Ticket Chamber:** Requires deliberate two-step confirmation, warning you that spending a ticket forfeits that session's time toward your next milestone.
 
 ### 4. Automated Routines & Overnight Schedules
 - Set recurring focus windows for specific days or daily cycles (e.g. Bedtime at `22:00 – 06:00` or Morning Study at `08:00 – 11:00`).
-- Seamlessly handles midnight-crossing windows with native `SharedPreferences` routine bridges that maintain lock enforcement even when the screen is dark.
+- Handles midnight-crossing windows with native `SharedPreferences` routine bridges that maintain lock enforcement even when the screen is dark.
 
 ### 5. Insights, Heatmaps & Focus Receipts
 - **Multi-Timeframe Heatmaps:** Track your discipline across **Daily**, **Weekly**, **Monthly**, and **All-Time** contribution heatmaps.
@@ -174,7 +174,7 @@ Zero-Noise is 100% free and open-source with zero paywalls. If Zero-Noise has he
 
 - **Ko-fi:** [https://ko-fi.com/mdyousuf2620](https://ko-fi.com/mdyousuf2620)
 - **UPI:** `md.y2007@ptaxis`
-- **Supporter Perks:** A first tip of ₹50+ unlocks the Golden **`ZERO-SUPPORTER`** profile badge and `+1 Free Emergency Escape Ticket (🎫)`.
+- **Supporter Perks:** A first tip of ₹50+ unlocks the Golden **`ZERO-SUPPORTER`** profile badge and `+1 Free Emergency Escape Ticket`.
 - **Manual Verification:** Email your donation screenshot to **mdyousuf982007@proton.me** to receive a signed offline unlock token (`ZDON1...`).
 
 ---

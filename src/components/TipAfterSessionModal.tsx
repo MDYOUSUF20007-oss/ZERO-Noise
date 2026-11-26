@@ -876,7 +876,7 @@ export const TipAfterSessionModal: React.FC<TipAfterSessionModalProps> = ({
                           style={{ color: 'var(--accent-hex, #FFFFFF)' }}
                         >
                           <Gift size={13} className="shrink-0" />
-                          <span>1st Tip ₹{FIRST_DONATION_BONUS_INR}+ = +1 🎫 &amp; Gold Badge</span>
+                          <span>1st Tip ₹{FIRST_DONATION_BONUS_INR}+ = +1 Ticket &amp; Gold Badge</span>
                         </div>
                         <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded obsidian-pill-active shrink-0">
                           Min ₹{FIRST_DONATION_BONUS_INR} (1st Tip Only)
@@ -885,7 +885,7 @@ export const TipAfterSessionModal: React.FC<TipAfterSessionModalProps> = ({
                       <p className="text-[10px] text-zinc-300 leading-relaxed">
                         <strong>Strict Requirement:</strong> The Golden{' '}
                         <strong style={{ color: 'var(--accent-hex, #FFFFFF)' }}>ZERO-SUPPORTER</strong> Profile Badge &amp;{' '}
-                        <strong>+1 Free Emergency Escape Ticket (🎫)</strong>{' '}
+                        <strong>+1 Free Emergency Escape Ticket</strong>{' '}
                         <strong>ONLY unlock after your 1st tip of minimum ₹{FIRST_DONATION_BONUS_INR}</strong>{' '}
                         (tips under ₹{FIRST_DONATION_BONUS_INR} do not unlock this badge).
                       </p>
@@ -900,7 +900,7 @@ export const TipAfterSessionModal: React.FC<TipAfterSessionModalProps> = ({
                             }}
                             className="flex-1 py-2 px-3 rounded-xl obsidian-pill-active font-black text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all"
                           >
-                            <span>Tip ₹{FIRST_DONATION_BONUS_INR}+ (+1 🎫 &amp; Gold)</span>
+                            <span>Tip ₹{FIRST_DONATION_BONUS_INR}+ (+1 Ticket &amp; Gold)</span>
                             <ExternalLink size={12} />
                           </a>
                           <button
@@ -917,7 +917,7 @@ export const TipAfterSessionModal: React.FC<TipAfterSessionModalProps> = ({
                             Confirm you completed your <strong>1st tip of minimum ₹{FIRST_DONATION_BONUS_INR}</strong>{' '}
                             to unlock the Golden{' '}
                             <strong style={{ color: 'var(--accent-hex, #FFFFFF)' }}>ZERO-SUPPORTER</strong> Badge &amp;{' '}
-                            <strong>+1 Free Emergency Escape Ticket (🎫)</strong>:
+                            <strong>+1 Free Emergency Escape Ticket</strong>:
                           </div>
                           <div className="flex gap-2">
                             <button

@@ -90,7 +90,7 @@ export const AetherialDashboardView: React.FC<AetherialDashboardViewProps> = ({
             <h1 className="text-xl sm:text-2xl font-bold text-[#e2e1ed]">
               {greeting}, {userName}
             </h1>
-            <span className="w-2 h-2 rounded-full bg-[#4edea3] animate-ping" />
+            <span className="w-2 h-2 rounded-full bg-[#4edea3]" />
           </div>
           <p className="text-xs text-[#bdc8d1] mt-0.5">
             Let&apos;s protect your cognitive bandwidth today.
@@ -274,7 +274,7 @@ export const AetherialDashboardView: React.FC<AetherialDashboardViewProps> = ({
                       : 'bg-[#1d1f28] text-[#87929a] hover:text-[#e2e1ed] border border-white/5'
                   }`}
                 >
-                  <span>{(b as any).icon || '🎒'}</span>
+                  <Briefcase size={13} />
                   <span>{b.name}</span>
                 </button>
               );
@@ -286,7 +286,7 @@ export const AetherialDashboardView: React.FC<AetherialDashboardViewProps> = ({
         <button
           type="button"
           onClick={handleStartSession}
-          className="relative group w-full py-4 px-6 rounded-full bg-[#38bdf8] text-[#001e2c] flex items-center justify-center gap-3 shadow-[0_0_24px_rgba(56,189,248,0.38)] active:scale-[0.98] transition-all cursor-pointer font-bold text-base"
+          className="relative group w-full py-4 px-6 rounded-xl bg-[#38bdf8] text-[#001e2c] flex items-center justify-center gap-3 active:scale-[0.98] transition-all cursor-pointer font-semibold text-base"
         >
           <Play size={20} fill="currentColor" />
           <span>Ignite {selectedDuration}m Focus Session</span>

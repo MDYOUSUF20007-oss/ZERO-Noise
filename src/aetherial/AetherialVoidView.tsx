@@ -419,26 +419,16 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
 
             {/* Central Digital Timer */}
             <div className="flex items-baseline justify-center tracking-tight text-white my-3">
-              <span
-                className="text-6xl sm:text-7xl font-extrabold font-display tabular-nums"
-                style={{
-                  filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.92)) drop-shadow(0 2px 16px ${activeAccent}77)`,
-                }}
-              >
+              <span className="text-6xl sm:text-7xl font-bold font-display tabular-nums">
                 {timeDisplay.m}
               </span>
               <span
-                className="text-6xl sm:text-7xl font-bold font-display animate-pulse px-1"
+                className="text-6xl sm:text-7xl font-semibold font-display px-1"
                 style={{ color: activeAccent }}
               >
                 :
               </span>
-              <span
-                className="text-6xl sm:text-7xl font-extrabold font-display tabular-nums"
-                style={{
-                  filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.92)) drop-shadow(0 2px 16px ${activeAccent}77)`,
-                }}
-              >
+              <span className="text-6xl sm:text-7xl font-bold font-display tabular-nums">
                 {timeDisplay.s}
               </span>
             </div>
@@ -588,30 +578,20 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
           {/* Central Digital Timer */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
             <div
-              className="w-3.5 h-3.5 rounded-full mb-1.5 animate-ping opacity-75"
-              style={{ backgroundColor: activeAccent, boxShadow: `0 0 16px ${activeAccent}` }}
+              className="w-2.5 h-2.5 rounded-full mb-2"
+              style={{ backgroundColor: activeAccent }}
             />
             <div className="flex items-baseline justify-center tracking-tight text-white">
-              <span
-                className="text-5xl sm:text-6xl font-extrabold font-display tabular-nums"
-                style={{
-                  filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.95)) drop-shadow(0 2px 16px ${activeAccent}88)`,
-                }}
-              >
+              <span className="text-5xl sm:text-6xl font-bold font-display tabular-nums">
                 {timeDisplay.m}
               </span>
               <span
-                className="text-5xl sm:text-6xl font-bold font-display animate-pulse px-0.5"
+                className="text-5xl sm:text-6xl font-semibold font-display px-0.5"
                 style={{ color: activeAccent }}
               >
                 :
               </span>
-              <span
-                className="text-5xl sm:text-6xl font-extrabold font-display tabular-nums"
-                style={{
-                  filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.95)) drop-shadow(0 2px 16px ${activeAccent}88)`,
-                }}
-              >
+              <span className="text-5xl sm:text-6xl font-bold font-display tabular-nums">
                 {timeDisplay.s}
               </span>
             </div>

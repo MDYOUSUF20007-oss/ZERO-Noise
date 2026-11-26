@@ -38,46 +38,31 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
       style={{ bottom: 'calc(20px + var(--zero-safe-bottom))' }}
     >
       <div
-        className={`liquid-dock rounded-[2rem] p-1.5 relative overflow-hidden ${
-          isAero ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] shadow-[0_-4px_20px_rgba(53,59,91,0.05),0_10px_30px_rgba(53,59,91,0.08)]' : ''
+        className={`liquid-dock rounded-2xl p-1.5 relative overflow-hidden ${
+          isAero ? 'bg-[#F8F4F0] border border-[rgba(53,59,91,0.09)] shadow-sm' : ''
         }`}
       >
-        {/* Top specular refraction highlight */}
-        {!isAero && (
-          <div
-            aria-hidden="true"
-            className="absolute top-0 left-8 right-8 h-px pointer-events-none"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.65) 50%, transparent 100%)',
-            }}
-          />
-        )}
-
         <div className="grid grid-cols-5 relative">
-          {/* Smooth 60FPS spring sliding glass pill indicator */}
+          {/* Smooth sliding pill indicator */}
           <div
             aria-hidden="true"
             className="absolute top-0 bottom-0 left-0 w-1/5 p-1 pointer-events-none will-change-transform"
             style={{
               transform: `translateX(${activeIdx * 100}%)`,
-              transition: 'transform 0.26s cubic-bezier(0.16, 1, 0.3, 1)',
+              transition: 'transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)',
             }}
           >
             <div
-              className="w-full h-full rounded-full liquid-dock-item-active"
+              className="w-full h-full rounded-[10px] liquid-dock-item-active"
               style={
                 isAero
                   ? {
                       backgroundColor: '#353B5B',
                       border: '1px solid #353B5B',
-                      boxShadow: '0 4px 14px rgba(53, 59, 91, 0.25)',
                     }
                   : {
-                      background: 'var(--accent-soft, rgba(0, 240, 255, 0.16))',
-                      border: '1px solid var(--accent-border, rgba(0, 240, 255, 0.55))',
-                      boxShadow:
-                        'inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 16px var(--liquid-accent-soft-glow, rgba(0, 240, 255, 0.25))',
+                      background: 'var(--accent-soft, rgba(244, 63, 94, 0.14))',
+                      border: '1px solid var(--accent-border, rgba(244, 63, 94, 0.45))',
                     }
               }
             />
@@ -94,7 +79,7 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
                   onSelectTab(tab.id);
                 }}
                 aria-current={active ? 'page' : undefined}
-                className={`relative z-10 flex flex-col items-center justify-center py-2 px-1 rounded-full cursor-pointer liquid-spring ${
+                className={`relative z-10 flex flex-col items-center justify-center py-2 px-1 rounded-[10px] cursor-pointer liquid-spring ${
                   isAero
                     ? active
                       ? 'text-[var(--accent-primary,#E69F86)]'

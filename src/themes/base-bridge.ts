@@ -1,9 +1,9 @@
 export const BASE_ENGINE_BRIDGE_CSS = `
   html, body, #root {
-    background-color: #000000 !important;
-    color: #f0f9ff !important;
+    background-color: #090A0E !important;
+    color: #f0f4f8 !important;
     font-family: 'Space Grotesk Variable', 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
-    font-weight: 500;
+    font-weight: 400;
     background-image: none !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -199,10 +199,10 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   }
   h1, h2, h3, h4, .font-display, .font-heading, .liquid-metric {
     font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Space Grotesk Variable', sans-serif !important;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
   }
   .liquid-metric {
-    font-weight: 800 !important;
+    font-weight: 700 !important;
     font-variant-numeric: tabular-nums;
   }
   .font-mono {
@@ -211,23 +211,21 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   }
   .uppercase {
     text-transform: none !important;
-    letter-spacing: 0.01em !important;
+    letter-spacing: 0 !important;
   }
 
   /* -------------------------------------------------------------
-     Smooth Micro-Interactions & Hardware Acceleration
+     Unified Easing Curve (Interaction-Only Motion)
      ------------------------------------------------------------- */
   .liquid-spring {
-    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease !important;
+    transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.15s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.15s cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
   .liquid-spring:active {
-    transform: scale(0.97) !important;
+    transform: scale(0.98) !important;
   }
 
   /* -------------------------------------------------------------
-     Liquid Glass Surface Cards (Authentic Frosted Acrylic Glass)
-     Full-fidelity backdrop-filter blur with specular bevel highlights.
-     No intrusive radial color stains or background bleed-through.
+     Surface Elevation & 8–10% Hairline Borders (No Neon Glows)
      ------------------------------------------------------------- */
   .glass-card,
   .obsidian-card,
@@ -237,23 +235,15 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   .settings-card,
   [data-frosted-card="true"],
   [data-obsidian-card="true"] {
-    background-color: var(--glass-surface-bg, rgba(20, 24, 32, 0.65)) !important;
-    background-image:
-      linear-gradient(
-        160deg,
-        rgba(255, 255, 255, calc(var(--glass-opacity, 0.50) * 0.08)) 0%,
-        rgba(255, 255, 255, 0.01) 35%,
-        rgba(0, 0, 0, 0.20) 100%
-      ) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.09)) !important;
-    border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.28)) !important;
-    border-radius: 20px !important;
-    box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, calc(var(--glass-opacity, 0.50) * 0.22)),
-      0 12px 30px -6px rgba(0, 0, 0, 0.65) !important;
-    backdrop-filter: var(--surface-blur, blur(18px) saturate(140%)) !important;
-    -webkit-backdrop-filter: var(--surface-blur, blur(18px) saturate(140%)) !important;
-    text-shadow: var(--glass-text-shadow, none) !important;
+    background-color: var(--glass-surface-bg, #11131A) !important;
+    background-image: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+    backdrop-filter: var(--surface-blur, blur(14px) saturate(120%)) !important;
+    -webkit-backdrop-filter: var(--surface-blur, blur(14px) saturate(120%)) !important;
+    text-shadow: none !important;
     color: var(--text-primary, #f8fafc) !important;
   }
 
@@ -345,21 +335,20 @@ export const BASE_ENGINE_BRIDGE_CSS = `
 
   .obsidian-inset,
   .liquid-inset {
-    background-color: var(--glass-inset-bg, rgba(26, 32, 44, 0.45)) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08)) !important;
-    border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.18)) !important;
-    border-radius: 14px !important;
+    background-color: var(--glass-inset-bg, rgba(22, 26, 36, 0.65)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
   }
 
   .obsidian-inset-neutral,
   .liquid-row {
-    background-color: var(--glass-row-bg, rgba(16, 20, 28, 0.36)) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06)) !important;
-    border-radius: 14px !important;
+    background-color: var(--glass-row-bg, rgba(16, 20, 28, 0.45)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 10px !important;
   }
 
   /* -------------------------------------------------------------
-     Fluent Glass Tactile Pills & Buttons (Ultra-Fast 0ms Overhead)
+     Calibrated Interactive Controls (No Neon Glow Shadows)
      ------------------------------------------------------------- */
   .theme-pill-active,
   .liquid-pill-active,
@@ -369,21 +358,21 @@ export const BASE_ENGINE_BRIDGE_CSS = `
     background-image: none !important;
     color: var(--accent-primary) !important;
     border: 1px solid var(--accent-border) !important;
-    border-radius: 9999px !important;
-    box-shadow: 0 0 14px var(--liquid-accent-soft-glow) !important;
-    font-weight: 700 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    font-weight: 600 !important;
   }
 
   .theme-pill,
   .liquid-pill-inactive,
   .obsidian-pill-inactive,
   .action-pill-inactive {
-    background-color: rgba(255, 255, 255, 0.07) !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
     background-image: none !important;
     color: #cbd5e1 !important;
-    border: 1px solid rgba(255, 255, 255, 0.11) !important;
-    border-radius: 9999px !important;
-    font-weight: 600 !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
   }
 
   /* -------------------------------------------------------------
@@ -421,13 +410,13 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   .zero-bottom-nav,
   nav[data-bottom-nav="true"],
   nav[data-frosted-chrome="true"] {
-    background-color: var(--glass-dock-bg, rgba(12, 16, 24, 0.80)) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.10)) !important;
-    border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.26)) !important;
-    border-radius: 2rem !important;
-    backdrop-filter: blur(10px) saturate(130%) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(130%) !important;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.20), 0 12px 32px -4px rgba(0, 0, 0, 0.65) !important;
+    background-color: var(--glass-dock-bg, rgba(15, 17, 24, 0.92)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 16px !important;
+    backdrop-filter: blur(12px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
   }
 
   /* -------------------------------------------------------------

@@ -119,7 +119,7 @@ export const AetherialBagsView: React.FC<AetherialBagsViewProps> = ({
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl">{(activeBag as any).icon || '🎒'}</span>
+                    <Briefcase size={18} className="text-[#38bdf8]" />
                     <h3 className="text-base font-bold text-[#e2e1ed]">{activeBag.name}</h3>
                   </div>
                   <div className="flex items-center gap-2 text-xs">
@@ -132,9 +132,9 @@ export const AetherialBagsView: React.FC<AetherialBagsViewProps> = ({
                     </span>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-full bg-[#00a572]/25 text-[#4edea3] text-[11px] font-bold flex items-center gap-1.5 shadow-[0_0_8px_rgba(78,222,163,0.3)]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3] animate-pulse" />
-                  ACTIVE NOW
+                <span className="px-2.5 py-1 rounded-md bg-[#00a572]/25 text-[#4edea3] text-[11px] font-semibold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3]" />
+                  Active now
                 </span>
               </div>
 
@@ -197,7 +197,7 @@ export const AetherialBagsView: React.FC<AetherialBagsViewProps> = ({
             className="relative overflow-hidden rounded-2xl bg-[#191b24]/80 backdrop-blur-xl p-4 shadow-lg border border-white/5 hover:border-white/10 transition-all flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{(bag as any).icon || '📚'}</span>
+              <Briefcase size={18} className="text-[#87929a]" />
               <div>
                 <h3 className="text-sm font-bold text-[#e2e1ed]">{bag.name}</h3>
                 <p className="text-xs text-[#bdc8d1]">

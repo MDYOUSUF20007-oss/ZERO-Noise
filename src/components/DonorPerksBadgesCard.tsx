@@ -233,7 +233,7 @@ export const DonorPerksBadgesCard: React.FC<DonorPerksBadgesCardProps> = ({
                 ) : isBespoke ? (
                   <Ticket size={11} className="text-blue-500 inline" />
                 ) : (
-                  <span>(+1 🎫):</span>
+                  <span>(+1 Ticket):</span>
                 )}
               </span>
               <span

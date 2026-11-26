@@ -355,8 +355,8 @@ const DialWheelSection = React.memo(function DialWheelSection({
             style={{
               borderColor: isAero ? (aeroAccentColor || '#0f172a') : undefined,
               boxShadow: isAero
-                ? '0 2px 10px rgba(15, 23, 42, 0.20)'
-                : '0 0 16px #ffffff, 0 0 26px var(--liquid-accent-vibrant)',
+                ? '0 2px 6px rgba(15, 23, 42, 0.18)'
+                : '0 2px 8px rgba(0, 0, 0, 0.50)',
             }}
           >
             <div
@@ -368,17 +368,17 @@ const DialWheelSection = React.memo(function DialWheelSection({
 
         <div className="flex flex-col items-center justify-center z-10 pointer-events-none">
           {isAero ? (
-            <span className="px-3 py-1 rounded-2xl bg-white border border-[#CBD5E1] shadow-xs text-[10.5px] font-sans tracking-[0.14em] uppercase mb-1 font-extrabold text-[#0f172a]">
-              Lock Duration
+            <span className="px-2.5 py-0.5 rounded-md bg-white border border-[#CBD5E1] text-[11px] font-sans mb-1 font-semibold text-[#0f172a]">
+              Lock duration
             </span>
           ) : (
-            <span className="text-[11px] font-sans tracking-[0.14em] uppercase mb-1 font-bold text-zinc-300">
-              Lock Duration
+            <span className="text-[11px] font-sans mb-1 font-medium text-zinc-400">
+              Lock duration
             </span>
           )}
           <div
             ref={durationTextRef}
-            className={`font-display tabular-nums text-4xl font-extrabold tracking-tight ${
+            className={`font-display tabular-nums text-4xl font-bold tracking-tight ${
               isAero ? 'text-[#0f172a]' : 'liquid-metric'
             }`}
           >
@@ -430,14 +430,14 @@ const DialWheelSection = React.memo(function DialWheelSection({
                   ? { backgroundColor: aeroAccentColor || '#0f172a', borderColor: aeroAccentColor || '#0f172a' }
                   : undefined
               }
-              className={`min-h-[36px] px-3.5 py-1.5 text-xs font-sans tabular-nums inline-flex items-center justify-center liquid-spring hover:scale-[1.02] active:scale-[0.97] cursor-pointer ${
+              className={`min-h-[36px] px-3.5 py-1.5 text-xs font-sans tabular-nums inline-flex items-center justify-center liquid-spring active:scale-[0.98] cursor-pointer ${
                 isAero
                   ? isSelected
-                    ? 'text-white font-extrabold shadow-md rounded-2xl border'
-                    : 'bg-white text-[#0f172a] font-bold border border-[#CBD5E1] shadow-xs rounded-2xl hover:border-[#94A3B8]'
+                    ? 'text-white font-semibold rounded-lg border'
+                    : 'bg-white text-[#0f172a] font-medium border border-[#CBD5E1] rounded-lg hover:border-[#94A3B8]'
                   : isSelected
-                  ? 'liquid-pill-active font-bold rounded-xl'
-                  : 'liquid-pill-inactive font-semibold rounded-xl'
+                  ? 'liquid-pill-active font-semibold rounded-lg'
+                  : 'liquid-pill-inactive font-medium rounded-lg'
               }`}
             >
               {preset.label}
@@ -881,10 +881,9 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
             headerContent={
               <>
                 <div
-                  className="relative w-6 h-6 obsidian-icon-box flex items-center justify-center rounded-xl"
+                  className="relative w-6 h-6 obsidian-icon-box flex items-center justify-center rounded-md"
                   style={{
-                    border: '1px solid var(--accent-hex, rgba(125, 211, 252, 0.45))',
-                    boxShadow: '0 0 10px var(--accent-hex, rgba(125, 211, 252, 0.15))',
+                    border: '1px solid var(--accent-border, rgba(255, 255, 255, 0.14))',
                   }}
                 >
                   <Ticket
@@ -894,13 +893,13 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                   />
                   {parachuteMetrics.currentBalance > 0 && (
                     <span
-                      className="absolute -top-1.5 -right-1.5 min-w-[15px] h-[15px] px-0.5 rounded-full bg-[#070b11] border border-cyan-400/80 text-[8.5px] font-mono font-bold leading-[13px] text-cyan-200 text-center flex items-center justify-center shadow-sm"
+                      className="absolute -top-1.5 -right-1.5 min-w-[15px] h-[15px] px-0.5 rounded-md bg-[#090A0E] border border-white/25 text-[9px] font-mono font-semibold leading-[13px] text-white text-center flex items-center justify-center"
                     >
                       {parachuteMetrics.currentBalance}
                     </span>
                   )}
                 </div>
-                <span className="text-[9px] uppercase tracking-wider leading-none font-bold text-zinc-300">
+                <span className="text-[10px] leading-none font-medium text-zinc-300">
                   {parachuteMetrics.currentBalance === 1 ? 'Ticket' : 'Tickets'}
                 </span>
               </>
@@ -941,11 +940,10 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
             headerContent={
               <>
                 <div
-                  className="w-6 h-6 obsidian-icon-box flex items-center justify-center rounded-xl"
+                  className="w-6 h-6 obsidian-icon-box flex items-center justify-center rounded-md"
                   style={{
-                    backgroundColor: 'var(--accent-primary, #00f0ff)',
-                    border: '1px solid rgba(255, 255, 255, 0.95)',
-                    boxShadow: '0 2px 10px var(--liquid-accent-glow)',
+                    backgroundColor: 'var(--accent-primary, #f43f5e)',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
                     color: '#07040d',
                   }}
                 >
@@ -956,7 +954,7 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                     style={{ color: '#07040d' }}
                   />
                 </div>
-                <span className="text-[9px] uppercase tracking-wider leading-none font-bold text-zinc-300">
+                <span className="text-[10px] leading-none font-medium text-zinc-300">
                   Theme
                 </span>
               </>
@@ -1119,11 +1117,11 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
         <div className="w-full">
           <div className="flex items-center justify-between mb-2">
             <span
-              className={`text-[11px] font-sans uppercase tracking-wider ${
-                isAero ? 'text-[#0f172a] font-extrabold' : 'text-zinc-300 font-bold'
+              className={`text-xs font-sans ${
+                isAero ? 'text-[#0f172a] font-semibold' : 'text-zinc-300 font-medium'
               }`}
             >
-              Session Focus Tag
+              Session focus tag
             </span>
             <button
               type="button"
@@ -1177,14 +1175,14 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                         ? { backgroundColor: aeroAccentColor || '#0f172a', borderColor: aeroAccentColor || '#0f172a' }
                         : undefined
                     }
-                    className={`min-h-[36px] px-3.5 py-1.5 text-xs font-sans whitespace-nowrap inline-flex items-center justify-center liquid-spring hover:scale-[1.02] active:scale-[0.97] cursor-pointer ${
+                    className={`min-h-[36px] px-3.5 py-1.5 text-xs font-sans whitespace-nowrap inline-flex items-center justify-center liquid-spring active:scale-[0.98] cursor-pointer ${
                       isAero
                         ? isSelected
-                          ? 'text-white font-extrabold shadow-sm rounded-2xl border'
-                          : 'bg-white text-[#0f172a] border border-[#CBD5E1] font-bold rounded-2xl shadow-xs hover:border-[#94A3B8]'
+                          ? 'text-white font-semibold rounded-lg border'
+                          : 'bg-white text-[#0f172a] border border-[#CBD5E1] font-medium rounded-lg hover:border-[#94A3B8]'
                         : isSelected
-                        ? 'liquid-pill-active font-bold rounded-xl'
-                        : 'liquid-pill-inactive font-semibold rounded-xl'
+                        ? 'liquid-pill-active font-semibold rounded-lg'
+                        : 'liquid-pill-inactive font-medium rounded-lg'
                     }`}
                   >
                     #{tag}
@@ -1311,7 +1309,7 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
           />
         )}
 
-        {/* 3-Second Hold to Ignite Button */}
+        {/* 3-Second Hold to Ignite Button (Single Clear Primary CTA) */}
         <div className="w-full flex flex-col items-center">
           <button
             type="button"
@@ -1321,21 +1319,19 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
             onTouchStart={startHold}
             onTouchEnd={cancelHold}
             onTouchCancel={cancelHold}
-            className={`relative w-full h-14 py-4 rounded-full font-display font-extrabold text-[15px] tracking-wide uppercase overflow-hidden select-none flex items-center justify-center cursor-pointer liquid-spring ${
+            className={`relative w-full h-12 py-3 rounded-xl font-display font-bold text-[15px] tracking-tight overflow-hidden select-none flex items-center justify-center cursor-pointer liquid-spring ${
               isHolding ? 'scale-[0.98]' : 'active:scale-[0.98]'
             } ${
-              isAero ? 'text-white shadow-lg' : 'liquid-glass'
+              isAero ? 'text-white' : ''
             }`}
             style={
               isAero
                 ? { touchAction: 'none', backgroundColor: aeroAccentColor || '#353B5B' }
                 : {
                     touchAction: 'none',
-                    backgroundColor: 'var(--accent-soft)',
-                    border: '1px solid var(--accent-border)',
-                    boxShadow: isHolding
-                      ? '0 0 24px var(--liquid-accent-glow)'
-                      : '0 8px 18px -4px var(--liquid-accent-soft-glow)',
+                    backgroundColor: 'var(--accent-primary, #f43f5e)',
+                    color: 'var(--text-on-accent, #ffffff)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
                   }
             }
           >
@@ -1353,11 +1349,10 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
             <div
               className={`relative z-10 flex items-center justify-center gap-2 transition-colors duration-75 ${
                 isAero
-                  ? 'text-white font-bold'
-                  : holdProgress > 0.4
-                  ? 'font-extrabold text-[#07040d]'
-                  : 'text-zinc-100'
+                  ? 'text-white font-semibold'
+                  : 'font-semibold'
               }`}
+              style={!isAero ? { color: 'var(--text-on-accent, #ffffff)' } : undefined}
             >
               {isHolding ? (
                 <>
@@ -1408,14 +1403,14 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                   ? { backgroundColor: aeroAccentColor || '#E69F86' }
                   : undefined
               }
-              className={`min-h-[36px] flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-sans transition-all cursor-pointer ${
+              className={`min-h-[36px] flex items-center gap-1.5 px-3 py-1.5 text-xs font-sans transition-all cursor-pointer ${
                 isAero
                   ? intentionRitualEnabled
-                    ? 'text-[#353B5B] font-extrabold rounded-2xl shadow-sm'
-                    : 'bg-[#F8F4F0] text-[#353B5B] font-bold border border-[rgba(53,59,91,0.08)] rounded-2xl shadow-xs'
+                    ? 'text-[#353B5B] font-semibold rounded-lg'
+                    : 'bg-[#F8F4F0] text-[#353B5B] font-medium border border-[rgba(53,59,91,0.10)] rounded-lg'
                   : intentionRitualEnabled
-                  ? 'liquid-pill-active font-bold text-cyan-300 rounded-full'
-                  : 'liquid-pill-inactive font-semibold text-zinc-300 rounded-full'
+                  ? 'liquid-pill-active font-semibold rounded-lg'
+                  : 'liquid-pill-inactive font-medium text-zinc-300 rounded-lg'
               }`}
             >
               <Sparkles size={12} strokeWidth={2} />
@@ -1445,16 +1440,16 @@ export const LockDialView: React.FC<LockDialViewProps> = ({
                   ? 'Burn the Boats is limited to a maximum session duration of 4 hours'
                   : 'Burn the Boats disables emergency escape tickets for this session (Max 4h)'
               }
-              className={`min-h-[36px] flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-sans transition-all cursor-pointer ${
+              className={`min-h-[36px] flex items-center gap-1.5 px-3 py-1.5 text-xs font-sans transition-all cursor-pointer ${
                 durationSeconds > MAX_BURN_THE_BOATS_SECONDS
-                  ? 'opacity-40 cursor-not-allowed bg-zinc-900/40 text-zinc-500 border border-white/5 rounded-full'
+                  ? 'opacity-40 cursor-not-allowed bg-zinc-900/40 text-zinc-500 border border-white/5 rounded-lg'
                   : isAero
                   ? burnTheBoatsEnabled
-                    ? 'bg-[#E69F86] text-[#353B5B] font-extrabold rounded-2xl shadow-sm'
-                    : 'bg-[#F8F4F0] text-[#353B5B] font-bold border border-[rgba(53,59,91,0.08)] rounded-2xl shadow-xs'
+                    ? 'bg-[#E69F86] text-[#353B5B] font-semibold rounded-lg'
+                    : 'bg-[#F8F4F0] text-[#353B5B] font-medium border border-[rgba(53,59,91,0.10)] rounded-lg'
                   : burnTheBoatsEnabled
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold rounded-full'
-                  : 'liquid-pill-inactive font-semibold text-zinc-300 rounded-full'
+                  ? 'bg-amber-500/15 text-amber-300 border border-amber-500/35 font-semibold rounded-lg'
+                  : 'liquid-pill-inactive font-medium text-zinc-300 rounded-lg'
               }`}
             >
               <Flame size={12} strokeWidth={2} className={burnTheBoatsEnabled ? (isAero ? 'text-[#353B5B]' : 'text-amber-400') : (isAero ? 'text-[#353B5B]' : 'text-zinc-500')} />

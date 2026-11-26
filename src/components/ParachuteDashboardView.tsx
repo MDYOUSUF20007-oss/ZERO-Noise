@@ -1902,13 +1902,13 @@ export const ParachuteDashboardView: React.FC<ParachuteDashboardViewProps> = ({
           <h1
             className={`text-xl tracking-tight flex items-center gap-2 truncate ${
               isFluentGlass
-                ? 'font-display font-extrabold text-white'
+                ? 'font-display font-bold text-white'
                 : isBespoke
-                ? 'font-display font-extrabold text-neutral-50'
-                : 'font-mono font-black text-white'
+                ? 'font-display font-bold text-neutral-50'
+                : 'font-mono font-bold text-white'
             }`}
           >
-            <span>ESCAPE TICKETS &amp; METRICS</span>
+            <span>Insights &amp; Escape Tickets</span>
           </h1>
           <p
             className={`text-xs font-medium ${
