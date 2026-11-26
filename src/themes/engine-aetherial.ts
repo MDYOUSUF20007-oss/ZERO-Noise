@@ -80,7 +80,8 @@ export const aetherialEngine: ThemeEngineDefinition = {
     html, body, #root {
       background-color: #11131b !important;
       color: #e2e1ed !important;
-      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+      font-family: 'Space Grotesk Variable', 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
+      font-weight: 500;
       background-image: none !important;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -239,9 +240,17 @@ export const aetherialEngine: ThemeEngineDefinition = {
       --liquid-accent-tint: #cbd5e1 !important;
     }
 
-    /* Clean Geometric Typography */
-    body, .font-mono, .font-sans {
-      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+    /* Bold Geometric & Architectural Typography */
+    body, .font-sans {
+      font-family: 'Space Grotesk Variable', 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
+    }
+    h1, h2, h3, h4, .font-display, .font-heading, .liquid-metric {
+      font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Space Grotesk Variable', sans-serif !important;
+      letter-spacing: -0.025em;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace !important;
+      font-variant-numeric: tabular-nums;
     }
 
     /* Smooth Micro-Interactions */

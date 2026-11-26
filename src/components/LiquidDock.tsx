@@ -94,51 +94,51 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
                   onSelectTab(tab.id);
                 }}
                 aria-current={active ? 'page' : undefined}
-                className={`relative z-10 flex flex-col items-center justify-center py-2 px-1 rounded-full liquid-spring ${
+                className={`relative z-10 flex flex-col items-center justify-center py-2 px-1 rounded-full cursor-pointer liquid-spring ${
                   isAero
                     ? active
                       ? 'text-[var(--accent-primary,#E69F86)]'
-                      : 'text-[#353B5B]/70 hover:text-[#353B5B]'
+                      : 'text-[#353B5B]/75 hover:text-[#353B5B]'
                     : active
                     ? 'text-white'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    : 'text-zinc-300 hover:text-white'
                 }`}
               >
                 <div className="relative flex items-center justify-center">
                   {tab.id === 'dial' && (
                     <Clock
                       size={17}
-                      strokeWidth={1.8}
-                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-cyan-300' : undefined)}
+                      strokeWidth={active ? 2.2 : 1.9}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/75') : (active ? 'text-cyan-300' : undefined)}
                     />
                   )}
                   {tab.id === 'dashboard' && (
                     <BarChart3
                       size={17}
-                      strokeWidth={1.8}
-                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-cyan-300' : undefined)}
+                      strokeWidth={active ? 2.2 : 1.9}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/75') : (active ? 'text-cyan-300' : undefined)}
                     />
                   )}
                   {tab.id === 'zerotube' && (
                     <Play
                       size={17}
-                      strokeWidth={1.8}
+                      strokeWidth={active ? 2.2 : 1.9}
                       fill={active ? 'currentColor' : 'none'}
-                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-cyan-300' : undefined)}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/75') : (active ? 'text-cyan-300' : undefined)}
                     />
                   )}
                   {tab.id === 'schedules' && (
                     <Settings
                       size={17}
-                      strokeWidth={1.8}
-                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-cyan-300' : undefined)}
+                      strokeWidth={active ? 2.2 : 1.9}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/75') : (active ? 'text-cyan-300' : undefined)}
                     />
                   )}
                   {tab.id === 'support' && (
                     <Heart
                       size={17}
-                      strokeWidth={1.8}
-                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/70') : (active ? 'text-cyan-300' : undefined)}
+                      strokeWidth={active ? 2.2 : 1.9}
+                      className={isAero ? (active ? 'text-[var(--accent-primary,#E69F86)]' : 'text-[#353B5B]/75') : (active ? 'text-cyan-300' : undefined)}
                     />
                   )}
                 </div>
@@ -146,11 +146,11 @@ export const LiquidDock: React.FC<LiquidDockProps> = ({
                   className={`text-[10px] mt-1 tracking-tight whitespace-nowrap font-sans ${
                     isAero
                       ? active
-                        ? 'font-bold text-[var(--accent-primary,#E69F86)]'
-                        : 'font-medium text-[#353B5B]/70'
+                        ? 'font-extrabold text-[var(--accent-primary,#E69F86)]'
+                        : 'font-semibold text-[#353B5B]/75'
                       : active
-                      ? 'font-bold text-white'
-                      : 'font-medium text-zinc-400'
+                      ? 'font-extrabold text-white'
+                      : 'font-semibold text-zinc-300'
                   }`}
                 >
                   {tab.label}

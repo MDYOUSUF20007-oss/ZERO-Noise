@@ -420,7 +420,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
             {/* Central Digital Timer */}
             <div className="flex items-baseline justify-center tracking-tight text-white my-3">
               <span
-                className="text-6xl sm:text-7xl font-light tabular-nums"
+                className="text-6xl sm:text-7xl font-extrabold font-display tabular-nums"
                 style={{
                   filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.92)) drop-shadow(0 2px 16px ${activeAccent}77)`,
                 }}
@@ -428,13 +428,13 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
                 {timeDisplay.m}
               </span>
               <span
-                className="text-6xl sm:text-7xl font-extralight animate-pulse px-1"
+                className="text-6xl sm:text-7xl font-bold font-display animate-pulse px-1"
                 style={{ color: activeAccent }}
               >
                 :
               </span>
               <span
-                className="text-6xl sm:text-7xl font-light tabular-nums"
+                className="text-6xl sm:text-7xl font-extrabold font-display tabular-nums"
                 style={{
                   filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.92)) drop-shadow(0 2px 16px ${activeAccent}77)`,
                 }}
@@ -593,7 +593,7 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
             />
             <div className="flex items-baseline justify-center tracking-tight text-white">
               <span
-                className="text-5xl sm:text-6xl font-light tabular-nums"
+                className="text-5xl sm:text-6xl font-extrabold font-display tabular-nums"
                 style={{
                   filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.95)) drop-shadow(0 2px 16px ${activeAccent}88)`,
                 }}
@@ -601,13 +601,13 @@ export const AetherialVoidView: React.FC<AetherialVoidViewProps> = ({
                 {timeDisplay.m}
               </span>
               <span
-                className="text-5xl sm:text-6xl font-extralight animate-pulse px-0.5"
+                className="text-5xl sm:text-6xl font-bold font-display animate-pulse px-0.5"
                 style={{ color: activeAccent }}
               >
                 :
               </span>
               <span
-                className="text-5xl sm:text-6xl font-light tabular-nums"
+                className="text-5xl sm:text-6xl font-extrabold font-display tabular-nums"
                 style={{
                   filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.95)) drop-shadow(0 2px 16px ${activeAccent}88)`,
                 }}

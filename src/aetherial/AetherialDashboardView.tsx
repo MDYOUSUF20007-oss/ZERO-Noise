@@ -129,11 +129,11 @@ export const AetherialDashboardView: React.FC<AetherialDashboardViewProps> = ({
           <div className="flex items-center justify-between mt-4 gap-4">
             <div className="flex flex-col justify-center">
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-light text-[#e2e1ed] tracking-tight">
+                <span className="text-4xl font-extrabold font-display text-[#e2e1ed] tracking-tight tabular-nums">
                   {Math.floor(todayReclaimedHours || 2)}
-                  <span className="text-xl font-normal text-[#bdc8d1]">h </span>
+                  <span className="text-xl font-bold text-[#bdc8d1]">h </span>
                   {Math.round(((todayReclaimedHours || 2.23) % 1) * 60)}
-                  <span className="text-xl font-normal text-[#bdc8d1]">m</span>
+                  <span className="text-xl font-bold text-[#bdc8d1]">m</span>
                 </span>
               </div>
               <p className="text-xs text-[#bdc8d1] mt-1">

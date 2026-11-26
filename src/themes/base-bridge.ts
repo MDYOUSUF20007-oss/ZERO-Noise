@@ -2,7 +2,8 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   html, body, #root {
     background-color: #000000 !important;
     color: #f0f9ff !important;
-    font-family: 'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif !important;
+    font-family: 'Space Grotesk Variable', 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
+    font-weight: 500;
     background-image: none !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -191,10 +192,22 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   }
 
   /* -------------------------------------------------------------
-     Clean Typography & Natural Letter-casing
+     Bold Architectural Typography & Natural Letter-casing
      ------------------------------------------------------------- */
-  body, .font-mono, .font-sans {
-    font-family: 'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif !important;
+  body, .font-sans {
+    font-family: 'Space Grotesk Variable', 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
+  }
+  h1, h2, h3, h4, .font-display, .font-heading, .liquid-metric {
+    font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Space Grotesk Variable', sans-serif !important;
+    letter-spacing: -0.025em;
+  }
+  .liquid-metric {
+    font-weight: 800 !important;
+    font-variant-numeric: tabular-nums;
+  }
+  .font-mono {
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace !important;
+    font-variant-numeric: tabular-nums;
   }
   .uppercase {
     text-transform: none !important;
@@ -358,17 +371,19 @@ export const BASE_ENGINE_BRIDGE_CSS = `
     border: 1px solid var(--accent-border) !important;
     border-radius: 9999px !important;
     box-shadow: 0 0 14px var(--liquid-accent-soft-glow) !important;
+    font-weight: 700 !important;
   }
 
   .theme-pill,
   .liquid-pill-inactive,
   .obsidian-pill-inactive,
   .action-pill-inactive {
-    background-color: rgba(255, 255, 255, 0.06) !important;
+    background-color: rgba(255, 255, 255, 0.07) !important;
     background-image: none !important;
-    color: #94a3b8 !important;
-    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    color: #cbd5e1 !important;
+    border: 1px solid rgba(255, 255, 255, 0.11) !important;
     border-radius: 9999px !important;
+    font-weight: 600 !important;
   }
 
   /* -------------------------------------------------------------

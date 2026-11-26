@@ -32,7 +32,9 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   const widthClass = fullWidth ? 'w-full' : '';
 
   const interactiveClasses =
-    onClick && !disabled ? 'cursor-pointer liquid-spring hover:brightness-105 active:scale-[0.98]' : '';
+    onClick && !disabled
+      ? 'cursor-pointer liquid-spring hover:brightness-105 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]'
+      : '';
 
   const sharedClassName = `relative flex flex-col justify-between ${widthClass} rounded-[20px] overflow-hidden liquid-glass font-sans ${interactiveClasses} ${className}`;
 

@@ -51,12 +51,38 @@ body {
   padding: 0;
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  font-family: 'Space Grotesk Variable', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-weight: 500;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
   transition: background-color 150ms ease, color 150ms ease;
+}
+
+h1, h2, h3, h4, .font-display, .font-heading, .liquid-metric {
+  font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Space Grotesk Variable', sans-serif;
+  letter-spacing: -0.025em;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-primary, #f43f5e);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .zero-app-shell {

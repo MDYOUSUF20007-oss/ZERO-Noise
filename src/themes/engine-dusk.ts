@@ -108,9 +108,34 @@ export const duskEngine: ThemeEngineDefinition = {
     html[data-interface-style="dusk"] #root {
       background: #24283F !important;
       color: #F3EDE8 !important;
-      font-family: 'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif !important;
+      font-family: 'Space Grotesk Variable', 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
+      font-weight: 500;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+    }
+
+    html[data-theme="dusk"] h1,
+    html[data-theme="dusk"] h2,
+    html[data-theme="dusk"] h3,
+    html[data-theme="dusk"] h4,
+    html[data-theme="dusk"] .font-display,
+    html[data-theme="dusk"] .font-heading,
+    html[data-theme="dusk"] .liquid-metric,
+    html[data-interface-style="dusk"] h1,
+    html[data-interface-style="dusk"] h2,
+    html[data-interface-style="dusk"] h3,
+    html[data-interface-style="dusk"] h4,
+    html[data-interface-style="dusk"] .font-display,
+    html[data-interface-style="dusk"] .font-heading,
+    html[data-interface-style="dusk"] .liquid-metric {
+      font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Space Grotesk Variable', sans-serif !important;
+      letter-spacing: -0.025em;
+    }
+
+    html[data-theme="dusk"] .font-mono,
+    html[data-interface-style="dusk"] .font-mono {
+      font-family: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace !important;
+      font-variant-numeric: tabular-nums;
     }
 
     html[data-theme="dusk"] .zero-app-shell,

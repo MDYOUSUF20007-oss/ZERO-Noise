@@ -1902,17 +1902,17 @@ export const ParachuteDashboardView: React.FC<ParachuteDashboardViewProps> = ({
           <h1
             className={`text-xl tracking-tight flex items-center gap-2 truncate ${
               isFluentGlass
-                ? 'font-sans font-bold text-white'
+                ? 'font-display font-extrabold text-white'
                 : isBespoke
-                ? 'font-sans font-semibold text-neutral-50'
+                ? 'font-display font-extrabold text-neutral-50'
                 : 'font-mono font-black text-white'
             }`}
           >
             <span>ESCAPE TICKETS &amp; METRICS</span>
           </h1>
           <p
-            className={`text-xs ${
-              isModernFont ? 'font-sans text-zinc-400' : 'font-mono text-zinc-400'
+            className={`text-xs font-medium ${
+              isModernFont ? 'font-sans text-zinc-300' : 'font-mono text-zinc-300'
             }`}
           >
             100% Real Focus Metrics • Zero Fake Data

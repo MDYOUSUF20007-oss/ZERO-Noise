@@ -158,13 +158,13 @@ export const AetherialLandingView: React.FC<AetherialLandingViewProps> = ({
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
             <div className="w-3.5 h-3.5 rounded-full bg-[#38bdf8] shadow-[0_0_16px_#38bdf8] mb-1.5 animate-ping opacity-75" />
             <div className="flex items-baseline justify-center tracking-tight text-[#e2e1ed]">
-              <span className="text-5xl sm:text-6xl font-light font-sans drop-shadow-[0_0_24px_rgba(56,189,248,0.25)] tabular-nums">
+              <span className="text-5xl sm:text-6xl font-extrabold font-display drop-shadow-[0_0_24px_rgba(56,189,248,0.25)] tabular-nums">
                 {selectedMinutes.toString().padStart(2, '0')}
               </span>
-              <span className="text-5xl sm:text-6xl font-extralight text-[#38bdf8] animate-pulse px-0.5">
+              <span className="text-5xl sm:text-6xl font-bold font-display text-[#38bdf8] animate-pulse px-0.5">
                 :
               </span>
-              <span className="text-5xl sm:text-6xl font-light font-sans drop-shadow-[0_0_24px_rgba(56,189,248,0.25)] tabular-nums">
+              <span className="text-5xl sm:text-6xl font-extrabold font-display drop-shadow-[0_0_24px_rgba(56,189,248,0.25)] tabular-nums">
                 00
               </span>
             </div>

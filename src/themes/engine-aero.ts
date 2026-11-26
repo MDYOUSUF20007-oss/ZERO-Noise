@@ -105,9 +105,26 @@ export const aeroEngine: ThemeEngineDefinition = {
     html[data-interface-style="aero"] #root {
       background: #F3EDE8 !important;
       color: #353B5B !important;
-      font-family: 'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif !important;
+      font-family: 'Space Grotesk Variable', 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
+      font-weight: 500;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+    }
+
+    html[data-interface-style="aero"] h1,
+    html[data-interface-style="aero"] h2,
+    html[data-interface-style="aero"] h3,
+    html[data-interface-style="aero"] h4,
+    html[data-interface-style="aero"] .font-display,
+    html[data-interface-style="aero"] .font-heading,
+    html[data-interface-style="aero"] .liquid-metric {
+      font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Space Grotesk Variable', sans-serif !important;
+      letter-spacing: -0.025em;
+    }
+
+    html[data-interface-style="aero"] .font-mono {
+      font-family: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace !important;
+      font-variant-numeric: tabular-nums;
     }
 
     html[data-interface-style="aero"] .zero-app-shell {

@@ -8,8 +8,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        mono: ['ui-monospace', 'SFMono-Regular', '"JetBrains Mono"', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Inter"', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        display: ['"Bricolage Grotesque Variable"', '"Bricolage Grotesque"', '"Space Grotesk Variable"', 'sans-serif'],
+        heading: ['"Bricolage Grotesque Variable"', '"Bricolage Grotesque"', '"Space Grotesk Variable"', 'sans-serif'],
+        mono: ['"JetBrains Mono Variable"', '"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        sans: ['"Space Grotesk Variable"', '"Space Grotesk"', '"Bricolage Grotesque Variable"', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
         zero: {

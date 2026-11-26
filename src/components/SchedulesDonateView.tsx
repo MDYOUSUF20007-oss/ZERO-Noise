@@ -461,17 +461,17 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
           <h1
             className={`text-xl tracking-tight flex items-center gap-2 ${
               isAero
-                ? 'font-sans font-bold text-[#111827]'
+                ? 'font-display font-extrabold text-[#111827]'
                 : isFluentGlass
-                ? 'font-sans font-semibold liquid-metric text-white'
+                ? 'font-display font-extrabold liquid-metric text-white'
                 : isBespoke
-                ? 'font-sans font-bold text-white'
+                ? 'font-display font-extrabold text-white'
                 : 'font-mono font-black text-white'
             }`}
           >
             <span>KEEP ZERO FREE</span>
           </h1>
-          <p className={`text-xs ${isAero ? 'font-sans text-[#5B6B79]' : isModernFont ? 'font-sans text-zinc-400' : 'font-mono text-zinc-400'}`}>
+          <p className={`text-xs font-medium ${isAero ? 'font-sans text-[#5B6B79]' : isModernFont ? 'font-sans text-zinc-300' : 'font-mono text-zinc-300'}`}>
             100% FOSS • Voluntary UPI / Ko-fi Support &amp; Donor Perks
           </p>
         </div>
@@ -480,17 +480,17 @@ export const SchedulesDonateView: React.FC<SchedulesDonateViewProps> = ({
           <h1
             className={`text-xl tracking-tight flex items-center gap-2 ${
               isAero
-                ? 'font-sans font-bold text-[#111827]'
+                ? 'font-display font-extrabold text-[#111827]'
                 : isFluentGlass
-                ? 'font-sans font-semibold liquid-metric text-white'
+                ? 'font-display font-extrabold liquid-metric text-white'
                 : isBespoke
-                ? 'font-sans font-bold text-white'
+                ? 'font-display font-extrabold text-white'
                 : 'font-mono font-black text-white'
             }`}
           >
             <span>SETTINGS &amp; OS</span>
           </h1>
-          <p className={`text-xs ${isAero ? 'font-sans text-[#5B6B79]' : isModernFont ? 'font-sans text-zinc-400' : 'font-mono text-zinc-400'}`}>
+          <p className={`text-xs font-medium ${isAero ? 'font-sans text-[#5B6B79]' : isModernFont ? 'font-sans text-zinc-300' : 'font-mono text-zinc-300'}`}>
             Auto-Pilot Schedules, Theme Studio, Backups &amp; Android Guards
           </p>
         </div>
