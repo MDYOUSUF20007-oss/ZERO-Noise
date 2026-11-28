@@ -464,6 +464,7 @@ export function App() {
               paddingBottom: 'var(--zero-safe-bottom)',
             }}
           >
+            <div key={activeTab} className="zn-view-enter flex-1 flex flex-col">
             {activeTab === 'dial' && (
               <LockDialView
                 onIgnite={integrityViolation ? () => false : store.igniteSession}
@@ -581,6 +582,7 @@ export function App() {
                 />
               </Suspense>
             )}
+            </div>
           </main>
 
           {/* Bottom Navigation Dock */}
@@ -595,9 +597,7 @@ export function App() {
       {/* 5-Minute Pre-Lock Heads-Up Warning Banner */}
       {store.preLockAlert && (
         <div
-          className={`fixed left-4 right-4 z-50 max-w-md mx-auto ${
-            isBespoke || isFluentGlass ? '' : 'animate-bounce'
-          }`}
+          className="fixed left-4 right-4 z-50 max-w-md mx-auto zn-modal-enter"
           style={{ top: 'calc(0.75rem + var(--zero-safe-top))' }}
         >
           <ObsidianCard
@@ -614,7 +614,7 @@ export function App() {
                   <div
                     className={
                       isFluentGlass
-                        ? 'liquid-squircle text-cyan-200'
+                        ? 'liquid-squircle'
                         : `w-9 h-9 obsidian-icon-box flex items-center justify-center shrink-0 ${
                             isBespoke ? 'rounded-md' : 'rounded-xl'
                           }`
@@ -634,7 +634,7 @@ export function App() {
                       }`}
                       style={{
                         color: isFluentGlass
-                          ? '#7DD3FC'
+                          ? 'var(--liquid-accent-tint, var(--accent-primary))'
                           : isBespoke
                           ? '#60A5FA'
                           : 'var(--accent-hex, #FFFFFF)',
@@ -672,7 +672,7 @@ export function App() {
       {/* Cloud Restore Confirmation Toast */}
       {restoreToast && (
         <div
-          className="fixed left-4 right-4 z-50 max-w-md mx-auto"
+          className="fixed left-4 right-4 z-50 max-w-md mx-auto zn-modal-enter"
           style={{ top: 'calc(0.75rem + var(--zero-safe-top))' }}
         >
           <ObsidianCard

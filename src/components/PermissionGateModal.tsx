@@ -29,7 +29,7 @@ export const PermissionGateModal: React.FC<PermissionGateModalProps> = ({
   onRefresh,
   onProceedReady,
 }) => {
-  const { isBespoke, isFluentGlass, isAero } = useInterfaceStyle();
+  const { isBespoke, isFluentGlass, isMaterial } = useInterfaceStyle();
   if (!isOpen) return null;
 
   const priority = evaluatePermissionPriority(permissions);
@@ -50,11 +50,11 @@ export const PermissionGateModal: React.FC<PermissionGateModalProps> = ({
     window.ZeroNative?.openAppSettingsDetails();
   };
 
-  if (isFluentGlass || isAero) {
+  if (isFluentGlass || isMaterial) {
     return (
       <div
-        className={`fixed inset-0 z-50 flex items-center justify-center px-4 backdrop-blur-md ${
-          isAero ? 'bg-[rgba(243,237,232,0.88)]' : 'bg-[rgba(36,40,63,0.88)]'
+        className={`fixed inset-0 z-50 flex items-center justify-center px-4 backdrop-blur-sm ${
+          isMaterial ? 'bg-black/50' : 'bg-[rgba(36,40,63,0.88)]'
         }`}
         style={{
           paddingTop: 'calc(1rem + var(--zero-safe-top))',
@@ -575,9 +575,7 @@ export const PermissionGateModal: React.FC<PermissionGateModalProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center px-4 backdrop-blur-md ${
-        isAero ? 'bg-[rgba(243,237,232,0.88)]' : 'bg-[rgba(36,40,63,0.88)]'
-      }`}
+      className="fixed inset-0 z-50 flex items-center justify-center px-4 backdrop-blur-md bg-[rgba(36,40,63,0.88)]"
       style={{
         paddingTop: 'calc(1rem + var(--zero-safe-top))',
         paddingBottom: 'calc(1rem + var(--zero-safe-bottom))',

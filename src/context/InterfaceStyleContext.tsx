@@ -7,6 +7,7 @@ import {
 } from 'react';
 import {
   type CanonicalThemeId,
+  type MaterialAppearanceMode,
   type AccentColorId,
   type InterfaceStyle,
   type ThemeEngineDefinition,
@@ -39,6 +40,7 @@ export type {
 };
 
 const STORAGE_KEY_THEME = 'zero_isolated_theme_engine_v5';
+const STORAGE_KEY_MATERIAL_MODE = 'zero_material_mode_v1';
 const STORAGE_KEY_ACCENT = 'zero_theme_accent_seed_v5';
 const STORAGE_KEY_AERO_PALETTE = 'zero_aero_palette_v1';
 const STORAGE_KEY_GLOW = 'zero_ambient_glow_intensity_v1';
@@ -87,7 +89,9 @@ function mountIsolatedThemeEngine(
   themeId: CanonicalThemeId,
   accent: AccentColorId,
   glowIntensity = 0.35,
-  glassStrength = 0.50
+  glassStrength = 0.50,
+  materialMode: MaterialAppearanceMode = 'dark',
+  aeroPalette: AeroPaletteId = 'orange'
 ): void {
   if (typeof document === 'undefined') return;
 
@@ -102,40 +106,48 @@ function mountIsolatedThemeEngine(
     body.removeAttribute('data-engine');
     body.removeAttribute('data-accent');
     body.removeAttribute('data-style');
+    body.removeAttribute('data-material-mode');
     body.classList.remove(...LEGACY_CLASSES);
   }
 
   // 2. Set strict DOM attributes
   root.classList.remove(...LEGACY_CLASSES);
   root.removeAttribute('data-style');
-  root.setAttribute('data-theme', themeId);
-  root.setAttribute('data-engine', themeId);
-  root.setAttribute('data-accent', accent);
-  if (themeId === 'aero') {
-    root.setAttribute('data-interface-style', 'aero');
-    root.classList.remove('dark');
-    root.classList.add('light');
-    const palColor = '#E69F86';
-    root.setAttribute('data-aero-palette', 'orange');
+  const isMaterialEngine = themeId === 'material' || themeId === 'aero' || themeId === 'dusk';
+  const resolvedMode: MaterialAppearanceMode =
+    themeId === 'aero' ? 'light' : themeId === 'dusk' ? 'dark' : materialMode;
+
+  if (isMaterialEngine) {
+    root.setAttribute('data-theme', 'material');
+    root.setAttribute('data-engine', 'material');
+    root.setAttribute('data-material-mode', resolvedMode);
+    root.setAttribute('data-interface-style', resolvedMode === 'light' ? 'aero' : 'dusk');
+    root.setAttribute('data-aero-palette', aeroPalette);
+    root.setAttribute('data-accent', accent);
+    if (resolvedMode === 'light') {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    } else {
+      root.classList.remove('light');
+      root.classList.add('dark');
+    }
+    const palColor =
+      aeroPalette === 'espresso'
+        ? resolvedMode === 'light'
+          ? '#353B5B'
+          : '#B8C0E0'
+        : aeroPalette === 'terracotta'
+        ? resolvedMode === 'light'
+          ? '#A84A32'
+          : '#ED967D'
+        : '#E69F86';
     root.style.setProperty('--aero-palette-color', palColor);
-    root.style.setProperty('--aero-ink-primary', '#353B5B');
-    root.style.setProperty('--accent-primary', palColor);
-    root.style.setProperty('--accent-hex', palColor);
-    root.style.setProperty('--accent-rgb', '230, 159, 134');
-  } else if (themeId === 'dusk') {
-    root.setAttribute('data-interface-style', 'dusk');
-    root.classList.remove('light');
-    root.classList.add('dark');
-    const palColor = '#E69F86';
-    root.style.setProperty('--accent-primary', palColor);
-    root.style.setProperty('--accent-hex', palColor);
-    root.style.setProperty('--accent-rgb', '230, 159, 134');
-    root.style.setProperty('--ambient-glow-opacity', glowIntensity.toString());
-    root.style.setProperty('--ambient-glow-scale', (0.75 + glowIntensity * 0.45).toString());
-    applyGlassTokens(root, glassStrength);
+    root.style.setProperty('--aero-ink-primary', resolvedMode === 'light' ? '#262B44' : '#F3EDE8');
   } else {
     // Fluent Glass (Flagship / Default)
     root.removeAttribute('data-interface-style');
+    root.removeAttribute('data-material-mode');
+    root.removeAttribute('data-aero-palette');
     root.classList.remove('light');
     root.classList.add('dark');
     root.setAttribute('data-theme', 'fluent');
@@ -210,7 +222,8 @@ function mountIsolatedThemeEngine(
     document.head.appendChild(styleTag);
   }
 
-  const engine = THEME_ENGINES[themeId] ?? THEME_ENGINES.aero;
+  const engineKey: CanonicalThemeId = isMaterialEngine ? 'material' : themeId;
+  const engine = THEME_ENGINES[engineKey] ?? THEME_ENGINES.material;
   styleTag.textContent = engine.css;
 }
 
@@ -366,6 +379,19 @@ export function InterfaceStyleProvider({
     }
   });
 
+  const [materialMode, setMaterialModeState] = useState<MaterialAppearanceMode>(() => {
+    if (typeof window === 'undefined') return 'dark';
+    try {
+      const savedMode = window.localStorage.getItem(STORAGE_KEY_MATERIAL_MODE);
+      if (savedMode === 'light' || savedMode === 'dark') return savedMode;
+      const savedTheme = window.localStorage.getItem(STORAGE_KEY_THEME)?.toLowerCase().trim();
+      if (savedTheme === 'aero' || savedTheme === 'aero_ui' || savedTheme === 'light') {
+        return 'light';
+      }
+    } catch {}
+    return 'dark';
+  });
+
   const [theme, setThemeState] = useState<CanonicalThemeId>(() => {
     if (typeof window === 'undefined') return 'fluent';
     try {
@@ -501,20 +527,55 @@ export function InterfaceStyleProvider({
   useEffect(() => {
     const currentGlow = isBespokeActive ? 0 : fluentOrbIntensity;
     const currentGlass = isBespokeActive ? 0.05 : fluentGlassStrength;
-    mountIsolatedThemeEngine(theme, accent, currentGlow, currentGlass);
+    mountIsolatedThemeEngine(theme, accent, currentGlow, currentGlass, materialMode, aeroPalette);
     initActiveThemeMod();
     try {
       window.localStorage.setItem(STORAGE_KEY_THEME, theme);
+      window.localStorage.setItem(STORAGE_KEY_MATERIAL_MODE, materialMode);
       window.localStorage.setItem(STORAGE_KEY_ACCENT, accent);
       window.localStorage.setItem(STORAGE_KEY_GLOW, fluentOrbIntensity.toString());
       window.localStorage.setItem(STORAGE_KEY_GLASS_STRENGTH, fluentGlassStrength.toString());
     } catch {
       // Ignore storage errors
     }
-  }, [theme, accent, fluentOrbIntensity, fluentGlassStrength, isBespokeActive]);
+  }, [theme, accent, fluentOrbIntensity, fluentGlassStrength, isBespokeActive, materialMode, aeroPalette]);
+
+  const setMaterialMode = useCallback(
+    (nextMode: MaterialAppearanceMode) => {
+      setMaterialModeState(nextMode);
+      setThemeState('material');
+      setInterfaceStyleProp?.('material');
+      try {
+        window.localStorage.setItem(STORAGE_KEY_MATERIAL_MODE, nextMode);
+        window.localStorage.setItem(STORAGE_KEY_THEME, 'material');
+      } catch {}
+      mountIsolatedThemeEngine(
+        'material',
+        accent,
+        fluentOrbIntensity,
+        fluentGlassStrength,
+        nextMode,
+        aeroPalette
+      );
+    },
+    [accent, fluentOrbIntensity, fluentGlassStrength, aeroPalette, setInterfaceStyleProp]
+  );
 
   const setInterfaceStyle = useCallback((next: InterfaceStyle) => {
     const isNextBespoke = next === 'bespoke' || next === 'minimalist';
+    const raw = typeof next === 'string' ? next.toLowerCase().trim() : '';
+    const nextMode: MaterialAppearanceMode =
+      raw === 'aero' || raw === 'aero_ui' || raw === 'aeroui' || raw === 'light'
+        ? 'light'
+        : raw === 'dusk' || raw === 'twilight' || raw === 'night'
+        ? 'dark'
+        : materialMode;
+    if (nextMode !== materialMode) {
+      setMaterialModeState(nextMode);
+      try {
+        window.localStorage.setItem(STORAGE_KEY_MATERIAL_MODE, nextMode);
+      } catch {}
+    }
     const normalized = normalizeThemeId(next);
     setInterfaceStyleProp?.(isNextBespoke ? 'bespoke' : normalized);
     setThemeState(normalized);
@@ -527,9 +588,11 @@ export function InterfaceStyleProvider({
       normalized,
       accent,
       isNextBespoke ? 0 : (fluentOrbIntensity > 0 ? fluentOrbIntensity : 0.35),
-      isNextBespoke ? 0.05 : fluentGlassStrength
+      isNextBespoke ? 0.05 : fluentGlassStrength,
+      nextMode,
+      aeroPalette
     );
-  }, [setInterfaceStyleProp, accent, fluentOrbIntensity, fluentGlassStrength]);
+  }, [setInterfaceStyleProp, accent, fluentOrbIntensity, fluentGlassStrength, materialMode, aeroPalette]);
 
   const restartWithTheme = useCallback((nextTheme: InterfaceStyle) => {
     if (typeof window === 'undefined') return;
@@ -547,7 +610,14 @@ export function InterfaceStyleProvider({
   const setAccent = useCallback((nextAccent: AccentColorId) => {
     const safeAccent: AccentColorId = nextAccent === 'cyan' ? 'azure' : (isAmoledAccent(nextAccent) ? nextAccent : 'crimson');
     removeActiveModStyles();
-    mountIsolatedThemeEngine(theme, safeAccent, isBespokeActive ? 0 : fluentOrbIntensity, fluentGlassStrength);
+    mountIsolatedThemeEngine(
+      theme,
+      safeAccent,
+      isBespokeActive ? 0 : fluentOrbIntensity,
+      fluentGlassStrength,
+      materialMode,
+      aeroPalette
+    );
     setAccentState(safeAccent);
     setMaterialYouSeedProp?.(safeAccent);
     try {
@@ -555,7 +625,12 @@ export function InterfaceStyleProvider({
     } catch {
       // Ignore storage errors
     }
-  }, [theme, fluentOrbIntensity, fluentGlassStrength, isBespokeActive, setMaterialYouSeedProp]);
+  }, [theme, fluentOrbIntensity, fluentGlassStrength, isBespokeActive, setMaterialYouSeedProp, materialMode, aeroPalette]);
+
+  const isMaterialResolved =
+    (theme === 'material' || theme === 'aero' || theme === 'dusk') && !isBespokeActive;
+  const resolvedMaterialMode: MaterialAppearanceMode =
+    theme === 'aero' ? 'light' : theme === 'dusk' ? 'dark' : materialMode;
 
   const value = useMemo<InterfaceStyleContextValue>(
     () => ({
@@ -568,7 +643,7 @@ export function InterfaceStyleProvider({
       setInterfaceStyle,
       style: isBespokeActive ? 'bespoke' : theme,
       setStyle: setInterfaceStyle,
-      activeEngine: THEME_ENGINES[theme] ?? THEME_ENGINES.aero,
+      activeEngine: THEME_ENGINES[theme] ?? THEME_ENGINES.material,
       availableThemes: AVAILABLE_THEMES,
 
       engine: isBespokeActive ? 'bespoke' : theme,
@@ -578,13 +653,16 @@ export function InterfaceStyleProvider({
       isClassic: false,
       isClassicV2: false,
       isTrantor: false,
-      isMaterialYou: false,
+      isMaterialYou: isMaterialResolved,
+      isMaterial: isMaterialResolved,
+      materialMode: resolvedMaterialMode,
+      setMaterialMode,
       isFluent: theme === 'fluent' && !isBespokeActive,
       isFluentGlass: theme === 'fluent' && !isBespokeActive,
       isLiquidGlass: theme === 'fluent' && !isBespokeActive,
       isAetherial: theme === 'aetherial' && !isBespokeActive,
-      isAero: theme === 'aero' && !isBespokeActive,
-      isDusk: theme === 'dusk' && !isBespokeActive,
+      isAero: isMaterialResolved && resolvedMaterialMode === 'light',
+      isDusk: isMaterialResolved && resolvedMaterialMode === 'dark',
       aeroPalette,
       setAeroPalette,
       aeroAccentColor: theme === 'fluent' ? '#00f0ff' : aeroAccentColor,
@@ -643,6 +721,9 @@ export function InterfaceStyleProvider({
     [
       theme,
       isBespokeActive,
+      isMaterialResolved,
+      resolvedMaterialMode,
+      setMaterialMode,
       setInterfaceStyle,
       restartWithTheme,
       accent,

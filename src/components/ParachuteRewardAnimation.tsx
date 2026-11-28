@@ -32,7 +32,8 @@ export const ParachuteRewardAnimation: React.FC<ParachuteRewardAnimationProps> =
           ? getComputedStyle(document.documentElement).getPropertyValue('--accent-hex').trim()
           : '') || '#FFFFFF';
       const confettiHex = liveAccent.startsWith('#') ? liveAccent : '#FFFFFF';
-      confetti({
+      const fire = confetti.create(undefined, { resize: true, useWorker: false });
+      fire({
         particleCount: 70,
         spread: 65,
         origin: { y: 0.55 },

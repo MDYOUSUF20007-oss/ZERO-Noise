@@ -34,8 +34,8 @@ export const ActionReminderModal: React.FC<ActionReminderModalProps> = ({
   onConfigChange,
 }) => {
   const [newReminderText, setNewReminderText] = useState('');
-  const { isAero, isBespoke, isFluentGlass } = useInterfaceStyle();
-  const isModernFont = isBespoke || isFluentGlass;
+  const { isMaterial, isBespoke, isFluentGlass } = useInterfaceStyle();
+  const isModernFont = isBespoke || isFluentGlass || isMaterial;
 
   if (!isOpen) return null;
 
@@ -117,8 +117,8 @@ export const ActionReminderModal: React.FC<ActionReminderModalProps> = ({
       aria-modal="true"
       aria-label="Action & Movement Reminders"
       className={`fixed inset-0 z-[10020] flex items-center justify-center p-4 animate-fadeIn ${
-        isAero
-          ? 'bg-slate-900/40 backdrop-blur-md'
+        isMaterial
+          ? 'bg-black/50 backdrop-blur-sm'
           : isFluentGlass
           ? 'bg-black/75 backdrop-blur-md'
           : 'bg-black/85 backdrop-blur-xl'

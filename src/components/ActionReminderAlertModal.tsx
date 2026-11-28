@@ -20,8 +20,8 @@ export const ActionReminderAlertModal: React.FC<ActionReminderAlertModalProps> =
   onDismiss,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const { isAero, isBespoke, isFluentGlass } = useInterfaceStyle();
-  const isModernFont = isBespoke || isFluentGlass;
+  const { isMaterial, isBespoke, isFluentGlass } = useInterfaceStyle();
+  const isModernFont = isBespoke || isFluentGlass || isMaterial;
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setIsVisible(true));
@@ -40,8 +40,8 @@ export const ActionReminderAlertModal: React.FC<ActionReminderAlertModalProps> =
       aria-modal="true"
       aria-label="Movement Reminder"
       className={`fixed inset-0 z-[10050] flex items-center justify-center p-4 transition-opacity duration-200 ${
-        isAero
-          ? 'bg-slate-900/40 backdrop-blur-md'
+        isMaterial
+          ? 'bg-black/50 backdrop-blur-sm'
           : isFluentGlass
           ? 'bg-black/75 backdrop-blur-md'
           : 'bg-black/85 backdrop-blur-lg'

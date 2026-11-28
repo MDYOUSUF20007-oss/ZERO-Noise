@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react';
 import {
   type CanonicalThemeId,
+  type MaterialAppearanceMode,
   type AccentColorId,
   type InterfaceStyle,
   type ThemeEngineDefinition,
@@ -9,7 +10,7 @@ import {
 } from '../themes';
 import type { ClassicPreset, M3Palette } from '../types';
 
-export type { CanonicalThemeId, AccentColorId, InterfaceStyle, ThemeEngineDefinition };
+export type { CanonicalThemeId, MaterialAppearanceMode, AccentColorId, InterfaceStyle, ThemeEngineDefinition };
 export { AVAILABLE_THEMES, normalizeThemeId };
 export type GlassEngineType = 'acrylic' | 'eco';
 export type AeroPaletteId = 'orange' | 'espresso' | 'terracotta';
@@ -40,47 +41,63 @@ export function isAmoledAccent(val: unknown): val is AccentColorId {
 
 export function applyGlassTokens(root: HTMLElement, strength: number): void {
   const clamped = Math.max(0.05, Math.min(1, Math.round(strength * 100) / 100));
-  // Background alpha: from 0.08 at 0.05 up to 0.72 at 1.0 (clear transparent to deep acrylic)
+  // Silicate glass alpha: 0.08 at 0.05 up to 0.72 at 1.0 (transparent optical pane to deep VisionOS frost)
   const bgAlpha = (0.05 + clamped * 0.67).toFixed(3);
-  // Blur: from 2px up to 24px
-  const blurPx = Math.round(2 + clamped * 22);
-  // Saturation: 125% to 185%
-  const satPct = Math.round(125 + clamped * 60);
-  // Specular border opacity: 0.06 to 0.38
-  const specularAlpha = (0.06 + clamped * 0.32).toFixed(3);
-  // Top specular optical highlight line: 0.12 to 0.80
-  const specularRim = (0.12 + clamped * 0.68).toFixed(3);
-  // Sub-elements & Insets
-  const insetAlpha = (0.08 + clamped * 0.57).toFixed(3);
-  const rowAlpha = (0.06 + clamped * 0.49).toFixed(3);
-  const dockAlpha = (0.25 + clamped * 0.60).toFixed(3);
-  const dialAlpha = (0.12 + clamped * 0.48).toFixed(3);
-  const glowMult = (0.20 + clamped * 0.70).toFixed(3);
-  const modalBgAlpha = (0.72 + clamped * 0.22).toFixed(3);
-  const modalBlurPx = Math.round(16 + clamped * 12);
+  // Backdrop blur calibrated to Apple VisionOS optical clarity (8px to 32px)
+  const blurPx = Math.round(6 + clamped * 26);
+  // Optical silicate vibrancy: high chromatic saturation + gentle luminance lift
+  const satPct = Math.round(145 + clamped * 55);
+  const brightPct = (1.02 + clamped * 0.06).toFixed(3);
+  // Fresnel grazing rim & specular bevel opacity
+  const specularAlpha = (0.10 + clamped * 0.28).toFixed(3);
+  const specularRim = (0.20 + clamped * 0.65).toFixed(3);
+  const fresnelTop = (0.16 + clamped * 0.22).toFixed(3);
+  const fresnelEdge = (0.07 + clamped * 0.11).toFixed(3);
+  const fresnelBottom = (0.03 + clamped * 0.06).toFixed(3);
+  const sheenTop = (0.06 + clamped * 0.08).toFixed(3);
+  const sheenMid = (0.02 + clamped * 0.025).toFixed(3);
+  // Sub-elements, pills & insets
+  const insetAlpha = (0.12 + clamped * 0.52).toFixed(3);
+  const rowAlpha = (0.08 + clamped * 0.44).toFixed(3);
+  const dockAlpha = (0.34 + clamped * 0.50).toFixed(3);
+  const dockBlurPx = Math.round(14 + clamped * 14);
+  const dialAlpha = (0.20 + clamped * 0.48).toFixed(3);
+  const pillAlpha = (0.05 + clamped * 0.05).toFixed(3);
+  const pillHoverAlpha = (0.10 + clamped * 0.06).toFixed(3);
+  const glowMult = (0.24 + clamped * 0.68).toFixed(3);
+  const modalBgAlpha = (0.74 + clamped * 0.20).toFixed(3);
+  const modalBlurPx = Math.round(18 + clamped * 12);
   const textShadowRule =
-    clamped < 0.25
-      ? `0 1px 3px rgba(0, 0, 0, ${(0.85 * (1 - clamped / 0.25)).toFixed(2)})`
-      : 'none';
+    clamped < 0.30
+      ? `0 1px 4px rgba(0, 0, 0, ${(0.85 * (1 - clamped / 0.30)).toFixed(2)})`
+      : '0 1px 10px rgba(0, 0, 0, 0.22)';
 
   root.style.setProperty('--glass-opacity', clamped.toString());
-  root.style.setProperty('--glass-surface-bg', `rgba(20, 24, 32, ${bgAlpha})`);
-  root.style.setProperty('--bg-surface', `rgba(20, 24, 32, ${bgAlpha})`);
-  root.style.setProperty('--surface-tonal', `rgba(28, 34, 46, ${(0.10 + clamped * 0.68).toFixed(3)})`);
-  root.style.setProperty('--bg-surface-hover', `rgba(32, 38, 52, ${(0.08 + clamped * 0.66).toFixed(3)})`);
-  root.style.setProperty('--bg-elevated', `rgba(26, 31, 42, ${(0.10 + clamped * 0.68).toFixed(3)})`);
-  root.style.setProperty('--surface-blur', `blur(${blurPx}px) saturate(${satPct}%)`);
+  root.style.setProperty('--glass-surface-bg', `rgba(18, 22, 32, ${bgAlpha})`);
+  root.style.setProperty('--bg-surface', `rgba(18, 22, 32, ${bgAlpha})`);
+  root.style.setProperty('--surface-tonal', `rgba(26, 32, 46, ${(0.12 + clamped * 0.64).toFixed(3)})`);
+  root.style.setProperty('--bg-surface-hover', `rgba(30, 38, 54, ${(0.10 + clamped * 0.62).toFixed(3)})`);
+  root.style.setProperty('--bg-elevated', `rgba(24, 30, 44, ${(0.12 + clamped * 0.64).toFixed(3)})`);
+  root.style.setProperty('--surface-blur', `blur(${blurPx}px) saturate(${satPct}%) brightness(${brightPct})`);
   root.style.setProperty('--glass-blur', `${blurPx}px`);
   root.style.setProperty('--border-specular', `rgba(255, 255, 255, ${specularAlpha})`);
-  root.style.setProperty('--border-subtle', `rgba(255, 255, 255, ${(0.03 + clamped * 0.11).toFixed(3)})`);
+  root.style.setProperty('--border-subtle', `rgba(255, 255, 255, ${(0.05 + clamped * 0.11).toFixed(3)})`);
+  root.style.setProperty('--glass-fresnel-top', `rgba(255, 255, 255, ${fresnelTop})`);
+  root.style.setProperty('--glass-fresnel-edge', `rgba(255, 255, 255, ${fresnelEdge})`);
+  root.style.setProperty('--glass-fresnel-bottom', `rgba(255, 255, 255, ${fresnelBottom})`);
+  root.style.setProperty('--glass-sheen-top', `rgba(255, 255, 255, ${sheenTop})`);
+  root.style.setProperty('--glass-sheen-mid', `rgba(196, 220, 255, ${sheenMid})`);
   root.style.setProperty('--glass-specular-opacity', specularRim);
-  root.style.setProperty('--glass-inset-bg', `rgba(26, 32, 44, ${insetAlpha})`);
-  root.style.setProperty('--glass-row-bg', `rgba(16, 20, 28, ${rowAlpha})`);
-  root.style.setProperty('--glass-dock-bg', `rgba(12, 16, 24, ${dockAlpha})`);
-  root.style.setProperty('--glass-dial-bg', `rgba(16, 21, 30, ${dialAlpha})`);
+  root.style.setProperty('--glass-inset-bg', `rgba(24, 30, 44, ${insetAlpha})`);
+  root.style.setProperty('--glass-row-bg', `rgba(15, 19, 28, ${rowAlpha})`);
+  root.style.setProperty('--glass-dock-bg', `rgba(12, 16, 26, ${dockAlpha})`);
+  root.style.setProperty('--glass-dock-blur', `blur(${dockBlurPx}px) saturate(${Math.min(200, satPct + 15)}%) brightness(1.05)`);
+  root.style.setProperty('--glass-dial-bg', `rgba(14, 18, 28, ${dialAlpha})`);
+  root.style.setProperty('--glass-pill-bg', `rgba(255, 255, 255, ${pillAlpha})`);
+  root.style.setProperty('--glass-pill-hover-bg', `rgba(255, 255, 255, ${pillHoverAlpha})`);
   root.style.setProperty('--glass-glow-mult', glowMult);
-  root.style.setProperty('--glass-modal-bg', `rgba(12, 15, 22, ${modalBgAlpha})`);
-  root.style.setProperty('--glass-modal-blur', `blur(${modalBlurPx}px) saturate(180%)`);
+  root.style.setProperty('--glass-modal-bg', `rgba(11, 14, 22, ${modalBgAlpha})`);
+  root.style.setProperty('--glass-modal-blur', `blur(${modalBlurPx}px) saturate(190%) brightness(1.04)`);
   root.style.setProperty('--glass-text-shadow', textShadowRule);
 }
 
@@ -110,6 +127,9 @@ export interface InterfaceStyleContextValue {
   isFluentGlass: boolean;
   isLiquidGlass: boolean;
   isAetherial: boolean;
+  isMaterial: boolean;
+  materialMode: MaterialAppearanceMode;
+  setMaterialMode: (mode: MaterialAppearanceMode) => void;
   isAero: boolean;
   isDusk: boolean;
   aeroPalette: AeroPaletteId;

@@ -1,12 +1,13 @@
 ﻿import React, { type CSSProperties } from 'react';
 import type { ObsidianCardProps } from './ObsidianCard';
+import { useInterfaceStyle } from '../context/interfaceStyleStore';
 
 export type GlassCardProps = ObsidianCardProps;
 
 /**
- * Liquid Glass Pro 60FPS Surface Card:
- * Authentic optical glass refraction, specular top-edge highlight, dynamic Theme Studio inner glow,
- * and rounded-3xl geometry.
+ * Adaptive Surface Card:
+ * - Fluent Glass: Frosted acrylic glass with subtle specular highlight
+ * - Material Dusk: Material 3 tonal filled container (no specular glare)
  */
 export const GlassCard: React.FC<GlassCardProps> = ({
   headerContent,
@@ -14,6 +15,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   overlays,
   ambientGlow: _ambientGlow = false,
   fullWidth = true,
+  staggerIndex,
   className = '',
   headerClassName,
   footerClassName,
@@ -27,19 +29,24 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   'data-amoled-banner': dataAmoledBanner,
   'data-restricted-guide': dataRestrictedGuide,
 }) => {
+  const { isMaterial } = useInterfaceStyle();
   const resolvedHeaderClass = headerClassName ?? 'p-4 sm:p-5';
   const resolvedFooterClass = footerClassName ?? 'px-4 sm:px-5 py-3';
   const widthClass = fullWidth ? 'w-full' : '';
 
   const interactiveClasses =
     onClick && !disabled
-      ? 'cursor-pointer liquid-spring hover:brightness-105 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]'
+      ? 'cursor-pointer liquid-spring zn-hover-float hover:brightness-105 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]'
       : '';
 
-  const sharedClassName = `relative flex flex-col justify-between ${widthClass} rounded-2xl overflow-hidden liquid-glass font-sans ${interactiveClasses} ${className}`;
+  const staggerClass = typeof staggerIndex === 'number' ? 'zn-stagger-item' : '';
 
-  // Strip opaque classic/bespoke style overrides so glass translucency is preserved across every card
-  const passthroughStyle: CSSProperties | undefined = style
+  const sharedClassName = `relative flex flex-col justify-between ${widthClass} ${
+    isMaterial ? 'rounded-[20px]' : 'rounded-[22px]'
+  } overflow-hidden liquid-glass font-sans ${staggerClass} ${interactiveClasses} ${className}`;
+
+  // Strip opaque classic/bespoke style overrides so active theme surface styling stays clean
+  const cleanedStyle: CSSProperties | undefined = style
     ? (() => {
         const {
           background: _bg,
@@ -53,18 +60,38 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       })()
     : undefined;
 
+  const passthroughStyle: CSSProperties | undefined =
+    typeof staggerIndex === 'number'
+      ? {
+          ...cleanedStyle,
+          '--zn-stagger-idx': staggerIndex,
+        } as CSSProperties
+      : cleanedStyle;
+
   const innerMarkup = (
     <>
-      {/* Top Specular Optical Highlight Rim */}
-      <div
-        aria-hidden="true"
-        className="absolute top-0 left-6 right-6 h-[1px] pointer-events-none z-20"
-        style={{
-          background:
-            'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.60) 50%, transparent 100%)',
-          opacity: 'var(--glass-specular-opacity, 0.60)',
-        }}
-      />
+      {/* Top Specular Optical Highlight Rim (Fluent Glass only) */}
+      {!isMaterial && (
+        <>
+          <div
+            aria-hidden="true"
+            className="absolute top-0 left-4 right-4 h-[1px] pointer-events-none z-20"
+            style={{
+              background:
+                'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 18%, rgba(255,255,255,0.78) 50%, rgba(255,255,255,0.28) 82%, transparent 100%)',
+              opacity: 'var(--glass-specular-opacity, 0.525)',
+            }}
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none z-10 rounded-[inherit]"
+            style={{
+              background:
+                'radial-gradient(120% 60% at 14% 0%, rgba(255,255,255,0.06) 0%, transparent 55%)',
+            }}
+          />
+        </>
+      )}
 
       {overlays}
 
@@ -74,12 +101,15 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       {/* Tier 2: Footer Strip */}
       {footerContent && (
         <div
-          className={`relative z-10 shrink-0 border-t border-white/[0.08] ${resolvedFooterClass}`}
+          className="relative z-10 shrink-0 border-t"
           style={{
-            backgroundColor: 'var(--glass-row-bg, rgba(0, 0, 0, 0.35))',
+            borderColor: isMaterial ? 'var(--md-sys-color-outline-variant)' : 'rgba(255,255,255,0.08)',
+            backgroundColor: isMaterial
+              ? 'var(--md-sys-color-surface-container)'
+              : 'var(--glass-row-bg, rgba(0, 0, 0, 0.35))',
           }}
         >
-          {footerContent}
+          <div className={resolvedFooterClass}>{footerContent}</div>
         </div>
       )}
     </>

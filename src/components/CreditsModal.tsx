@@ -32,8 +32,8 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
     return FALLBACK_CONTRIBUTORS;
   });
   const [loading, setLoading] = useState(false);
-  const { isAero, isBespoke, isFluentGlass } = useInterfaceStyle();
-  const isModernFont = isBespoke || isFluentGlass;
+  const { isMaterial, isBespoke, isFluentGlass } = useInterfaceStyle();
+  const isModernFont = isBespoke || isFluentGlass || isMaterial;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -88,8 +88,8 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className={`absolute inset-0 ${
-          isAero
-            ? 'bg-slate-900/40 backdrop-blur-md'
+          isMaterial
+            ? 'bg-black/50 backdrop-blur-sm'
             : isFluentGlass
             ? 'bg-black/75 backdrop-blur-md'
             : 'bg-black/80 backdrop-blur-sm'

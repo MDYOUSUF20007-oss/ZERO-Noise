@@ -957,7 +957,8 @@ export function useZeroStore() {
     const activeHex = activeAccentTokensRef.current?.hex || '#FFFFFF';
     void import('canvas-confetti')
       .then((mod) => {
-        mod.default({
+        const fire = mod.default.create(undefined, { resize: true, useWorker: false });
+        fire({
           particleCount: 110,
           spread: 75,
           origin: { y: 0.6 },

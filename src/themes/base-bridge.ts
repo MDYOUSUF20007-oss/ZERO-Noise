@@ -218,14 +218,23 @@ export const BASE_ENGINE_BRIDGE_CSS = `
      Unified Easing Curve (Interaction-Only Motion)
      ------------------------------------------------------------- */
   .liquid-spring {
-    transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.15s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.15s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transition:
+      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.18s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+  @media (hover: hover) {
+    .liquid-spring:hover {
+      transform: perspective(900px) translate3d(0, -1.5px, 0);
+    }
   }
   .liquid-spring:active {
-    transform: scale(0.98) !important;
+    transform: scale(0.972) !important;
   }
 
   /* -------------------------------------------------------------
-     Surface Elevation & 8–10% Hairline Borders (No Neon Glows)
+     Apple VisionOS Liquid Glass Panels (Fresnel Rim + Silicate Refraction)
      ------------------------------------------------------------- */
   .glass-card,
   .obsidian-card,
@@ -235,16 +244,43 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   .settings-card,
   [data-frosted-card="true"],
   [data-obsidian-card="true"] {
-    background-color: var(--glass-surface-bg, #11131A) !important;
-    background-image: none !important;
-    border: 1px solid rgba(255, 255, 255, 0.09) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
-    backdrop-filter: var(--surface-blur, blur(14px) saturate(120%)) !important;
-    -webkit-backdrop-filter: var(--surface-blur, blur(14px) saturate(120%)) !important;
-    text-shadow: none !important;
+    background-color: var(--glass-surface-bg, rgba(18, 22, 32, 0.385)) !important;
+    background-image: linear-gradient(
+      155deg,
+      var(--glass-sheen-top, rgba(255, 255, 255, 0.10)) 0%,
+      var(--glass-sheen-mid, rgba(196, 220, 255, 0.033)) 38%,
+      rgba(8, 10, 16, 0.14) 100%
+    ) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.105)) !important;
+    border-top: 1px solid var(--glass-fresnel-top, rgba(255, 255, 255, 0.27)) !important;
+    border-radius: 22px !important;
+    box-shadow:
+      inset 0 1px 0 var(--glass-fresnel-top, rgba(255, 255, 255, 0.27)),
+      inset 1px 0 0 var(--glass-fresnel-edge, rgba(255, 255, 255, 0.125)),
+      inset 0 -1px 0 var(--glass-fresnel-bottom, rgba(255, 255, 255, 0.06)),
+      0 14px 36px -10px rgba(0, 0, 0, 0.60),
+      0 2px 10px rgba(0, 0, 0, 0.28) !important;
+    backdrop-filter: var(--surface-blur, blur(19px) saturate(172%) brightness(1.05)) !important;
+    -webkit-backdrop-filter: var(--surface-blur, blur(19px) saturate(172%) brightness(1.05)) !important;
+    text-shadow: var(--glass-text-shadow, 0 1px 10px rgba(0, 0, 0, 0.22)) !important;
     color: var(--text-primary, #f8fafc) !important;
+  }
+
+  .glass-card.cursor-pointer:hover,
+  .liquid-glass.cursor-pointer:hover,
+  [data-obsidian-card="true"].cursor-pointer:hover {
+    border-top-color: rgba(255, 255, 255, 0.36) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.34),
+      inset 1px 0 0 rgba(255, 255, 255, 0.15),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+      0 18px 42px -10px rgba(0, 0, 0, 0.66),
+      0 0 22px -6px var(--liquid-accent-soft-glow, rgba(244, 63, 94, 0.18)) !important;
+  }
+
+  .liquid-metric {
+    color: #ffffff;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
   }
 
   /* -------------------------------------------------------------
@@ -335,58 +371,161 @@ export const BASE_ENGINE_BRIDGE_CSS = `
 
   .obsidian-inset,
   .liquid-inset {
-    background-color: var(--glass-inset-bg, rgba(22, 26, 36, 0.65)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 10px !important;
+    background-color: var(--glass-inset-bg, rgba(24, 30, 44, 0.38)) !important;
+    background-image: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.065) 0%,
+      transparent 65%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-top-color: rgba(255, 255, 255, 0.16) !important;
+    border-radius: 14px !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.32) !important;
   }
 
   .obsidian-inset-neutral,
   .liquid-row {
-    background-color: var(--glass-row-bg, rgba(16, 20, 28, 0.45)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    border-radius: 10px !important;
+    background-color: var(--glass-row-bg, rgba(15, 19, 28, 0.30)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .liquid-squircle {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: var(--glass-inset-bg, rgba(24, 30, 44, 0.42));
+    background-image: linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(196, 220, 255, 0.03) 50%,
+      transparent 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-top-color: var(--glass-fresnel-top, rgba(255, 255, 255, 0.27));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 4px 12px -2px rgba(0, 0, 0, 0.35);
+    color: var(--liquid-accent-tint, var(--accent-primary));
+  }
+
+  .liquid-track {
+    background-color: rgba(8, 11, 18, 0.56);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-bottom-color: rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.50);
+    backdrop-filter: blur(10px) saturate(145%);
+    -webkit-backdrop-filter: blur(10px) saturate(145%);
+  }
+
+  .liquid-mercury-fill,
+  .liquid-shimmer-bar {
+    background: linear-gradient(
+      90deg,
+      var(--accent-primary, #f43f5e) 0%,
+      var(--liquid-accent-tint, #fb7185) 100%
+    );
+    box-shadow:
+      0 0 12px var(--liquid-accent-soft-glow, rgba(244, 63, 94, 0.24)),
+      inset 0 1px 0 rgba(255, 255, 255, 0.48);
+    border-radius: 9999px;
+    transition: width 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   /* -------------------------------------------------------------
-     Calibrated Interactive Controls (No Neon Glow Shadows)
+     Apple VisionOS Tactile Liquid Pills & Capsules
      ------------------------------------------------------------- */
   .theme-pill-active,
   .liquid-pill-active,
   .obsidian-pill-active,
   .action-pill {
     background-color: var(--accent-soft) !important;
-    background-image: none !important;
-    color: var(--accent-primary) !important;
+    background-image: linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      transparent 55%,
+      rgba(0, 0, 0, 0.14) 100%
+    ) !important;
+    color: var(--liquid-accent-tint, var(--accent-primary)) !important;
     border: 1px solid var(--accent-border) !important;
-    border-radius: 8px !important;
-    box-shadow: none !important;
+    border-top-color: rgba(255, 255, 255, 0.36) !important;
+    border-radius: 12px !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.34),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+      0 4px 14px -3px var(--liquid-accent-soft-glow, rgba(244, 63, 94, 0.22)) !important;
     font-weight: 600 !important;
   }
 
   .theme-pill,
+  .liquid-pill,
   .liquid-pill-inactive,
   .obsidian-pill-inactive,
   .action-pill-inactive {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    background-image: none !important;
-    color: #cbd5e1 !important;
-    border: 1px solid rgba(255, 255, 255, 0.09) !important;
-    border-radius: 8px !important;
+    background-color: var(--glass-pill-bg, rgba(255, 255, 255, 0.075)) !important;
+    background-image: linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.09) 0%,
+      transparent 60%
+    ) !important;
+    color: #e2e8f0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.11) !important;
+    border-top-color: rgba(255, 255, 255, 0.20) !important;
+    border-radius: 12px !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 2px 8px rgba(0, 0, 0, 0.24) !important;
     font-weight: 500 !important;
+  }
+
+  .theme-pill:hover,
+  .liquid-pill:hover,
+  .liquid-pill-inactive:hover,
+  .obsidian-pill-inactive:hover,
+  .action-pill-inactive:hover {
+    background-color: var(--glass-pill-hover-bg, rgba(255, 255, 255, 0.13)) !important;
+    border-top-color: rgba(255, 255, 255, 0.28) !important;
+    color: #ffffff !important;
+  }
+
+  .rounded-full.liquid-pill-active,
+  .rounded-full.liquid-pill-inactive,
+  .rounded-full.liquid-pill,
+  .rounded-full.theme-pill-active,
+  .rounded-full.theme-pill {
+    border-radius: 9999px !important;
   }
 
   /* -------------------------------------------------------------
      Radial Dial Hardware Instrument Surface & Zero-Heat Dragging
      ------------------------------------------------------------- */
   .zero-dial-surface {
-    background-color: var(--glass-dial-bg, #0F1117) !important;
-    background-image: none !important;
-    border: 1px solid rgba(255, 255, 255, 0.10) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.16) !important;
+    background-color: var(--glass-dial-bg, rgba(14, 18, 28, 0.44)) !important;
+    background-image: radial-gradient(
+      circle at 28% 22%,
+      rgba(255, 255, 255, 0.085) 0%,
+      rgba(196, 220, 255, 0.025) 36%,
+      rgba(10, 13, 20, 0.22) 72%,
+      rgba(5, 7, 12, 0.56) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.28) !important;
     border-radius: 9999px !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+    box-shadow:
+      inset 0 1.5px 1px rgba(255, 255, 255, 0.26),
+      inset 1px 0 1px rgba(255, 255, 255, 0.10),
+      inset 0 -2px 6px rgba(0, 0, 0, 0.50),
+      0 18px 42px -8px rgba(0, 0, 0, 0.72),
+      0 0 0 1px rgba(255, 255, 255, 0.05) !important;
     contain: layout style paint;
     touch-action: none !important;
   }
@@ -398,19 +537,29 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   }
 
   /* -------------------------------------------------------------
-     Floating Frosted Dock Navigation (Lightweight 8px Blur Only Where Content Scrolls)
+     Floating Spatial Liquid Dock (High-Vibrancy Silicate Blur)
      ------------------------------------------------------------- */
   .liquid-dock,
   .zero-bottom-nav,
   nav[data-bottom-nav="true"],
   nav[data-frosted-chrome="true"] {
-    background-color: var(--glass-dock-bg, rgba(15, 17, 24, 0.92)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.09) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
-    border-radius: 16px !important;
-    backdrop-filter: blur(12px) saturate(120%) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+    background-color: var(--glass-dock-bg, rgba(12, 16, 26, 0.59)) !important;
+    background-image: linear-gradient(
+      175deg,
+      rgba(255, 255, 255, 0.11) 0%,
+      rgba(196, 220, 255, 0.025) 42%,
+      rgba(6, 8, 14, 0.20) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-top: 1px solid var(--glass-fresnel-top, rgba(255, 255, 255, 0.30)) !important;
+    border-radius: 26px !important;
+    backdrop-filter: var(--glass-dock-blur, blur(21px) saturate(188%) brightness(1.05)) !important;
+    -webkit-backdrop-filter: var(--glass-dock-blur, blur(21px) saturate(188%) brightness(1.05)) !important;
+    box-shadow:
+      inset 0 1px 0 var(--glass-fresnel-top, rgba(255, 255, 255, 0.28)),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+      0 16px 40px -6px rgba(0, 0, 0, 0.65),
+      0 2px 12px rgba(0, 0, 0, 0.35) !important;
   }
 
   /* -------------------------------------------------------------
@@ -419,12 +568,21 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   .modal-glass,
   [data-modal-glass="true"],
   .zero-modal-card {
-    background-color: rgba(12, 15, 20, 0.94) !important;
-    background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.07) 0%, transparent 45%) !important;
-    backdrop-filter: blur(10px) saturate(125%) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(125%) !important;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12)) !important;
-    border-top: 1px solid var(--border-specular, rgba(255, 255, 255, 0.30)) !important;
+    background-color: var(--glass-modal-bg, rgba(11, 14, 22, 0.84)) !important;
+    background-image: linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.10) 0%,
+      rgba(196, 220, 255, 0.025) 36%,
+      transparent 70%
+    ) !important;
+    backdrop-filter: var(--glass-modal-blur, blur(24px) saturate(190%) brightness(1.04)) !important;
+    -webkit-backdrop-filter: var(--glass-modal-blur, blur(24px) saturate(190%) brightness(1.04)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-top: 1px solid var(--glass-fresnel-top, rgba(255, 255, 255, 0.32)) !important;
+    border-radius: 24px !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.26),
+      0 24px 64px -12px rgba(0, 0, 0, 0.78) !important;
   }
 
   /* -------------------------------------------------------------
@@ -440,6 +598,7 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   html[data-glass-engine="eco"] [data-obsidian-card="true"],
   html[data-glass-engine="eco"] .zero-dial-surface,
   html[data-glass-engine="eco"] .liquid-dock,
+  html[data-glass-engine="eco"] .liquid-track,
   html[data-glass-engine="eco"] .modal-glass,
   html[data-glass-engine="eco"] [data-modal-glass="true"],
   html[data-gpu-safeguard="true"] .glass-card,
@@ -452,18 +611,21 @@ export const BASE_ENGINE_BRIDGE_CSS = `
   html[data-gpu-safeguard="true"] [data-obsidian-card="true"],
   html[data-gpu-safeguard="true"] .zero-dial-surface,
   html[data-gpu-safeguard="true"] .liquid-dock,
+  html[data-gpu-safeguard="true"] .liquid-track,
   html[data-gpu-safeguard="true"] .modal-glass,
   html[data-gpu-safeguard="true"] [data-modal-glass="true"] {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    background-color: rgba(14, 18, 24, 0.95) !important;
+    background-color: rgba(14, 18, 26, 0.95) !important;
     background-image: linear-gradient(
       160deg,
-      rgba(255, 255, 255, 0.05) 0%,
-      rgba(255, 255, 255, 0.01) 40%,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.015) 40%,
       transparent 100%
     ) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.75) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 6px 20px rgba(0, 0, 0, 0.72) !important;
   }
 
   html[data-gpu-safeguard="true"] .ambient-mesh-node-1,
@@ -477,15 +639,15 @@ export const BASE_ENGINE_BRIDGE_CSS = `
      ------------------------------------------------------------- */
   .zero-ambient-canvas {
     display: block !important;
-    opacity: 0.90 !important;
+    opacity: 0.95 !important;
   }
 
   /* Semantic Helper Utilities */
   .theme-bg-primary { background-color: #08090c !important; color: #f8fafc !important; }
-  .theme-bg-secondary { background-color: rgba(15, 18, 24, 0.75) !important; color: #f8fafc !important; }
+  .theme-bg-secondary { background-color: rgba(16, 20, 30, 0.72) !important; color: #f8fafc !important; }
   .theme-text-primary { color: #f8fafc !important; }
-  .theme-text-secondary { color: #94a3b8 !important; }
-  .theme-text-muted { color: #64748b !important; }
+  .theme-text-secondary { color: #cbd5e1 !important; }
+  .theme-text-muted { color: #94a3b8 !important; }
   .theme-text-accent { color: var(--accent-primary) !important; }
-  .theme-border { border-color: rgba(255, 255, 255, 0.09) !important; }
+  .theme-border { border-color: rgba(255, 255, 255, 0.105) !important; }
 `;

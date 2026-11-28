@@ -31,7 +31,7 @@ export const ZeroProfilePreviewCard: React.FC<ZeroProfilePreviewCardProps> = ({
   rankTitle = 'INITIATE',
   isZeroSupporter = false,
 }) => {
-  const { isBespoke, isFluentGlass, isAero, aeroAccentColor } = useInterfaceStyle();
+  const { isBespoke, isFluentGlass, isMaterial } = useInterfaceStyle();
   const formattedHandle = handle.trim()
     ? handle.trim().startsWith('@')
       ? handle.trim()
@@ -41,57 +41,55 @@ export const ZeroProfilePreviewCard: React.FC<ZeroProfilePreviewCardProps> = ({
     ? mission.trim()
     : `#${mission.trim() || 'Deep Work'}`;
 
-  if (isAero) {
+  if (isMaterial) {
     return (
-      <div className="my-3 rounded-[22px] bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] shadow-xs overflow-hidden text-left">
+      <div className="my-3 rounded-[20px] bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] overflow-hidden text-left">
         <div className="p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3.5">
-            {/* Left: Soft Cloud Emblem Capsule */}
+            {/* Left: Soft Tonal Emblem Container */}
             <div
-              className="flex-shrink-0 w-14 h-14 rounded-2xl bg-[#EDE6DF] border border-[rgba(53,59,91,0.08)] flex items-center justify-center shadow-2xs"
+              className="flex-shrink-0 w-14 h-14 rounded-2xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] flex items-center justify-center"
             >
-              <ZeroEmblemIcon emblem={emblem} color={aeroAccentColor || '#E69F86'} size={28} />
+              <ZeroEmblemIcon emblem={emblem} color="var(--md-sys-color-primary)" size={28} />
             </div>
 
             {/* Center: Callsign + Rank Pill + Handle & Mission */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center flex-wrap gap-1.5">
-                <span className="font-sans text-[#353B5B] font-black text-base tracking-wide uppercase truncate">
+                <span className="font-sans text-[var(--md-sys-color-on-surface)] font-black text-base tracking-wide uppercase truncate">
                   {callsign.trim() || 'ANONYMOUS'}
                 </span>
                 <span
-                  style={{ backgroundColor: aeroAccentColor || '#E69F86' }}
-                  className="px-2.5 py-0.5 rounded-full text-[#353B5B] font-sans text-[10px] font-bold uppercase tracking-wide shadow-2xs"
+                  className="px-2.5 py-0.5 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-sans text-[10px] font-bold uppercase tracking-wide"
                 >
                   {rankTitle}
                 </span>
                 {isZeroSupporter && <ZeroSupporterGoldenBadge compact />}
               </div>
 
-              <p className="mt-1 text-xs font-sans text-[#353B5B]/80 truncate">
+              <p className="mt-1 text-xs font-sans text-[var(--md-sys-color-on-surface-variant)] truncate">
                 <span className="font-medium">{formattedHandle}</span>
-                <span className="mx-1.5 text-stone-300">•</span>
-                <span className="font-bold text-[#353B5B]">{formattedMission}</span>
+                <span className="mx-1.5 opacity-50">•</span>
+                <span className="font-bold text-[var(--md-sys-color-on-surface)]">{formattedMission}</span>
               </p>
             </div>
 
             {/* Right: Dynamic Target Box */}
-            <div className="flex-shrink-0 px-3.5 py-2 rounded-xl bg-[#EDE6DF] border border-[rgba(53,59,91,0.08)] text-center shadow-2xs">
+            <div className="flex-shrink-0 px-3.5 py-2 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-center">
               <div
-                style={{ color: aeroAccentColor || '#E69F86' }}
-                className="text-sm font-black font-sans tabular-nums leading-none"
+                className="text-sm font-black font-sans tabular-nums leading-none text-[var(--md-sys-color-primary)]"
               >
                 {dailyGoalHours}h/day
               </div>
-              <div className="mt-1 text-[9px] font-sans font-bold tracking-wider uppercase text-[#353B5B]/70">
+              <div className="mt-1 text-[9px] font-sans font-bold tracking-wider uppercase text-[var(--md-sys-color-on-surface-variant)]">
                 TARGET
               </div>
             </div>
           </div>
         </div>
 
-        <div className="px-4 py-2.5 bg-[#F6F1E8] border-t border-[#E8E0D2]">
-          <p className="text-xs font-sans italic text-[#443E38] leading-relaxed break-words">
+        <div className="px-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border-t border-[var(--md-sys-color-outline-variant)]">
+          <p className="text-xs font-sans italic text-[var(--md-sys-color-on-surface-variant)] leading-relaxed break-words">
             &ldquo;{pledge.trim() || 'Put your phone facedown. Reclaim your hours.'}&rdquo;
           </p>
         </div>

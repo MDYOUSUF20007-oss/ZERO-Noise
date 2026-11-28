@@ -107,7 +107,8 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
   onDeployParachute,
   onExtendLock,
 }) => {
-  const { fluentOrbIntensity, gpuThermalSafeguard, isAero, isDusk, aeroAccentColor } = useInterfaceStyle();
+  const { fluentOrbIntensity, gpuThermalSafeguard, isMaterial, materialMode, isDusk } = useInterfaceStyle();
+  const isMaterialDark = isMaterial && materialMode === 'dark';
   const themeRuntime = useMemo(
     () => computeThemeRuntime(themeConfig ?? DEFAULT_THEME_CONFIG),
     [themeConfig]
@@ -718,28 +719,18 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
     <div
       data-void-terminal="true"
       className={`fixed inset-0 z-50 flex flex-col justify-between overflow-x-hidden overflow-y-auto select-none px-4 py-3 sm:px-6 transition-colors duration-300 ${
-        isAero
-          ? 'aero-canvas text-[#353B5B]'
-          : isDusk
-          ? 'text-[#F3EDE8]'
+        isMaterial
+          ? 'text-[var(--md-sys-color-on-surface)]'
           : isLightMode
           ? 'text-stone-900'
           : 'text-white'
       }`}
       style={
-        isAero
+        isMaterial
           ? {
-              backgroundColor: '#F3EDE8',
+              backgroundColor: 'var(--md-sys-color-surface)',
               backgroundImage: voidBackgroundImage,
-              color: '#353B5B',
-              paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
-              paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
-            }
-          : isDusk
-          ? {
-              backgroundColor: '#24283F',
-              backgroundImage: voidBackgroundImage,
-              color: '#F3EDE8',
+              color: 'var(--md-sys-color-on-surface)',
               paddingTop: 'calc(0.75rem + var(--zero-safe-top))',
               paddingBottom: 'calc(0.75rem + var(--zero-safe-bottom))',
             }
@@ -758,7 +749,6 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             } as React.CSSProperties)
       }
     >
-      {isAero && <div className="aero-cloud-glows" />}
       {/* FEATURE 4: FLIP-TO-FOCUS PURE AMOLED BLACKOUT OVERLAY */}
       {isDeviceFaceDown && (
         <div
@@ -858,7 +848,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       )}
 
       {/* Dynamic Sub-Surface Ambient Glow Orbs */}
-      {themeRuntime.family !== 'kindle' && !isAero && !isDusk && (
+      {themeRuntime.family !== 'kindle' && !isMaterial && (
         <>
           {/* Primary Celestial Anchor Glow (Upper Left) */}
           <div
@@ -884,17 +874,17 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       {/* TOP STATUS BAR: Live Clock, Status, Battery, Controls */}
       <div className="relative z-10 w-full max-w-md mx-auto flex items-center justify-between text-xs font-sans tabular-nums pt-1 pb-2 shrink-0">
         <div className="flex items-center gap-2">
-          <span className={`font-semibold tracking-wide ${isAero ? 'text-[#353B5B] font-bold' : isLightMode ? 'text-stone-800' : 'text-zinc-200'}`}>
+          <span className={`font-semibold tracking-wide ${isMaterial ? 'text-[var(--md-sys-color-on-surface)] font-bold' : isLightMode ? 'text-stone-800' : 'text-zinc-200'}`}>
             {clockText}
           </span>
           <div
-            className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
             style={
-              isAero
+              isMaterial
                 ? {
-                    backgroundColor: '#353B5B',
-                    color: '#F3EDE8',
-                    border: '1px solid #353B5B',
+                    backgroundColor: 'var(--md-sys-color-primary-container)',
+                    color: 'var(--md-sys-color-on-primary-container)',
+                    border: '1px solid var(--md-sys-color-outline-variant)',
                   }
                 : {
                     backgroundColor: isLightMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)',
@@ -903,7 +893,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   }
             }
           >
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: isAero ? '#F3EDE8' : activeAccent }} />
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: isMaterial ? 'var(--md-sys-color-on-primary-container)' : activeAccent }} />
             <span>VOID ARMED</span>
           </div>
         </div>
@@ -918,23 +908,23 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             }}
             title="Action & Movement Reminders (Zero Guilt)"
             className={`p-1.5 rounded-lg liquid-spring cursor-pointer relative ${
-              isAero
+              isMaterial
                 ? actionReminderConfig.enabled
-                  ? 'bg-[#111827] text-white shadow-sm'
-                  : 'bg-white/80 text-[#374151] border border-white/90 shadow-sm'
+                  ? 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border border-[var(--md-sys-color-primary)]'
+                  : 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)]'
                 : actionReminderConfig.enabled
                 ? 'liquid-pill-active'
                 : 'liquid-pill-inactive text-zinc-400 hover:text-white'
             }`}
-            style={!isAero && actionReminderConfig.enabled ? { color: activeAccent } : undefined}
+            style={!isMaterial && actionReminderConfig.enabled ? { color: activeAccent } : undefined}
           >
             <Dumbbell size={13} strokeWidth={1.75} />
             {actionReminderConfig.enabled && (
               <span
                 className={`absolute -top-1 -right-1 w-2 h-2 rounded-full animate-pulse ${
-                  isAero ? 'bg-[#111827]' : ''
+                  isMaterial ? 'bg-[var(--md-sys-color-primary)]' : ''
                 }`}
-                style={!isAero ? { backgroundColor: activeAccent } : undefined}
+                style={!isMaterial ? { backgroundColor: activeAccent } : undefined}
               />
             )}
           </button>
@@ -948,10 +938,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             }}
             title="Distraction Parking Lot (Discharge Mental RAM)"
             className={`p-1.5 rounded-lg liquid-spring cursor-pointer relative ${
-              isAero
+              isMaterial
                 ? parkedThoughts.length > 0
-                  ? 'bg-[#111827] text-white shadow-sm'
-                  : 'bg-white/80 text-[#374151] border border-white/90 shadow-sm'
+                  ? 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border border-[var(--md-sys-color-primary)]'
+                  : 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)]'
                 : parkedThoughts.length > 0
                 ? 'liquid-pill-active text-amber-300'
                 : 'liquid-pill-inactive text-zinc-400 hover:text-white'
@@ -974,8 +964,8 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             }}
             title="AOD Glanceable Pixel Clock"
             className={`p-1.5 rounded-lg liquid-spring cursor-pointer ${
-              isAero
-                ? 'bg-white/80 text-[#374151] border border-white/90 shadow-sm'
+              isMaterial
+                ? 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)]'
                 : 'liquid-pill-inactive text-zinc-400 hover:text-white'
             }`}
           >
@@ -991,15 +981,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             }}
             title="Toggle Flip-To-Focus AMOLED Dimming"
             className={`p-1.5 rounded-lg liquid-spring cursor-pointer ${
-              isAero
+              isMaterial
                 ? flipToFocusEnabled
-                  ? 'bg-[#111827] text-white shadow-sm'
-                  : 'bg-white/80 text-[#9CA3AF] border border-white/90 shadow-sm'
+                  ? 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border border-[var(--md-sys-color-primary)]'
+                  : 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)] opacity-75'
                 : flipToFocusEnabled
                 ? 'liquid-pill-active'
                 : 'liquid-pill-inactive text-zinc-500'
             }`}
-            style={!isAero && flipToFocusEnabled ? { color: activeAccent } : undefined}
+            style={!isMaterial && flipToFocusEnabled ? { color: activeAccent } : undefined}
           >
             <Smartphone size={13} strokeWidth={1.75} />
           </button>
@@ -1013,15 +1003,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             }}
             title="Offline Focus Audio Soundscapes"
             className={`flex items-center gap-1 px-2 py-0.5 rounded-lg liquid-spring cursor-pointer ${
-              isAero
+              isMaterial
                 ? activeSound !== 'none'
-                  ? 'bg-[#111827] text-white font-bold shadow-sm'
-                  : 'bg-white/80 text-[#374151] border border-white/90 shadow-sm'
+                  ? 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border border-[var(--md-sys-color-primary)] font-bold'
+                  : 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)]'
                 : activeSound !== 'none'
                 ? 'liquid-pill-active font-semibold'
                 : 'liquid-pill-inactive text-zinc-400'
             }`}
-            style={!isAero && activeSound !== 'none' ? { color: activeAccent } : undefined}
+            style={!isMaterial && activeSound !== 'none' ? { color: activeAccent } : undefined}
           >
             {activeSound !== 'none' ? (
               <>
@@ -1125,26 +1115,24 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
 
       {/* MAIN BODY AREA */}
       <div className="relative z-10 flex-1 w-full max-w-md mx-auto flex flex-col justify-center py-2 space-y-3">
-        {/* HERO CHRONOMETER GLASS CARD */}
+        {/* HERO CHRONOMETER CARD */}
         <div
           data-void-inverted-timer="true"
-          className={`relative w-full rounded-[26px] p-5 sm:p-6 text-center overflow-hidden transition-all duration-200 ${
-            isAero
-              ? 'aero-hero-card shadow-xl border border-white/95'
+          className={`relative w-full rounded-[24px] p-5 sm:p-6 text-center overflow-hidden transition-colors duration-200 ${
+            isMaterial
+              ? 'bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)]'
               : isLightMode
               ? 'bg-amber-50/70 border border-stone-300 shadow-stone-300/30'
               : 'liquid-glass border border-white/10 shadow-2xl'
           }`}
           style={
-            !isAero && themeRuntime.family === 'matte'
+            !isMaterial && themeRuntime.family === 'matte'
               ? { backgroundColor: themeRuntime.cssVars['--zero-surface-1'] || '#1c1c22' }
               : undefined
           }
         >
-          {isAero && <div className="aero-aurora-glow" />}
-
           {/* Top specular highlight rim */}
-          {!isAero && (
+          {!isMaterial && (
             <div
               aria-hidden="true"
               className="absolute top-0 left-6 right-6 h-[1.5px] pointer-events-none z-20"
@@ -1161,13 +1149,13 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             <span
               data-void-work-hashtag="true"
               className={
-                isAero
-                  ? 'bg-[#111827] text-white px-3 py-1 rounded-full text-xs font-bold tracking-wide flex items-center gap-1.5 shadow-sm'
+                isMaterial
+                  ? 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] px-3 py-1 rounded-full text-xs font-bold tracking-wide flex items-center gap-1.5'
                   : 'text-xs font-bold uppercase tracking-wider truncate flex items-center gap-1.5'
               }
-              style={isAero ? undefined : { color: activeAccent }}
+              style={isMaterial ? undefined : { color: activeAccent }}
             >
-              <Sparkles size={12} style={{ color: isAero ? '#FFFFFF' : activeAccent }} />
+              <Sparkles size={12} style={{ color: isMaterial ? 'var(--md-sys-color-on-primary-container)' : activeAccent }} />
               {workBagActive ? `MISSION ${workTagDisplay}` : `LOCKED IN ${workTagDisplay}`}
             </span>
 
@@ -1188,9 +1176,9 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleStartPomodoroBreak()}
-                      className={`flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border transition-all cursor-pointer shadow-sm active:scale-95 ${
-                        isAero
-                          ? 'bg-white/90 text-[#111827] border-[#E2E8F0]'
+                      className={`flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border transition-all cursor-pointer active:scale-95 ${
+                        isMaterial
+                          ? 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] border-[var(--md-sys-color-outline-variant)]'
                           : 'bg-amber-500/20 text-amber-200 border-amber-400/40 hover:bg-amber-500/30'
                       }`}
                       title="Take or resume your 10-minute freedom break bank anytime this hour"
@@ -1216,10 +1204,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                     type="button"
                     onClick={handleTogglePomodoro}
                     className={`flex items-center gap-1 text-[10px] font-mono font-medium px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
-                      isAero
+                      isMaterial
                         ? pomodoroMode !== 'off'
-                          ? 'bg-[#111827] text-white border-[#111827]'
-                          : 'bg-white/80 text-[#374151] border-[#E2E8F0]'
+                          ? 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-[var(--md-sys-color-primary)]'
+                          : 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)]'
                         : pomodoroMode !== 'off'
                         ? 'border-transparent'
                         : isLightMode
@@ -1227,7 +1215,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                         : 'text-zinc-400 bg-white/[0.05] border-white/10 hover:text-white'
                     }`}
                     style={
-                      !isAero && pomodoroMode !== 'off'
+                      !isMaterial && pomodoroMode !== 'off'
                         ? { color: activeAccent, borderColor: `${activeAccent}50`, backgroundColor: `${activeAccent}15` }
                         : undefined
                     }
@@ -1257,7 +1245,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
           >
             {/* System Clock (5x7 Dot-Matrix Pixel Layout) */}
             <div className="flex flex-col items-center justify-center pt-0.5 pb-2">
-              <span className={`text-[9.5px] font-mono tracking-widest uppercase mb-1 ${isAero ? 'text-[#5B6B79] font-bold' : isLightMode ? 'text-stone-500' : 'text-zinc-400'}`}>
+              <span className={`text-[9.5px] font-mono tracking-widest uppercase mb-1 ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)] font-bold' : isLightMode ? 'text-stone-500' : 'text-zinc-400'}`}>
                 SYSTEM TIME // SYNCED
               </span>
               <svg
@@ -1272,8 +1260,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                     <stop
                       offset="0%"
                       stopColor={
-                        isAero
-                          ? '#353B5B'
+                        isMaterial
+                          ? isMaterialDark
+                            ? '#F3EDE8'
+                            : '#353B5B'
                           : isLightMode
                           ? (themeRuntime.cssVars['--zero-ink-primary'] || '#353B5B')
                           : '#FFFFFF'
@@ -1282,8 +1272,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                     <stop
                       offset="100%"
                       stopColor={
-                        isAero
-                          ? 'rgba(53, 59, 91, 0.75)'
+                        isMaterial
+                          ? isMaterialDark
+                            ? 'rgba(243, 237, 232, 0.72)'
+                            : 'rgba(53, 59, 91, 0.72)'
                           : isLightMode
                           ? (themeRuntime.cssVars['--zero-ink-secondary'] || '#353B5B')
                           : 'rgba(255,255,255,0.72)'
@@ -1308,23 +1300,21 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             <div
               className="w-24 h-[1px] mx-auto my-1"
               style={{
-                backgroundColor: isAero
-                  ? 'rgba(53, 59, 91, 0.15)'
-                  : isDusk
-                  ? 'rgba(243, 237, 232, 0.15)'
+                backgroundColor: isMaterial
+                  ? 'var(--md-sys-color-outline)'
                   : activeAccent,
               }}
             />
 
-            {/* Countdown Timer (5x7 Dot-Matrix Pixel Layout with Radiant Theme Gradient) */}
+            {/* Countdown Timer (5x7 Dot-Matrix Pixel Layout) */}
             <div className="flex flex-col items-center justify-center pt-2 pb-1">
               <span
                 className={`text-[9.5px] font-mono tracking-widest uppercase mb-1.5 flex items-center gap-1.5 ${
-                  isAero ? 'text-[#5B6B79] font-bold' : ''
+                  isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)] font-bold' : ''
                 }`}
-                style={isAero ? undefined : { color: activeAccent }}
+                style={isMaterial ? undefined : { color: activeAccent }}
               >
-                <Lock size={10} style={{ color: isAero ? '#111827' : activeAccent }} />
+                <Lock size={10} style={{ color: isMaterial ? 'var(--md-sys-color-primary)' : activeAccent }} />
                 <span>COUNTDOWN TIMER // SEALED</span>
               </span>
               <svg
@@ -1333,7 +1323,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 viewBox={`0 0 ${timerPixelLayout.totalCols} ${timerPixelLayout.totalRows}`}
                 className="h-12 sm:h-14 w-auto max-w-full overflow-visible"
                 style={
-                  isAero
+                  isMaterial
                     ? undefined
                     : {
                         filter: `drop-shadow(0 0 1.5px rgba(255,255,255,0.95)) drop-shadow(0 2px 14px ${activeAccent}88)`,
@@ -1346,8 +1336,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                     <stop
                       offset="0%"
                       stopColor={
-                        isAero
-                          ? '#353B5B'
+                        isMaterial
+                          ? isMaterialDark
+                            ? '#F3EDE8'
+                            : '#353B5B'
                           : isLightMode
                           ? (themeRuntime.cssVars['--zero-ink-primary'] || '#353B5B')
                           : '#FFFFFF'
@@ -1357,8 +1349,10 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                     <stop
                       offset="65%"
                       stopColor={
-                        isAero
-                          ? '#353B5B'
+                        isMaterial
+                          ? isMaterialDark
+                            ? '#F3EDE8'
+                            : '#353B5B'
                           : isLightMode
                           ? (themeRuntime.cssVars['--zero-ink-primary'] || '#353B5B')
                           : '#FFFFFF'
@@ -1367,7 +1361,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                     />
                     <stop
                       offset="100%"
-                      stopColor={isAero ? (aeroAccentColor || '#0F172A') : activeAccent}
+                      stopColor={isMaterial ? '#E69F86' : activeAccent}
                       stopOpacity={1}
                     />
                   </linearGradient>
@@ -1383,7 +1377,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   />
                 ))}
               </svg>
-              <div className={`flex items-center gap-1.5 text-[10px] uppercase font-semibold tracking-widest mt-2 ${isAero ? 'text-[#5B6B79]' : isLightMode ? 'text-stone-500' : 'text-zinc-400'}`}>
+              <div className={`flex items-center gap-1.5 text-[10px] uppercase font-semibold tracking-widest mt-2 ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)]' : isLightMode ? 'text-stone-500' : 'text-zinc-400'}`}>
                 <span>Target Finish {targetEndTimeFormatted}</span>
               </div>
 
@@ -1419,14 +1413,14 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                       className={`px-3 py-1 rounded-full text-xs font-mono font-semibold transition-all cursor-pointer ${
                         wouldExceedBurnBoats
                           ? 'opacity-35 cursor-not-allowed bg-white/5 text-zinc-600 border border-white/5'
-                          : isAero
-                          ? 'bg-white border border-[#CBD5E1] text-[#0F172A] hover:bg-[#F1F5F9] shadow-xs active:scale-95'
+                          : isMaterial
+                          ? 'bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)] active:scale-95'
                           : isLightMode
                           ? 'bg-amber-100/70 border border-amber-300 text-amber-900 hover:bg-amber-100 shadow-xs active:scale-95'
                           : 'bg-white/[0.06] hover:bg-white/[0.12] text-white border transition-colors active:scale-95 shadow-sm'
                       }`}
                       style={
-                        !isAero && !isLightMode && !wouldExceedBurnBoats
+                        !isMaterial && !isLightMode && !wouldExceedBurnBoats
                           ? { borderColor: `${activeAccent}40`, color: '#FFFFFF' }
                           : undefined
                       }
@@ -1440,20 +1434,20 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
           </div>
 
           {/* Smooth Progress Track */}
-          <div className={`relative z-10 mt-3.5 pt-2 border-t ${isAero ? 'border-[#E2E8F0]' : 'border-white/[0.08]'}`}>
-            <div className={`flex items-center justify-between text-[11px] font-sans font-medium mb-1.5 tabular-nums ${isAero ? 'text-[#5B6B79]' : isLightMode ? 'text-stone-600' : 'text-zinc-400'}`}>
+          <div className={`relative z-10 mt-3.5 pt-2 border-t ${isMaterial ? 'border-[var(--md-sys-color-outline-variant)]' : 'border-white/[0.08]'}`}>
+            <div className={`flex items-center justify-between text-[11px] font-sans font-medium mb-1.5 tabular-nums ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)]' : isLightMode ? 'text-stone-600' : 'text-zinc-400'}`}>
               <span>{Math.floor(activeLock.elapsedSeconds / 60)}m completed</span>
-              <span className={`font-semibold ${isAero ? 'text-[#111827]' : isLightMode ? 'text-stone-900' : 'text-zinc-200'}`}>{progressPct}%</span>
+              <span className={`font-semibold ${isMaterial ? 'text-[var(--md-sys-color-on-surface)]' : isLightMode ? 'text-stone-900' : 'text-zinc-200'}`}>{progressPct}%</span>
               <span>{Math.ceil(activeLock.remainingSeconds / 60)}m left</span>
             </div>
-            <div className={`w-full h-1.5 rounded-full overflow-hidden p-0.5 ${isAero ? 'bg-[#E2E8F0]' : isLightMode ? 'bg-stone-300/60' : 'bg-white/[0.08]'}`}>
+            <div className={`w-full h-1.5 rounded-full overflow-hidden p-0.5 ${isMaterial ? 'bg-[var(--md-sys-color-surface-container-highest)]' : isLightMode ? 'bg-stone-300/60' : 'bg-white/[0.08]'}`}>
               <div
                 className="h-full rounded-full transition-all duration-1000 ease-out"
                 style={
-                  isAero
+                  isMaterial
                     ? {
                         width: `${progressPct}%`,
-                        background: '#353B5B',
+                        background: 'var(--md-sys-color-primary)',
                       }
                     : {
                         width: `${progressPct}%`,
@@ -1470,15 +1464,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
         <div
           onClick={handleNextQuote}
           title="Tap to cycle focus wisdom"
-          className={`relative w-full rounded-2xl px-4 py-3 flex items-start gap-3 cursor-pointer liquid-spring hover:brightness-105 active:scale-[0.99] transition-all border shadow-lg ${
-            isAero
-              ? 'bg-white/90 backdrop-blur-md border-white/95 text-[#111827] shadow-sm'
+          className={`relative w-full rounded-2xl px-4 py-3 flex items-start gap-3 cursor-pointer liquid-spring hover:brightness-105 active:scale-[0.99] transition-all border ${
+            isMaterial
+              ? 'bg-[var(--md-sys-color-surface-container-low)] border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)]'
               : isLightMode
               ? 'bg-amber-50/70 border-stone-300 text-stone-900'
-              : 'liquid-glass border-white/10 text-white'
+              : 'liquid-glass border-white/10 text-white shadow-lg'
           }`}
           style={
-            !isAero && themeRuntime.family === 'matte'
+            !isMaterial && themeRuntime.family === 'matte'
               ? { backgroundColor: themeRuntime.cssVars['--zero-surface-1'] || '#1c1c22' }
               : undefined
           }
@@ -1486,28 +1480,28 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
           <div
             className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
             style={
-              isAero
-                ? { backgroundColor: '#F6F9FC', color: '#111827' }
+              isMaterial
+                ? { backgroundColor: 'var(--md-sys-color-surface-container)', color: 'var(--md-sys-color-primary)' }
                 : {
                     backgroundColor: isLightMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)',
                     color: activeAccent,
                   }
             }
           >
-            <Quote size={13} style={{ color: isAero ? '#111827' : activeAccent }} />
+            <Quote size={13} style={{ color: isMaterial ? 'var(--md-sys-color-primary)' : activeAccent }} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className={`text-[13px] font-medium leading-relaxed line-clamp-3 ${isAero ? 'text-[#111827]' : isLightMode ? 'text-stone-800' : 'text-zinc-100'}`}>
+            <p className={`text-[13px] font-medium leading-relaxed line-clamp-3 ${isMaterial ? 'text-[var(--md-sys-color-on-surface)]' : isLightMode ? 'text-stone-800' : 'text-zinc-100'}`}>
               &ldquo;{currentQuote.quote}&rdquo;
             </p>
             <div className="flex items-center justify-between gap-2 mt-1.5">
               <span
-                className={`text-[10px] font-mono font-semibold uppercase tracking-wider ${isAero ? 'text-[#5B6B79]' : ''}`}
-                style={isAero ? undefined : { color: activeAccent }}
+                className={`text-[10px] font-mono font-semibold uppercase tracking-wider ${isMaterial ? 'text-[var(--md-sys-color-primary)]' : ''}`}
+                style={isMaterial ? undefined : { color: activeAccent }}
               >
                 — {currentQuote.author}
               </span>
-              <span className={`text-[9px] font-mono uppercase tracking-widest ${isAero ? 'text-[#9CA3AF]' : isLightMode ? 'text-stone-500' : 'text-zinc-500'}`}>
+              <span className={`text-[9px] font-mono uppercase tracking-widest ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)]' : isLightMode ? 'text-stone-500' : 'text-zinc-500'}`}>
                 Tap for next
               </span>
             </div>
@@ -1515,14 +1509,14 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
         </div>
 
         {/* Status Anti-Tamper, Phone Silence Shield & OLED Protection Indicator */}
-        <div className="flex items-center justify-between px-1 text-[11px] font-sans text-zinc-400">
+        <div className={`flex items-center justify-between px-1 text-[11px] font-sans ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)]' : 'text-zinc-400'}`}>
           <div className="flex items-center gap-1.5 min-w-0">
-            <CheckCircle2 size={12} style={{ color: isAero ? '#111827' : activeAccent }} className="shrink-0" />
+            <CheckCircle2 size={12} style={{ color: isMaterial ? 'var(--md-sys-color-primary)' : activeAccent }} className="shrink-0" />
             <span className="truncate">Calls Live • OLED Protected</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {activeLock.burnTheBoats ? (
-              <span className="text-amber-400 font-semibold flex items-center gap-1 text-[10px] uppercase">
+              <span className={`font-semibold flex items-center gap-1 text-[10px] uppercase ${isMaterial ? 'text-[var(--md-sys-color-tertiary)]' : 'text-amber-400'}`}>
                 <Flame size={11} />
                 <span>Boats Burned</span>
               </span>
@@ -1552,7 +1546,9 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 }
                 className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border cursor-pointer transition-colors ${
                   isDndEnabled
-                    ? 'bg-red-500/20 text-red-300 border-red-500/40 font-semibold'
+                    ? 'bg-red-500/20 text-red-400 border-red-500/40 font-semibold'
+                    : isMaterial
+                    ? 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)]'
                     : 'bg-white/[0.04] text-zinc-500 border-white/5 hover:text-zinc-300'
                 }`}
               >
@@ -1567,15 +1563,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       {/* FLOATING BOTTOM ALLOWED APPS DOCK (NOT A LIST, ICONS AT BOTTOM) */}
       <div
         className={
-          isAero
-            ? 'relative z-10 w-full max-w-md mx-auto mb-2 p-4 bg-white rounded-[26px] border border-[#E2E8F0] shadow-[0_-8px_24px_rgba(15,23,42,0.06)] flex flex-col gap-3 shrink-0'
+          isMaterial
+            ? 'relative z-10 w-full max-w-md mx-auto mb-2 p-4 bg-[var(--md-sys-color-surface-container-low)] rounded-[24px] border border-[var(--md-sys-color-outline-variant)] flex flex-col gap-3 shrink-0'
             : 'relative z-10 w-full max-w-md mx-auto mb-2 shrink-0'
         }
       >
-        <div className={`text-[10px] font-sans font-semibold tracking-wider uppercase px-1 mb-1.5 flex items-center justify-between ${isAero ? 'text-[#111827]' : 'text-zinc-400'}`}>
+        <div className={`text-[10px] font-sans font-semibold tracking-wider uppercase px-1 mb-1.5 flex items-center justify-between ${isMaterial ? 'text-[var(--md-sys-color-on-surface)]' : 'text-zinc-400'}`}>
           <span className="flex items-center gap-1.5">
-            <Lock size={10} className={isAero ? 'text-[#111827]' : 'theme-text-accent'} />
-            <span className={isAero ? 'font-bold text-[#111827]' : ''}>Bag: {activeBag.name}</span>
+            <Lock size={10} className={isMaterial ? 'text-[var(--md-sys-color-primary)]' : 'theme-text-accent'} />
+            <span className={isMaterial ? 'font-bold text-[var(--md-sys-color-on-surface)]' : ''}>Bag: {activeBag.name}</span>
           </span>
           <div className="flex items-center gap-2">
             <button
@@ -1586,15 +1582,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               }}
               title="Open ZeroTube Distraction-Free Study Player"
               className={`px-2 py-0.5 rounded-lg text-[9px] font-mono flex items-center gap-1 cursor-pointer transition-all ${
-                isAero
-                  ? 'bg-[#F6F9FC] border border-[#E2E8F0] text-[#111827] hover:bg-[#EDF2F7]'
+                isMaterial
+                  ? 'bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)]'
                   : 'liquid-pill-inactive text-cyan-300 hover:text-white'
               }`}
             >
               <Play size={9} fill="currentColor" />
               <span>ZeroTube</span>
             </button>
-            <span className={isAero ? 'text-[#5B6B79] font-medium' : 'text-cyan-300'}>
+            <span className={isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)] font-medium' : 'text-cyan-300'}>
               {pomodoroIsBreak
                 ? 'Mindful Break'
                 : visibleBagApps.length === 0
@@ -1605,15 +1601,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
         </div>
 
         <div
-          className={`w-full rounded-[22px] p-2 border flex items-center justify-center gap-3 overflow-x-auto no-scrollbar ${
-            isAero
-              ? 'bg-[#F6F9FC] border-[#E2E8F0]'
+          className={`w-full rounded-[20px] p-2 border flex items-center justify-center gap-3 overflow-x-auto no-scrollbar ${
+            isMaterial
+              ? 'bg-[var(--md-sys-color-surface-container)] border-[var(--md-sys-color-outline-variant)]'
               : isLightMode
               ? 'bg-amber-50/80 border-stone-300'
               : 'liquid-glass border-white/10 shadow-2xl'
           }`}
           style={
-            !isAero && themeRuntime.family === 'matte'
+            !isMaterial && themeRuntime.family === 'matte'
               ? { backgroundColor: themeRuntime.cssVars['--zero-surface-1'] || '#1c1c22' }
               : undefined
           }
@@ -1629,7 +1625,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-md bg-emerald-600 text-white border border-emerald-400/40">
                 <Phone size={20} strokeWidth={2.2} />
               </div>
-              <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isAero ? 'text-[#374151]' : 'text-zinc-300'}`}>
+              <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)]' : 'text-zinc-300'}`}>
                 Phone
               </span>
             </button>
@@ -1665,21 +1661,21 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                         style={{
                           backgroundColor: brand.bgColor,
                           color: brand.textColor,
-                          border: isAero ? '1.5px solid #111827' : '1.5px solid var(--accent-primary, #00f0ff)',
+                          border: isMaterial ? '1.5px solid var(--md-sys-color-primary)' : '1.5px solid var(--accent-primary, #00f0ff)',
                         }}
                       >
                         {brand.initial}
                         <span
                           className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
                           style={{
-                            backgroundColor: isAero ? '#353B5B' : 'var(--accent-primary, #00f0ff)',
-                            color: isAero ? '#F3EDE8' : '#021a1f',
+                            backgroundColor: isMaterial ? 'var(--md-sys-color-primary)' : 'var(--accent-primary, #00f0ff)',
+                            color: isMaterial ? 'var(--md-sys-color-on-primary)' : '#021a1f',
                           }}
                         >
                           <GraduationCap size={10} />
                         </span>
                       </div>
-                      <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isAero ? 'text-[#353B5B] font-semibold' : 'text-cyan-200'}`}>
+                      <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isMaterial ? 'text-[var(--md-sys-color-on-surface)] font-semibold' : 'text-cyan-200'}`}>
                         {studyApp.appName}
                       </span>
                     </button>
@@ -1706,7 +1702,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   >
                     {brand.initial}
                   </div>
-                  <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isAero ? 'text-[#443E38]' : 'text-zinc-300'}`}>
+                  <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)]' : 'text-zinc-300'}`}>
                     {app.appName}
                   </span>
                 </button>
@@ -1730,7 +1726,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-sky-600 text-white border border-sky-400/30 shadow-md">
                   <MessageSquare size={18} strokeWidth={2} />
                 </div>
-                <span className={`text-[10px] font-sans font-medium ${isAero ? 'text-[#443E38]' : 'text-zinc-300'}`}>SMS</span>
+                <span className={`text-[10px] font-sans font-medium ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)]' : 'text-zinc-300'}`}>SMS</span>
               </button>
             )}
 
@@ -1747,15 +1743,15 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-md bg-gradient-to-br from-emerald-500/90 to-teal-700/90 text-white border border-emerald-300/40">
                 <CreditCard size={20} strokeWidth={2.2} />
               </div>
-              <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isAero ? 'text-emerald-700 font-semibold' : 'text-emerald-300'}`}>
+              <span className={`text-[10px] font-sans font-medium max-w-[54px] truncate text-center ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)] font-semibold' : 'text-emerald-300'}`}>
                 Pay
               </span>
             </button>
           </div>
         </div>
 
-        {/* In Aero UI, the Emergency Call & Escape Ticket are embedded cleanly in the bottom sheet */}
-        {isAero && (
+        {/* In Material Dusk UI, the Emergency Call & Escape Ticket sit cleanly inside the bottom tonal card */}
+        {isMaterial && (
           <div
             className={`relative z-10 w-full pt-1 shrink-0 flex items-center gap-3 ${
               effectiveTicketCount > 0 ? 'justify-between' : 'justify-center'
@@ -1767,7 +1763,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 haptics.thud();
                 setShowEmergencyModal(true);
               }}
-              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-xs font-sans font-semibold transition-all cursor-pointer active:scale-95 bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#EDE6DF] shadow-sm ${
+              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-xs font-sans font-semibold transition-all cursor-pointer active:scale-95 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)] ${
                 effectiveTicketCount > 0 ? 'flex-1' : 'w-full max-w-xs'
               }`}
             >
@@ -1783,16 +1779,16 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   setTamperWarning('Burn the Boats is active. Escape tickets are strictly disabled for this session.');
                   setTimeout(() => setTamperWarning(null), 3500);
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-sans font-semibold cursor-pointer active:scale-95"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-[var(--md-sys-color-tertiary-container)] border border-[var(--md-sys-color-tertiary)] text-[var(--md-sys-color-on-tertiary-container)] text-xs font-sans font-semibold cursor-pointer active:scale-95"
                 title="Burn the Boats is active. Escape tickets are strictly locked."
               >
-                <Flame size={13} className="text-amber-400" />
+                <Flame size={13} />
                 <span>Boats Burned</span>
               </button>
             ) : effectiveTicketCount > 0 ? (
               <EscapeTicketDockButton
                 ticketCount={effectiveTicketCount}
-                isAero={isAero}
+                isAero={isMaterial}
                 onOpen={() => setShowEscapeTicketModal(true)}
               />
             ) : null}
@@ -1800,8 +1796,8 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
         )}
       </div>
 
-      {/* BOTTOM ACTION BAR: For standard dark mode (kept 100% separate outside dock) */}
-      {!isAero && (
+      {/* BOTTOM ACTION BAR: For non-Material modes */}
+      {!isMaterial && (
         <div
           className={`relative z-10 w-full max-w-md mx-auto pt-1 pb-1 shrink-0 flex items-center gap-3 ${
             effectiveTicketCount > 0 || activeLock.burnTheBoats ? 'justify-between' : 'justify-center'
@@ -1864,21 +1860,21 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
         <div
           role="dialog"
           aria-modal="true"
-          className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xl animate-fadeIn ${
-            isAero ? 'bg-[rgba(243,237,232,0.88)]' : 'bg-black/85'
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn ${
+            isMaterial ? 'bg-black/50' : 'bg-black/85'
           }`}
         >
           <div
             className={`relative w-full max-w-sm rounded-[24px] p-5 shadow-2xl space-y-4 font-sans select-none border ${
-              isAero
-                ? 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B]'
+              isMaterial
+                ? 'bg-[var(--md-sys-color-surface-container-low)] border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)]'
                 : 'bg-[#2C314C] border-[rgba(243,237,232,0.10)] text-[#F3EDE8]'
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Phone size={16} className="text-[#D87255]" />
-                <h3 className={`text-sm font-bold uppercase tracking-wider ${isAero ? 'text-[#353B5B]' : 'text-[#F3EDE8]'}`}>
+                <h3 className={`text-sm font-bold uppercase tracking-wider ${isMaterial ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[#F3EDE8]'}`}>
                   Emergency Protocol
                 </h3>
               </div>
@@ -1886,14 +1882,16 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                 type="button"
                 onClick={() => setShowEmergencyModal(false)}
                 className={`w-7 h-7 rounded-full flex items-center justify-center cursor-pointer transition-colors ${
-                  isAero ? 'bg-[#EDE6DF] text-[#353B5B] hover:bg-[#E5DDD5]' : 'bg-[#202438] text-[#F3EDE8] hover:bg-[#282E47]'
+                  isMaterial
+                    ? 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)]'
+                    : 'bg-[#202438] text-[#F3EDE8] hover:bg-[#282E47]'
                 }`}
               >
                 <X size={14} />
               </button>
             </div>
 
-            <p className={`text-xs leading-relaxed ${isAero ? 'text-[rgba(53,59,91,0.75)]' : 'text-[rgba(243,237,232,0.75)]'}`}>
+            <p className={`text-xs leading-relaxed ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)]' : 'text-[rgba(243,237,232,0.75)]'}`}>
               If you are facing an urgent safety situation, you can immediately initiate a call to
               emergency services or your emergency ICE contacts.
             </p>
@@ -1916,7 +1914,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
             </div>
 
             <div className="pt-1">
-              <div className={`text-[11px] font-semibold mb-1.5 uppercase tracking-wider ${isAero ? 'text-[rgba(53,59,91,0.60)]' : 'text-[rgba(243,237,232,0.60)]'}`}>
+              <div className={`text-[11px] font-semibold mb-1.5 uppercase tracking-wider ${isMaterial ? 'text-[var(--md-sys-color-on-surface-variant)]' : 'text-[rgba(243,237,232,0.60)]'}`}>
                 Or Dial Specific ICE Number:
               </div>
               <div className="flex gap-2">
@@ -1926,8 +1924,8 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
                   value={emergencyNumber}
                   onChange={(e) => setEmergencyNumber(e.target.value)}
                   className={`flex-1 px-3 py-2 rounded-xl text-xs outline-none focus:ring-1 focus:ring-[#D87255] ${
-                    isAero
-                      ? 'bg-[#EDE6DF] border border-[rgba(53,59,91,0.12)] text-[#353B5B] placeholder-[rgba(53,59,91,0.45)]'
+                    isMaterial
+                      ? 'bg-[var(--md-sys-color-surface-container-highest)] border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-on-surface)]'
                       : 'bg-[#202438] border border-[rgba(243,237,232,0.12)] text-[#F3EDE8] placeholder-[rgba(243,237,232,0.45)]'
                   }`}
                 />
@@ -1946,8 +1944,8 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
               type="button"
               onClick={() => setShowEmergencyModal(false)}
               className={`w-full py-2.5 font-medium text-xs rounded-xl cursor-pointer transition-colors ${
-                isAero
-                  ? 'bg-[#EDE6DF] text-[#353B5B] hover:bg-[#E5DDD5]'
+                isMaterial
+                  ? 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)]'
                   : 'bg-[#202438] text-[#F3EDE8] hover:bg-[#282E47]'
               }`}
             >
@@ -1961,7 +1959,7 @@ export const TheVoidView: React.FC<TheVoidViewProps> = ({
       <EscapeTicketModal
         isOpen={showEscapeTicketModal}
         ticketCount={effectiveTicketCount}
-        isAero={isAero}
+        isAero={isMaterial}
         onClose={() => setShowEscapeTicketModal(false)}
         onEscapeConfirmed={() => {
           setShowEscapeTicketModal(false);

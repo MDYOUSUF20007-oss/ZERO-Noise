@@ -245,11 +245,15 @@ export function OnboardingWizard({
     onComplete(profile, recommendedSchedules, recommendedBags);
   };
 
+  const docEl = typeof document !== 'undefined' ? document.documentElement : null;
+  const docTheme = docEl?.getAttribute('data-theme');
+  const docStyle = docEl?.getAttribute('data-interface-style');
+  const matMode = docEl?.getAttribute('data-material-mode');
   const isAero =
-    _interfaceStyle === 'aero' ||
-    (typeof document !== 'undefined' &&
-      (document.documentElement.getAttribute('data-theme') === 'aero' ||
-        document.documentElement.getAttribute('data-interface-style') === 'aero'));
+    (docTheme === 'material' && matMode === 'light') ||
+    (_interfaceStyle === 'aero' && docTheme !== 'material') ||
+    docTheme === 'aero' ||
+    docStyle === 'aero';
 
   const themeTokens = {
     canvasBg: isAero ? '#F3EDE8' : '#24283F',
@@ -891,7 +895,7 @@ export function OnboardingWizard({
       {/* Bottom Navigation Dock */}
       <div className="max-w-lg mx-auto w-full pb-1">
         <div
-          className="rounded-2xl p-2.5 flex items-center justify-between gap-3"
+          className="rounded-2xl p-2.5 flex items-center justify-between gap-2"
           style={{
             background: themeTokens.cardBg,
             border: themeTokens.cardBorder,
@@ -902,7 +906,7 @@ export function OnboardingWizard({
             <button
               type="button"
               onClick={handleBack}
-              className="py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center gap-1.5 liquid-spring cursor-pointer"
+              className="py-2.5 px-3.5 rounded-full text-xs font-semibold flex items-center gap-1.5 shrink-0 liquid-spring cursor-pointer"
               style={{
                 border: themeTokens.insetBorder,
                 background: themeTokens.insetBg,
@@ -918,7 +922,7 @@ export function OnboardingWizard({
           <button
             type="button"
             onClick={handleNext}
-            className="py-2.5 px-6 rounded-xl text-xs font-bold flex items-center gap-2 liquid-spring cursor-pointer"
+            className="py-2.5 px-4 sm:px-6 rounded-full text-xs font-bold flex items-center gap-1.5 whitespace-nowrap shrink-0 liquid-spring cursor-pointer"
             style={{
               background: isAero ? '#353B5B' : '#E69F86',
               color: isAero ? '#F3EDE8' : '#24283F',

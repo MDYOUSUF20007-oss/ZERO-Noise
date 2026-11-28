@@ -98,8 +98,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
   onSaveProfile,
   onClose,
 }) => {
-  const { isBespoke, isFluentGlass, isAero, aeroAccentColor } = useInterfaceStyle();
-  const isModernFont = isBespoke || isFluentGlass || isAero;
+  const { isBespoke, isFluentGlass, isMaterial } = useInterfaceStyle();
+  const isModernFont = isBespoke || isFluentGlass || isMaterial;
   const [displayName, setDisplayName] = useState(initialProfile?.displayName || '');
   const [handleInput, setHandleInput] = useState(initialProfile?.handle || '');
   const [avatarId, setAvatarId] = useState<ProfileAvatarId>(initialProfile?.avatarId || 'monk');
@@ -183,8 +183,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center px-4 ${
-        isAero
-          ? 'bg-slate-900/40 backdrop-blur-md'
+        isMaterial
+          ? 'bg-black/50 backdrop-blur-sm'
           : isFluentGlass
           ? 'bg-black/75 backdrop-blur-sm'
           : 'bg-black/95'
@@ -196,7 +196,7 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
     >
       <ObsidianCard
         onSubmit={handleSubmit}
-        ambientGlow={!isBespoke && !isAero}
+        ambientGlow={!isBespoke && !isMaterial}
         className={`w-full max-w-md max-h-full ${isModernFont ? 'font-sans' : 'font-mono'}`}
         headerClassName={
           isModernFont
@@ -213,17 +213,15 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                   <div
                     style={
                       isModernFont
-                        ? isAero && aeroAccentColor
-                          ? { backgroundColor: aeroAccentColor }
-                          : undefined
+                        ? undefined
                         : {
                             background: 'var(--accent-badge-gradient)',
                             color: 'var(--accent-badge-text, #09090B)',
                           }
                     }
                     className={
-                      isAero
-                        ? 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#353B5B] text-[#F3EDE8] font-sans text-[10px] font-bold uppercase tracking-wider mb-2 shadow-xs'
+                      isMaterial
+                        ? 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-sans text-[10px] font-bold uppercase tracking-wider mb-2'
                         : isFluentGlass
                         ? 'inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full liquid-inset text-cyan-200 font-sans text-[10px] font-semibold uppercase tracking-wider mb-2'
                         : isBespoke
@@ -241,8 +239,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                 )}
                 <h2
                   className={
-                    isAero
-                      ? 'text-base font-black text-[#353B5B] tracking-tight'
+                    isMaterial
+                      ? 'text-base font-black text-[var(--md-sys-color-on-surface)] tracking-tight'
                       : isModernFont
                       ? 'text-base font-semibold text-white tracking-tight'
                       : 'text-base font-black text-white tracking-tight'
@@ -252,8 +250,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                 </h2>
                 <p
                   className={
-                    isAero
-                      ? 'text-xs text-[#353B5B]/80 mt-1 leading-relaxed font-medium'
+                    isMaterial
+                      ? 'text-xs text-[var(--md-sys-color-on-surface-variant)] mt-1 leading-relaxed font-medium'
                       : isModernFont
                       ? 'text-xs text-neutral-400 mt-1 leading-relaxed'
                       : 'text-[11px] text-zinc-400 mt-0.5'
@@ -270,8 +268,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                 type="button"
                 onClick={onClose}
                 className={
-                  isAero
-                    ? 'p-2 rounded-full bg-[#EDE6DF] border border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#E8E0D7] transition-colors shrink-0'
+                  isMaterial
+                    ? 'p-2 rounded-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)] transition-colors shrink-0'
                     : isFluentGlass
                     ? 'p-2 rounded-full liquid-pill text-zinc-300 shrink-0'
                     : isBespoke
@@ -439,8 +437,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
               <div>
                 <label
                   className={
-                    isAero
-                      ? 'text-[10px] font-sans font-bold uppercase tracking-wider text-[#475569] block mb-1.5'
+                    isMaterial
+                      ? 'text-[10px] font-sans font-bold uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)] block mb-1.5'
                       : isFluentGlass
                       ? 'text-[10px] font-sans font-semibold uppercase tracking-wider text-zinc-400 block mb-1.5'
                       : isBespoke
@@ -461,8 +459,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                   maxLength={28}
                   autoFocus={mode === 'welcome'}
                   className={
-                    isAero
-                      ? 'w-full bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] focus:border-[#E69F86] rounded-xl px-3 py-2 text-xs font-sans text-[#353B5B] outline-none shadow-xs placeholder:text-stone-400 transition-colors'
+                    isMaterial
+                      ? 'w-full obsidian-input rounded-xl px-3 py-2 text-xs font-sans outline-none transition-colors'
                       : isFluentGlass
                       ? 'w-full obsidian-input rounded-xl px-3 py-2 text-xs font-sans text-white outline-none'
                       : isBespoke
@@ -474,8 +472,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
               <div>
                 <label
                   className={
-                    isAero
-                      ? 'text-[10px] font-sans font-bold uppercase tracking-wider text-[#353B5B]/80 block mb-1.5'
+                    isMaterial
+                      ? 'text-[10px] font-sans font-bold uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)] block mb-1.5'
                       : isFluentGlass
                       ? 'text-[10px] font-sans font-semibold uppercase tracking-wider text-zinc-400 block mb-1.5'
                       : isBespoke
@@ -492,8 +490,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                   placeholder={normalizeProfileHandle(displayName)}
                   maxLength={20}
                   className={
-                    isAero
-                      ? 'w-full bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] focus:border-[#E69F86] rounded-xl px-3 py-2 text-xs font-sans text-[#353B5B] outline-none shadow-xs placeholder:text-stone-400 transition-colors'
+                    isMaterial
+                      ? 'w-full obsidian-input rounded-xl px-3 py-2 text-xs font-sans outline-none transition-colors'
                       : isFluentGlass
                       ? 'w-full obsidian-input rounded-xl px-3 py-2 text-xs font-sans text-zinc-200 outline-none'
                       : isBespoke
@@ -508,8 +506,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
             <div>
               <label
                 className={
-                  isAero
-                    ? 'text-[10px] font-sans font-bold uppercase tracking-wider text-[#353B5B]/80 block mb-2'
+                  isMaterial
+                    ? 'text-[10px] font-sans font-bold uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)] block mb-2'
                     : isFluentGlass
                     ? 'text-[10px] font-sans font-semibold uppercase tracking-wider text-zinc-400 block mb-2'
                     : isBespoke
@@ -531,20 +529,16 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                         setAvatarId(opt.id);
                       }}
                       style={
-                        isAero
-                          ? active
-                            ? { backgroundColor: aeroAccentColor || '#E69F86', borderColor: aeroAccentColor || '#E69F86' }
-                            : undefined
-                          : !isModernFont && active
+                        !isModernFont && active
                           ? { borderColor: 'var(--accent-hex, #FFFFFF)' }
                           : undefined
                       }
                       className={
-                        isAero
-                          ? `p-2.5 rounded-2xl border flex flex-col items-center gap-1.5 transition-all shadow-2xs ${
+                        isMaterial
+                          ? `p-2.5 rounded-2xl border flex flex-col items-center gap-1.5 transition-colors ${
                               active
-                                ? 'text-white shadow-xs'
-                                : 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#EDE6DF]'
+                                ? 'border-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'
+                                : 'bg-[var(--md-sys-color-surface-container)] border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)]'
                             }`
                           : isFluentGlass
                           ? `p-2.5 rounded-xl flex flex-col items-center gap-1.5 liquid-spring ${
@@ -581,8 +575,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
             <div className="space-y-2">
               <label
                 className={
-                  isAero
-                    ? 'text-[10px] font-sans font-bold uppercase tracking-wider text-[#475569] block'
+                  isMaterial
+                    ? 'text-[10px] font-sans font-bold uppercase tracking-wider text-[var(--md-sys-color-on-surface-variant)] block'
                     : isFluentGlass
                     ? 'text-[10px] font-sans font-semibold uppercase tracking-wider text-zinc-400 block'
                     : isBespoke
@@ -603,17 +597,12 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                         haptics.tick(800);
                         setPrimaryMission(mission);
                       }}
-                      style={
-                        isAero && isActiveMission
-                          ? { backgroundColor: aeroAccentColor || '#E69F86', borderColor: aeroAccentColor || '#E69F86' }
-                          : undefined
-                      }
                       className={
-                        isAero
-                          ? `px-3 py-1 rounded-full font-sans text-[11px] font-bold border transition-all shadow-2xs ${
+                        isMaterial
+                          ? `px-3 py-1 rounded-full font-sans text-[11px] font-bold border transition-colors ${
                               isActiveMission
-                                ? 'text-white shadow-xs'
-                                : 'bg-[#F8F4F0] border-[rgba(53,59,91,0.08)] text-[#353B5B] hover:bg-[#EDE6DF]'
+                                ? 'border-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'
+                                : 'bg-[var(--md-sys-color-surface-container)] border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)]'
                             }`
                           : isFluentGlass
                           ? `px-3 py-1 rounded-full font-sans text-[11px] font-semibold liquid-spring ${
@@ -653,8 +642,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                   maxLength={24}
                   placeholder="Custom #hashtag (e.g. GatePrep)"
                   className={
-                    isAero
-                      ? 'flex-1 bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] focus:border-[#E69F86] rounded-xl px-3 py-1.5 font-sans text-xs text-[#353B5B] outline-none shadow-xs placeholder:text-stone-400 transition-colors'
+                    isMaterial
+                      ? 'flex-1 obsidian-input rounded-xl px-3 py-1.5 font-sans text-xs outline-none transition-colors'
                       : isFluentGlass
                       ? 'flex-1 obsidian-input rounded-xl px-3 py-1.5 font-sans text-xs text-white outline-none'
                       : isBespoke
@@ -667,9 +656,7 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                   onClick={handleAddCustomHashtag}
                   disabled={!normalizeCustomHashtag(customTagInput)}
                   style={
-                    isAero
-                      ? { backgroundColor: aeroAccentColor || '#E69F86' }
-                      : isModernFont
+                    isModernFont
                       ? undefined
                       : {
                           background: 'var(--accent-badge-gradient)',
@@ -677,8 +664,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                         }
                   }
                   className={
-                    isAero
-                      ? 'px-3.5 py-1.5 rounded-xl text-white text-xs font-bold flex items-center gap-1 disabled:opacity-40 active:scale-95 transition-all shadow-xs shrink-0'
+                    isMaterial
+                      ? 'px-3.5 py-1.5 rounded-xl bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] text-xs font-bold flex items-center gap-1 disabled:opacity-40 active:scale-95 transition-transform shrink-0'
                       : isFluentGlass
                       ? 'px-3.5 py-1.5 rounded-xl liquid-pill-active text-xs font-semibold flex items-center gap-1 disabled:opacity-40 shrink-0'
                       : isBespoke
@@ -695,8 +682,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
             {/* Interactive Daily Focus Goal Slider */}
             <div
               className={
-                isAero
-                  ? 'p-4 rounded-2xl bg-white border border-[#E2E8F0] space-y-2.5 shadow-xs'
+                isMaterial
+                  ? 'p-4 rounded-2xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] space-y-2.5'
                   : isFluentGlass
                   ? 'p-4 rounded-2xl liquid-row space-y-2.5'
                   : isBespoke
@@ -707,8 +694,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
               <div className="flex items-center justify-between text-xs">
                 <span
                   className={
-                    isAero
-                      ? 'font-bold text-[#353B5B] flex items-center gap-1.5'
+                    isMaterial
+                      ? 'font-bold text-[var(--md-sys-color-on-surface)] flex items-center gap-1.5'
                       : isModernFont
                       ? 'font-medium text-neutral-300 flex items-center gap-1.5'
                       : 'font-bold text-zinc-300 flex items-center gap-1.5'
@@ -716,10 +703,10 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                 >
                   <Flame
                     size={13}
-                    strokeWidth={isFluentGlass ? 1.75 : 2}
+                    strokeWidth={isFluentGlass || isMaterial ? 1.75 : 2}
                     style={{
-                      color: isAero
-                        ? (aeroAccentColor || '#E69F86')
+                      color: isMaterial
+                        ? 'var(--md-sys-color-primary)'
                         : isFluentGlass
                         ? '#7DD3FC'
                         : isBespoke
@@ -731,8 +718,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                 </span>
                 <span
                   className={
-                    isAero
-                      ? 'font-sans tabular-nums font-black text-[#353B5B]'
+                    isMaterial
+                      ? 'font-sans tabular-nums font-black text-[var(--md-sys-color-on-surface)]'
                       : isFluentGlass
                       ? 'font-sans tabular-nums font-bold text-cyan-200'
                       : isBespoke
@@ -740,7 +727,7 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                       : 'font-black'
                   }
                   style={
-                    isAero || isFluentGlass
+                    isMaterial || isFluentGlass
                       ? undefined
                       : { color: isBespoke ? '#3B82F6' : 'var(--accent-hex, #FFFFFF)' }
                   }
@@ -759,8 +746,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                   setDailyGoalHours(Number(e.target.value));
                 }}
                 style={{
-                  accentColor: isAero
-                    ? (aeroAccentColor || '#E69F86')
+                  accentColor: isMaterial
+                    ? 'var(--md-sys-color-primary)'
                     : isFluentGlass
                     ? '#4FACFE'
                     : isBespoke
@@ -771,8 +758,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
               />
               <div
                 className={
-                  isAero
-                    ? 'flex justify-between font-sans tabular-nums text-[10px] text-[#64748B] font-semibold'
+                  isMaterial
+                    ? 'flex justify-between font-sans tabular-nums text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-semibold'
                     : isFluentGlass
                     ? 'flex justify-between font-sans tabular-nums text-[10px] text-zinc-400'
                     : isBespoke
@@ -790,8 +777,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
             {errorMsg && (
               <div
                 className={
-                  isAero
-                    ? 'p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold'
+                  isMaterial
+                    ? 'p-3 rounded-xl bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-error-container)] text-xs font-semibold'
                     : isFluentGlass
                     ? 'p-3 rounded-xl bg-red-950/60 border border-red-500/50 text-red-200 text-xs'
                     : isBespoke
@@ -809,9 +796,7 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
             <button
               type="submit"
               style={
-                isAero
-                  ? { backgroundColor: aeroAccentColor || '#E69F86' }
-                  : isModernFont
+                isModernFont
                   ? undefined
                   : {
                       background: 'var(--accent-badge-gradient)',
@@ -820,8 +805,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                     }
               }
               className={
-                isAero
-                  ? 'w-full py-3.5 px-4 rounded-2xl text-white font-sans font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all'
+                isMaterial
+                  ? 'w-full py-3.5 px-4 rounded-full bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] font-sans font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-transform'
                   : isFluentGlass
                   ? 'w-full py-3 px-4 rounded-2xl liquid-pill-active font-sans font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2'
                   : isBespoke
@@ -840,7 +825,7 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
                 </>
               ) : (
                 <>
-                  <UserCheck size={15} strokeWidth={isFluentGlass ? 1.75 : 2} />
+                  <UserCheck size={15} strokeWidth={isFluentGlass || isMaterial ? 1.75 : 2} />
                   <span>Save Interactive Profile</span>
                 </>
               )}
@@ -850,8 +835,8 @@ const ProfileModalInner: React.FC<ProfileModalProps> = ({
               type="button"
               onClick={onClose}
               className={
-                isAero
-                  ? 'w-full py-2.5 rounded-2xl bg-[#F8F4F0] border border-[rgba(53,59,91,0.08)] text-[#353B5B]/80 hover:text-[#353B5B] hover:bg-[#EDE6DF] text-xs font-bold transition-colors shadow-2xs'
+                isMaterial
+                  ? 'w-full py-2.5 rounded-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)] text-xs font-bold transition-colors'
                   : isFluentGlass
                   ? 'w-full py-2.5 rounded-2xl liquid-pill text-zinc-300 hover:text-white text-xs font-medium'
                   : isBespoke

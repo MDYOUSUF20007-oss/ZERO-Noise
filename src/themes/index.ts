@@ -1,24 +1,24 @@
 import { type CanonicalThemeId, type ThemeEngineDefinition } from './types';
 import { fluentEngine } from './engine-fluent';
-import { aeroEngine } from './engine-aero';
-import { duskEngine } from './engine-dusk';
+import { materialEngine } from './engine-material';
 
 export * from './types';
 export { fluentEngine } from './engine-fluent';
-export { aeroEngine } from './engine-aero';
-export { duskEngine } from './engine-dusk';
+export { materialEngine } from './engine-material';
+export { materialEngine as aeroEngine };
+export { materialEngine as duskEngine };
 
 export const THEME_ENGINES: Record<CanonicalThemeId, ThemeEngineDefinition> = {
   fluent: fluentEngine,
+  material: materialEngine,
   aetherial: fluentEngine,
-  aero: aeroEngine,
-  dusk: duskEngine,
+  aero: materialEngine,
+  dusk: materialEngine,
 };
 
 export const AVAILABLE_THEMES: readonly ThemeEngineDefinition[] = [
   fluentEngine,
-  aeroEngine,
-  duskEngine,
+  materialEngine,
 ] as const;
 
 export function normalizeThemeId(raw?: string | null): CanonicalThemeId {
@@ -29,16 +29,24 @@ export function normalizeThemeId(raw?: string | null): CanonicalThemeId {
     cleaned === 'fluent_glass' ||
     cleaned === 'glass' ||
     cleaned === 'liquid_glass' ||
-    cleaned === 'acrylic' ||
-    cleaned === 'dark'
+    cleaned === 'acrylic'
   ) {
     return 'fluent';
   }
-  if (cleaned === 'aero' || cleaned === 'aero_ui' || cleaned === 'aeroui' || cleaned === 'light') {
-    return 'aero';
-  }
-  if (cleaned === 'dusk' || cleaned === 'twilight' || cleaned === 'night') {
-    return 'dusk';
+  if (
+    cleaned === 'material' ||
+    cleaned === 'material_dusk' ||
+    cleaned === 'material-you' ||
+    cleaned === 'material_you' ||
+    cleaned === 'aero' ||
+    cleaned === 'aero_ui' ||
+    cleaned === 'aeroui' ||
+    cleaned === 'light' ||
+    cleaned === 'dusk' ||
+    cleaned === 'twilight' ||
+    cleaned === 'night'
+  ) {
+    return 'material';
   }
   if (cleaned === 'aetherial' || cleaned === 'aetherial_focus' || cleaned === 'cosmic') {
     return 'fluent';

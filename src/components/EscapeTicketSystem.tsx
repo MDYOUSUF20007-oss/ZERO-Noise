@@ -23,9 +23,27 @@ const ACCENT_COLOR_MAP: Record<string, string> = {
   lime: '#84CC16',    // Laser Volt
 };
 
-function resolveTicketAccent(explicitAccent?: string, isAero?: boolean): string {
+function getMaterialTicketPalette(explicitIsAero?: boolean) {
+  const docEl = typeof document !== 'undefined' ? document.documentElement : null;
+  const docTheme = docEl?.getAttribute('data-theme');
+  const docStyle = docEl?.getAttribute('data-interface-style');
+  const matMode = docEl?.getAttribute('data-material-mode');
+  const isMaterial =
+    Boolean(explicitIsAero) ||
+    docTheme === 'material' ||
+    docTheme === 'aero' ||
+    docTheme === 'dusk' ||
+    docStyle === 'aero' ||
+    docStyle === 'dusk';
+  const isMaterialDark =
+    isMaterial && ((docTheme === 'material' && matMode === 'dark') || docTheme === 'dusk' || docStyle === 'dusk');
+  const isMaterialLight = isMaterial && !isMaterialDark;
+  return { isMaterial, isMaterialLight, isMaterialDark };
+}
+
+function resolveTicketAccent(explicitAccent?: string, isMaterial?: boolean): string {
   if (explicitAccent && explicitAccent.trim().length > 0) return explicitAccent.trim();
-  if (isAero) return '#E69F86';
+  if (isMaterial) return '#E69F86';
   if (typeof document !== 'undefined') {
     const activeAccentAttr = document.documentElement.getAttribute('data-accent');
     if (activeAccentAttr && ACCENT_COLOR_MAP[activeAccentAttr]) {
@@ -41,7 +59,7 @@ function resolveTicketAccent(explicitAccent?: string, isAero?: boolean): string 
 
 /**
  * Compact notched ticket preview for the bottom dock.
- * Rendered in high-contrast Liquid Glass obsidian (or clean Aero daylight)
+ * Rendered in Material Dusk (Day Porcelain / Night Twilight) or Liquid Glass obsidian
  * with zero wireframe clutter and automatic hiding when ticketCount <= 0.
  */
 export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
@@ -59,15 +77,12 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
   const sheenGradId = `znDockSheen_${uid}`;
   const clipId = `znDockClip_${uid}`;
 
-  const isAeroTheme =
-    isAero ||
-    (typeof document !== 'undefined' &&
-      (document.documentElement.getAttribute('data-theme') === 'aero' ||
-        document.documentElement.getAttribute('data-interface-style') === 'aero'));
+  const { isMaterial, isMaterialLight, isMaterialDark } = getMaterialTicketPalette(isAero);
+  const isAeroTheme = isMaterialLight;
 
   if (!ticketCount || ticketCount <= 0) return null;
 
-  const primaryAccent = resolveTicketAccent(explicitAccent, isAeroTheme);
+  const primaryAccent = resolveTicketAccent(explicitAccent, isMaterial);
 
   return (
     <button
@@ -88,10 +103,15 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
       >
         <defs>
           <linearGradient id={bgGradId} x1="0" y1="0" x2="296" y2="120" gradientUnits="userSpaceOnUse">
-            {isAeroTheme ? (
+            {isMaterialLight ? (
               <>
                 <stop offset="0%" stopColor="#FAF7F4" />
                 <stop offset="100%" stopColor="#EFE9E2" />
+              </>
+            ) : isMaterialDark ? (
+              <>
+                <stop offset="0%" stopColor="#2C314C" />
+                <stop offset="100%" stopColor="#202438" />
               </>
             ) : (
               <>
@@ -102,10 +122,15 @@ export const EscapeTicketDockButton: React.FC<EscapeTicketDockButtonProps> = ({
             )}
           </linearGradient>
           <linearGradient id={stubGradId} x1="0" y1="0" x2="74" y2="120" gradientUnits="userSpaceOnUse">
-            {isAeroTheme ? (
+            {isMaterialLight ? (
               <>
                 <stop offset="0%" stopColor="#EFE8E0" />
                 <stop offset="100%" stopColor="#E6DDD3" />
+              </>
+            ) : isMaterialDark ? (
+              <>
+                <stop offset="0%" stopColor="#353B5B" />
+                <stop offset="100%" stopColor="#24283F" />
               </>
             ) : (
               <>
@@ -335,14 +360,11 @@ const EscapeTicketModalInner: React.FC<EscapeTicketModalProps> = ({
   isAero = false,
   parachuteMetrics,
 }) => {
-  const isAeroTheme =
-    isAero ||
-    (typeof document !== 'undefined' &&
-      (document.documentElement.getAttribute('data-theme') === 'aero' ||
-        document.documentElement.getAttribute('data-interface-style') === 'aero'));
+  const { isMaterial, isMaterialLight, isMaterialDark } = getMaterialTicketPalette(isAero);
+  const isAeroTheme = isMaterialLight;
 
   const effectiveTicketCount = ticketCount ?? parachuteMetrics?.currentBalance ?? 0;
-  const primaryAccent = resolveTicketAccent(explicitAccent, isAeroTheme);
+  const primaryAccent = resolveTicketAccent(explicitAccent, isMaterial);
 
   const [ripProgress, setRipProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -822,10 +844,15 @@ const EscapeTicketModalInner: React.FC<EscapeTicketModalProps> = ({
         >
           <defs>
             <linearGradient id={mainBgId} x1="160" y1="0" x2="640" y2="320" gradientUnits="userSpaceOnUse">
-              {isAeroTheme ? (
+              {isMaterialLight ? (
                 <>
                   <stop offset="0%" stopColor="#FAF7F4" />
                   <stop offset="100%" stopColor="#EFE8E0" />
+                </>
+              ) : isMaterialDark ? (
+                <>
+                  <stop offset="0%" stopColor="#2C314C" />
+                  <stop offset="100%" stopColor="#202438" />
                 </>
               ) : (
                 <>
@@ -837,10 +864,15 @@ const EscapeTicketModalInner: React.FC<EscapeTicketModalProps> = ({
             </linearGradient>
 
             <linearGradient id={stubBgId} x1="0" y1="0" x2="160" y2="320" gradientUnits="userSpaceOnUse">
-              {isAeroTheme ? (
+              {isMaterialLight ? (
                 <>
                   <stop offset="0%" stopColor="#EFE8E0" />
                   <stop offset="100%" stopColor="#E4DBD1" />
+                </>
+              ) : isMaterialDark ? (
+                <>
+                  <stop offset="0%" stopColor="#353B5B" />
+                  <stop offset="100%" stopColor="#24283F" />
                 </>
               ) : (
                 <>

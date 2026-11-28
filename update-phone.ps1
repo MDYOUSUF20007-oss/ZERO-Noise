@@ -3,7 +3,7 @@ Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host "   ZERO-NOISE PHONE INSTALLER / UPDATER   " -ForegroundColor Cyan
 Write-Host "=========================================" -ForegroundColor Cyan
 
-$targetVersion = "v1.0.159"
+$targetVersion = "v1.0.167"
 $apkPath = "$PSScriptRoot\ZERO-requires-adb-$targetVersion.apk"
 if (-not (Test-Path $apkPath)) {
     $apkPath = "$PSScriptRoot\ZERO-$targetVersion.apk"

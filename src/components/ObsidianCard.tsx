@@ -11,6 +11,7 @@ export interface ObsidianCardProps {
   overlays?: ReactNode; // Optional background shimmer/watermark bounded inside card
   ambientGlow?: boolean;
   fullWidth?: boolean;
+  staggerIndex?: number;
   className?: string;
   headerClassName?: string;
   footerClassName?: string;

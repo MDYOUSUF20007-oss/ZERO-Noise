@@ -1,4 +1,5 @@
-export type CanonicalThemeId = 'fluent' | 'aetherial' | 'aero' | 'dusk';
+export type CanonicalThemeId = 'fluent' | 'material' | 'aetherial' | 'aero' | 'dusk';
+export type MaterialAppearanceMode = 'light' | 'dark';
 export type AccentColorId =
   | 'crimson' // Rose Coral (Primary / Recommended)
   | 'emerald' // Neon Emerald
@@ -11,7 +12,7 @@ export type AccentColorId =
   | 'cyan';   // Backward compatibility alias for azure
 
 // Prevents TypeScript TS2367 errors if any legacy component checks an interface style string
-export type InterfaceStyle = 'fluent' | 'aetherial' | 'aero' | 'dusk' | (string & {});
+export type InterfaceStyle = 'fluent' | 'material' | 'aetherial' | 'aero' | 'dusk' | (string & {});
 export type ThemeId = InterfaceStyle;
 
 export interface ThemeEngineDefinition {
